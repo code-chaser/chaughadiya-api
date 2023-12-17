@@ -107,13 +107,12 @@ def get_daywise_chaughadiya():
         ])
     return day_chaughadiya, night_chaughadiya    
 
-def get_chaughadiya(date: str, latitude: float, longitude: float) raises SunTimeException:
+def get_chaughadiya(date: str, latitude: float, longitude: float):
     """
     Returns the chaughadiya for the given date.
     :param date: Date in the format YYYY-MM-DD.
     :param latitude: Latitude of the location.
     :param longitude: Longitude of the location.
-
     """
     # Converting the date string to datetime object.
     date = datetime.datetime.strptime(date, '%Y-%m-%d')
@@ -174,7 +173,7 @@ def get_chaughadiya(date: str, latitude: float, longitude: float) raises SunTime
         'sunset-time': sunset.strftime('%H:%M:%S'),
         'next-sunrise-time': next_sunrise.strftime('%H:%M:%S'),
         'day-muhurat-length': str(datetime.timedelta(seconds=part_2_muhurat_length)),
-        'night-muhurat-length': str(datetime.timedelta(seconds=part_1_muhurat_length)),
+        'night-muhurat-length': str(datetime.timedelta(seconds=part_3_muhurat_length)),
         'chaughadiya': chaughadiya
     }
     return response
