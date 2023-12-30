@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Chaughadiya API</title>
+        <meta charset="utf-8">
+        <meta name="description" content="Chaughadiya API">
+        <meta name="author" content="Rajesh Patel">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            table, th, td {
+                border: 1px solid black;
+                border-collapse: collapse;
+                padding: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Chaughadiya API</h1>
+        <p>API to get chaughadiya and muhurat.</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Endpoint</th>
+                    <th>Method</th>
+                    <th>Parameters</th>
+                    <th>Description</th>
+                    <th>Example</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>/api/get-chaughadiya</td>
+                    <td>GET</td>
+                    <td>
+                        <ul>
+                            <li>date: string (format: YYYY-MM-DD)</li>
+                            <li>latitude: float</li>
+                            <li>longitude: float</li>
+                        </ul>
+                    </td>
+                    <td>Returns the chaughadiya for the given date.</td>
+                    <td><a href="/api/get-chaughadiya?date=2021-01-01&latitude=23.0225&longitude=72.5714">/api/get-chaughadiya?date=2021-01-01&latitude=23.0225&longitude=72.5714</a></td>
+                </tr>
+                <tr>
+                    <td>/api/get-muhurat</td>
+                    <td>GET</td>
+                    <td>
+                        <ul>
+                            <li>timestamp: string (format: YYYY-MM-DD HH:MM:SS)</li>
+                            <li>latitude: float</li>
+                            <li>longitude: float</li>
+                        </ul>
+                    </td>
+                    <td>Returns the muhurat for the given timestamp with the chaughadiya of that day.</td>
+                    <td><a href="/api/get-muhurat?timestamp=2021-01-01 12:00:00&latitude=23.0225&longitude=72.5714">/api/get-muhurat?timestamp=2021-01-01 12:00:00&latitude=23.0225&longitude=72.5714</a></td>
+                </tr>
+            </tbody>
+        </table>
+        <p><b>Note:</b> Please provide date and time in UTC timezone.</p>
+    </body>
+</html>
