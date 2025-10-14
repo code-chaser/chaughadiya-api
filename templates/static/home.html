@@ -1,14 +1,335 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <title>Chaughadiya API</title>
-        <meta charset="utf-8">
-        <meta name="description" content="Chaughadiya API">
-        <meta name="author" content="Rajesh Patel">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
-    <body>
-        <h1>Chaughadiya API</h1>
-        <p>Go to <a href="/api/docs">documentation</a>.</p>
-    </body>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Chaughadiya</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <!-- Tempus Dominus CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.9.4/dist/css/tempus-dominus.min.css" crossorigin="anonymous">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <style>
+        :root {
+            --primary-color: #FF9933; /* Saffron */
+            --secondary-color: #800000; /* Maroon */
+            --light-bg: #FDF5E6; /* Papaya Whip */
+            --dark-bg: #2C3E50; /* Dark Slate Blue */
+            --light-text: #333;
+            --dark-text: #ECF0F1; /* Silver */
+        }
+
+        [data-bs-theme="light"] {
+            --bs-body-bg: var(--light-bg);
+            --bs-body-color: var(--light-text);
+        }
+
+        [data-bs-theme="dark"] {
+            --bs-body-bg: var(--dark-bg);
+            --bs-body-color: var(--dark-text);
+            --bs-border-color: #444;
+        }
+
+        .navbar {
+            background-color: var(--secondary-color) !important;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: #E68A2E;
+            border-color: #E68A2E;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand text-white" href="#">Chaughadiya</a>
+            <div class="form-check form-switch ms-auto">
+                <input class="form-check-input" type="checkbox" id="themeSwitcher">
+                <label class="form-check-label text-white" for="themeSwitcher">Dark Mode</label>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-6">
+                <h2>Enter Details</h2>
+                <form id="chaughadiya-form">
+                    <div class="mb-3">
+                        <label for="location" class="form-label">Location</label>
+                        <input type="text" class="form-control" id="location" placeholder="Enter a location">
+                    </div>
+                    <div id="map" style="height: 300px;" class="mb-3"></div>
+                    <div class="mb-3">
+                        <label for="date" class="form-label">Date</label>
+                        <input type="text" class="form-control" id="date" placeholder="Select a date">
+                    </div>
+                    <div class="mb-3">
+                        <label for="time" class="form-label">Time</label>
+                        <input type="text" class="form-control" id="time" placeholder="Select a time">
+                    </div>
+                    <div class="mb-3">
+                        <label for="timezone" class="form-label">Timezone</label>
+                        <select class="form-select" id="timezone"></select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Get Chaughadiya</button>
+                </form>
+            </div>
+            <div class="col-md-6">
+                <h2>Results</h2>
+                <div id="results-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popperjs -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha256-BRqBN7dYgABqtY9Hd4ynE+1slnEw+roEPFzQ7TRRfcg=" crossorigin="anonymous"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <!-- Tempus Dominus JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.9.4/dist/js/tempus-dominus.min.js" crossorigin="anonymous"></script>
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const themeSwitcher = document.getElementById('themeSwitcher');
+            const htmlElement = document.documentElement;
+
+            themeSwitcher.addEventListener('change', function () {
+                if (this.checked) {
+                    htmlElement.setAttribute('data-bs-theme', 'dark');
+                } else {
+                    htmlElement.setAttribute('data-bs-theme', 'light');
+                }
+            });
+
+            const locationInput = document.getElementById('location');
+            const dateInput = document.getElementById('date');
+            const timeInput = document.getElementById('time');
+            const timezoneSelect = document.getElementById('timezone');
+            const form = document.getElementById('chaughadiya-form');
+            const resultsContainer = document.getElementById('results-container');
+            let latitude, longitude;
+
+            function fetchLocation() {
+                if ('geolocation' in navigator) {
+                    navigator.geolocation.getCurrentPosition(async (position) => {
+                        latitude = position.coords.latitude;
+                        longitude = position.coords.longitude;
+                        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+                        const data = await response.json();
+                        if (data && data.display_name) {
+                            locationInput.value = data.display_name;
+                        }
+                    }, (error) => {
+                        console.error('Error getting location:', error);
+                        locationInput.placeholder = "Could not fetch location. Please enter manually.";
+                    });
+                } else {
+                    console.error('Geolocation is not supported by this browser.');
+                    locationInput.placeholder = "Geolocation not supported. Please enter manually.";
+                }
+            }
+
+            fetchLocation();
+
+            const map = L.map('map').setView([20.5937, 78.9629], 5);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+            let marker = L.marker([20.5937, 78.9629]).addTo(map);
+
+            map.on('click', function(e) {
+                latitude = e.latlng.lat;
+                longitude = e.latlng.lng;
+                marker.setLatLng(e.latlng);
+                updateLocationInput(latitude, longitude);
+            });
+
+            async function updateLocationInput(lat, lng) {
+                const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+                const data = await response.json();
+                if (data && data.display_name) {
+                    locationInput.value = data.display_name;
+                }
+            }
+
+            new tempusDominus.TempusDominus(document.getElementById('date'), {
+                display: { components: { decades: true, year: true, month: true, date: true, hours: false, minutes: false, seconds: false } }
+            });
+            new tempusDominus.TempusDominus(document.getElementById('time'), {
+                display: { components: { decades: false, year: false, month: false, date: false, hours: true, minutes: true, seconds: true } }
+            });
+
+            const timezones = Intl.supportedValuesOf('timeZone');
+            timezones.forEach(tz => {
+                const option = document.createElement('option');
+                option.value = tz;
+                option.textContent = tz;
+                timezoneSelect.appendChild(option);
+            });
+            const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            timezoneSelect.value = userTimezone;
+
+            form.addEventListener('submit', async function(event) {
+                event.preventDefault();
+                const dateValue = dateInput.value;
+                const timeValue = timeInput.value;
+                const timezone = timezoneSelect.value;
+
+                if (!dateValue || !latitude || !longitude) {
+                    resultsContainer.innerHTML = '<div class="alert alert-danger">Please select a date and location.</div>';
+                    return;
+                }
+
+                let apiEndpoint = '/api/get-chaughadiya';
+                let params = `date=${dateValue}&latitude=${latitude}&longitude=${longitude}`;
+
+                if (timeValue) {
+                    const timestamp = getTimestamp(dateValue, timeValue, timezone);
+                    apiEndpoint = '/api/get-muhurat';
+                    params = `timestamp=${timestamp}&latitude=${latitude}&longitude=${longitude}`;
+                }
+
+                const response = await fetch(`${apiEndpoint}?${params}`);
+                const data = await response.json();
+                displayResults(data);
+            });
+
+            function getTimestamp(dateValue, timeValue, timezone) {
+                const [month, day, year] = dateValue.split('/');
+                const [hour, minute, second] = timeValue.split(/:| /);
+
+                const utcDate = Date.UTC(year, month - 1, day, hour, minute, second);
+                const tempDate = new Date(utcDate);
+
+                const parts = new Intl.DateTimeFormat('en-US', {
+                    timeZone: timezone,
+                    year: 'numeric',
+                    month: 'numeric',
+                    day: 'numeric',
+                    hour: 'numeric',
+                    minute: 'numeric',
+                    second: 'numeric',
+                    hour12: false
+                }).formatToParts(tempDate);
+
+                const getPart = (type) => parts.find(p => p.type === type)?.value;
+
+                const yearTZ = getPart('year');
+                const monthTZ = getPart('month');
+                const dayTZ = getPart('day');
+                const hourTZ = getPart('hour') % 24;
+                const minuteTZ = getPart('minute');
+                const secondTZ = getPart('second');
+
+                const tzDate = Date.UTC(yearTZ, monthTZ - 1, dayTZ, hourTZ, minuteTZ, secondTZ);
+
+                const offset = tempDate.getTime() - tzDate;
+
+                const correctTimestamp = utcDate + offset;
+
+                return new Date(correctTimestamp).toISOString();
+            }
+
+            function displayResults(data) {
+                if (!data) {
+                    resultsContainer.innerHTML = '<div class="alert alert-warning">No results found.</div>';
+                    return;
+                }
+
+                if (data.day_muhurat && data.night_muhurat) {
+                    let tableHtml = `<h3>Day Muhurat</h3>
+                                     <table class="table table-striped">
+                                         <thead>
+                                             <tr>
+                                                 <th>Time</th>
+                                                 <th>Chaughadiya</th>
+                                                 <th>Type</th>
+                                             </tr>
+                                         </thead>
+                                         <tbody>`;
+                    data.day_muhurat.forEach(muhurat => {
+                        tableHtml += `<tr>
+                                        <td>${muhurat.time}</td>
+                                        <td>${muhurat.chaughadiya}</td>
+                                        <td>${muhurat.type}</td>
+                                      </tr>`;
+                    });
+                    tableHtml += `</tbody></table>`;
+
+                    tableHtml += `<h3>Night Muhurat</h3>
+                                  <table class="table table-striped">
+                                      <thead>
+                                          <tr>
+                                              <th>Time</th>
+                                              <th>Chaughadiya</th>
+                                              <th>Type</th>
+                                          </tr>
+                                      </thead>
+                                      <tbody>`;
+                    data.night_muhurat.forEach(muhurat => {
+                        tableHtml += `<tr>
+                                        <td>${muhurat.time}</td>
+                                        <td>${muhurat.chaughadiya}</td>
+                                        <td>${muhurat.type}</td>
+                                      </tr>`;
+                    });
+                    tableHtml += `</tbody></table>`;
+                    resultsContainer.innerHTML = tableHtml;
+                } else if (data.chaughadiya) {
+                    const cardHtml = `<div class="card">
+                                        <div class="card-header">Current Muhurat</div>
+                                        <div class="card-body">
+                                            <h5 class="card-title">${data.chaughadiya}</h5>
+                                            <p class="card-text"><strong>Time:</strong> ${data.time}</p>
+                                            <p class="card-text"><strong>Type:</strong> ${data.type}</p>
+                                        </div>
+                                      </div>`;
+                    resultsContainer.innerHTML = cardHtml;
+                } else {
+                    resultsContainer.innerHTML = '<div class="alert alert-danger">An unexpected error occurred.</div>';
+                }
+            }
+
+            // Commented out Google Maps integration
+            /*
+            function initGoogleMap() {
+                // Google Maps API key is required
+                const apiKey = 'YOUR_GOOGLE_MAPS_API_KEY';
+                const script = document.createElement('script');
+                script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMap`;
+                script.async = true;
+                script.defer = true;
+                document.head.appendChild(script);
+            }
+
+            function initMap() {
+                const mapOptions = {
+                    center: { lat: 20.5937, lng: 78.9629 },
+                    zoom: 5
+                };
+                const map = new google.maps.Map(document.getElementById('map'), mapOptions);
+                let marker = new google.maps.Marker({
+                    position: mapOptions.center,
+                    map: map
+                });
+
+                map.addListener('click', function(e) {
+                    marker.setPosition(e.latLng);
+                    updateLocationInput(e.latLng.lat(), e.latLng.lng());
+                });
+            }
+            */
+        });
+    </script>
+</body>
 </html>
