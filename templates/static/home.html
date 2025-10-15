@@ -119,6 +119,45 @@
             box-shadow: var(--shadow-light);
         }
 
+        .chaughadiya-table {
+            margin: 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .chaughadiya-table thead {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+
+        .chaughadiya-table th {
+            font-weight: 600;
+            padding: 12px;
+            border: none;
+        }
+
+        .chaughadiya-table td {
+            padding: 10px 12px;
+            vertical-align: middle;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        [data-bs-theme="dark"] .chaughadiya-table td {
+            border-bottom-color: var(--border-dark);
+        }
+
+        .chaughadiya-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .chaughadiya-table tbody tr:hover {
+            background-color: rgba(255, 153, 51, 0.1);
+        }
+
+        .table-responsive {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
         .badge {
             padding: 8px 12px;
             border-radius: 20px;
@@ -925,6 +964,58 @@
                 });
 
                 html += `
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Table View -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="fas fa-table me-2"></i>Chaughadiya Table</h5>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table chaughadiya-table mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th style="width: 10%;">#</th>
+                                                <th style="width: 20%;">Muhurat</th>
+                                                <th style="width: 25%;">Start Time</th>
+                                                <th style="width: 25%;">End Time</th>
+                                                <th style="width: 20%;">Period</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                `;
+
+                // Generate table rows
+                allMuhurats.forEach((muhurat, index) => {
+                    const info = muhuratInfo[muhurat.muhurat] || { color: 'secondary', meaning: 'Unknown', icon: 'fas fa-question' };
+                    const isDay = index >= 8 && index < 16;
+                    const startTimeFormatted = formatTime(muhurat['start-time'], is24HourFormat);
+                    const endTimeFormatted = formatTime(muhurat['end-time'], is24HourFormat);
+                    
+                    html += `
+                        <tr>
+                            <td><strong>${index + 1}</strong></td>
+                            <td>
+                                <i class="${info.icon} text-${info.color} me-2"></i>
+                                <strong class="text-${info.color}">${muhurat.muhurat}</strong>
+                            </td>
+                            <td>${startTimeFormatted}</td>
+                            <td>${endTimeFormatted}</td>
+                            <td>
+                                <span class="badge ${isDay ? 'bg-warning text-dark' : 'bg-primary'}">
+                                    ${isDay ? 'Day' : 'Night'}
+                                </span>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                html += `
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
