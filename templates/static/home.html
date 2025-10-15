@@ -158,6 +158,96 @@
             overflow: hidden;
         }
 
+        /* Current Muhurat Styles */
+        .current-muhurat-banner {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(255, 153, 51, 0.4);
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .current-muhurat-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.1) 75%, transparent 75%, transparent);
+            background-size: 50px 50px;
+            animation: stripes 2s linear infinite;
+        }
+
+        @keyframes stripes {
+            0% { background-position: 0 0; }
+            100% { background-position: 50px 50px; }
+        }
+
+        .current-muhurat-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .countdown-timer {
+            font-family: 'Courier New', monospace;
+            font-size: 2rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .live-clock {
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .current-muhurat-highlight {
+            background-color: rgba(255, 153, 51, 0.2) !important;
+            border: 3px solid var(--primary-color) !important;
+            position: relative;
+        }
+
+        .current-muhurat-highlight::after {
+            content: 'CURRENT';
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: var(--primary-color);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 5px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .progress-bar-muhurat {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #fff, rgba(255,255,255,0.6));
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .pulse-animation {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
         /* Mobile Responsiveness */
         @media (max-width: 768px) {
             #map {
@@ -597,6 +687,145 @@
             // Load preferences on page load
             loadPreferences();
 
+            // Live Muhurat Tracking
+            let muhuratUpdateInterval = null;
+            let clockUpdateInterval = null;
+
+            function getCurrentMuhurat(data, userTimezone) {
+                if (!data || !data.chaughadiya) return null;
+
+                // Get current time in user's timezone
+                const now = new Date();
+                const timeString = now.toLocaleString('en-US', { 
+                    timeZone: userTimezone, 
+                    hour12: false, 
+                    hour: '2-digit', 
+                    minute: '2-digit', 
+                    second: '2-digit' 
+                });
+                
+                const [hours, minutes, seconds] = timeString.split(':').map(Number);
+                const currentSeconds = hours * 3600 + minutes * 60 + seconds;
+
+                // Find current muhurat
+                for (let i = 0; i < data.chaughadiya.length; i++) {
+                    const muhurat = data.chaughadiya[i];
+                    const [startH, startM, startS] = muhurat['start-time'].split(':').map(Number);
+                    const [endH, endM, endS] = muhurat['end-time'].split(':').map(Number);
+                    
+                    const startSeconds = startH * 3600 + startM * 60 + startS;
+                    const endSeconds = endH * 3600 + endM * 60 + endS;
+                    
+                    // Handle midnight crossing
+                    if (endSeconds < startSeconds) {
+                        if (currentSeconds >= startSeconds || currentSeconds < endSeconds) {
+                            return { muhurat, index: i, startSeconds, endSeconds };
+                        }
+                    } else {
+                        if (currentSeconds >= startSeconds && currentSeconds < endSeconds) {
+                            return { muhurat, index: i, startSeconds, endSeconds };
+                        }
+                    }
+                }
+                
+                return null;
+            }
+
+            function formatCountdown(seconds) {
+                const hours = Math.floor(seconds / 3600);
+                const minutes = Math.floor((seconds % 3600) / 60);
+                const secs = seconds % 60;
+                
+                if (hours > 0) {
+                    return `${hours}h ${minutes}m ${secs}s`;
+                } else if (minutes > 0) {
+                    return `${minutes}m ${secs}s`;
+                } else {
+                    return `${secs}s`;
+                }
+            }
+
+            function updateLiveMuhurat() {
+                if (!window.currentData || !window.currentTimezone) return;
+
+                const current = getCurrentMuhurat(window.currentData, window.currentTimezone);
+                if (!current) return;
+
+                // Update current muhurat banner
+                const banner = document.getElementById('current-muhurat-banner');
+                if (banner) {
+                    const now = new Date();
+                    const timeString = now.toLocaleString('en-US', { 
+                        timeZone: window.currentTimezone, 
+                        hour12: false, 
+                        hour: '2-digit', 
+                        minute: '2-digit', 
+                        second: '2-digit' 
+                    });
+                    
+                    const [hours, minutes, seconds] = timeString.split(':').map(Number);
+                    const currentSeconds = hours * 3600 + minutes * 60 + seconds;
+                    
+                    // Calculate time remaining
+                    let timeRemaining;
+                    if (current.endSeconds < current.startSeconds) {
+                        // Crosses midnight
+                        if (currentSeconds >= current.startSeconds) {
+                            timeRemaining = (24 * 3600 - currentSeconds) + current.endSeconds;
+                        } else {
+                            timeRemaining = current.endSeconds - currentSeconds;
+                        }
+                    } else {
+                        timeRemaining = current.endSeconds - currentSeconds;
+                    }
+
+                    // Calculate progress
+                    let totalDuration;
+                    if (current.endSeconds < current.startSeconds) {
+                        totalDuration = (24 * 3600 - current.startSeconds) + current.endSeconds;
+                    } else {
+                        totalDuration = current.endSeconds - current.startSeconds;
+                    }
+                    const progress = ((totalDuration - timeRemaining) / totalDuration) * 100;
+
+                    // Update clock
+                    const clockElement = banner.querySelector('.live-clock');
+                    if (clockElement) {
+                        clockElement.textContent = formatTime(timeString, is24HourFormat);
+                    }
+
+                    // Update countdown
+                    const countdownElement = banner.querySelector('.countdown-timer');
+                    if (countdownElement) {
+                        countdownElement.textContent = formatCountdown(timeRemaining);
+                    }
+
+                    // Update progress bar
+                    const progressBar = banner.querySelector('.progress-bar-fill');
+                    if (progressBar) {
+                        progressBar.style.width = `${progress}%`;
+                    }
+
+                    // If muhurat changed, refresh display
+                    if (window.lastMuhuratIndex !== current.index) {
+                        window.lastMuhuratIndex = current.index;
+                        displayResults(window.currentData, window.currentTimezone);
+                    }
+                }
+            }
+
+            function startLiveUpdates() {
+                stopLiveUpdates();
+                muhuratUpdateInterval = setInterval(updateLiveMuhurat, 1000);
+            }
+
+            function stopLiveUpdates() {
+                if (muhuratUpdateInterval) {
+                    clearInterval(muhuratUpdateInterval);
+                    muhuratUpdateInterval = null;
+                }
+            }
+
             const locationInput = document.getElementById('location');
             const daySelect = document.getElementById('day');
             const monthSelect = document.getElementById('month');
@@ -996,14 +1225,18 @@
             function displayResults(data, userTimezone) {
                 if (!data) {
                     resultsContainer.innerHTML = '<div class="alert alert-warning animate-fade-in"><i class="fas fa-exclamation-triangle me-2"></i>No results found.</div>';
+                    stopLiveUpdates();
                     return;
                 }
 
                 // Regular chaughadiya response
                 if (data.chaughadiya) {
                     resultsContainer.innerHTML = generateChaughadiyaTable(data, userTimezone);
+                    // Start live updates
+                    startLiveUpdates();
                 } else {
                     resultsContainer.innerHTML = '<div class="alert alert-danger animate-fade-in"><i class="fas fa-exclamation-triangle me-2"></i>An unexpected error occurred.</div>';
+                    stopLiveUpdates();
                 }
             }
 
@@ -1067,8 +1300,46 @@
                 const sunriseRounded = roundTimeToMinute(data['sunrise-time']);
                 const sunsetRounded = roundTimeToMinute(data['sunset-time']);
                 
+                // Get current muhurat
+                const currentMuhuratData = getCurrentMuhurat(data, userTimezone);
+                
                 let html = `
                     <div class="animate-fade-in">
+                `;
+
+                // Add current muhurat banner if data is for today
+                if (currentMuhuratData) {
+                    const info = muhuratInfo[currentMuhuratData.muhurat.muhurat] || { color: 'secondary', meaning: 'Unknown', icon: 'fas fa-question' };
+                    html += `
+                        <!-- Current Muhurat Banner -->
+                        <div class="current-muhurat-banner pulse-animation" id="current-muhurat-banner">
+                            <div class="current-muhurat-content">
+                                <div class="row align-items-center">
+                                    <div class="col-md-3 text-center mb-3 mb-md-0">
+                                        <i class="${info.icon} fa-4x"></i>
+                                    </div>
+                                    <div class="col-md-6 text-center mb-3 mb-md-0">
+                                        <h4 class="mb-2">Current Muhurat</h4>
+                                        <h2 class="mb-1"><strong>${currentMuhuratData.muhurat.muhurat}</strong></h2>
+                                        <p class="mb-2">${info.meaning}</p>
+                                        <div class="live-clock mb-2">
+                                            <i class="fas fa-clock me-2"></i><span class="live-clock">Loading...</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <div class="mb-2">Time Remaining</div>
+                                        <div class="countdown-timer">Loading...</div>
+                                    </div>
+                                </div>
+                                <div class="progress-bar-muhurat">
+                                    <div class="progress-bar-fill" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                html += `
                         <!-- Sunrise and Sunset Times -->
                         <div class="card mb-4">
                             <div class="card-body">
@@ -1133,12 +1404,16 @@
                     const isDay = index >= 8 && index < 16;
                     const timelineClass = isDay ? 'border-warning' : 'border-primary';
                     
+                    // Check if this is the current muhurat
+                    const isCurrent = currentMuhuratData && currentMuhuratData.index === index;
+                    const highlightClass = isCurrent ? 'current-muhurat-highlight' : '';
+                    
                     const startTimeFormatted = formatTime(muhurat['start-time'], is24HourFormat);
                     const endTimeFormatted = formatTime(muhurat['end-time'], is24HourFormat);
                     
                     html += `
                         <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
-                            <div class="card h-100 ${timelineClass}" style="border-width: 3px;">
+                            <div class="card h-100 ${timelineClass} ${highlightClass}" style="border-width: 3px;">
                                 <div class="card-body text-center p-3">
                                     <div class="mb-2">
                                         <i class="${info.icon} fa-2x text-${info.color}"></i>
@@ -1190,11 +1465,13 @@
                 allMuhurats.forEach((muhurat, index) => {
                     const info = muhuratInfo[muhurat.muhurat] || { color: 'secondary', meaning: 'Unknown', icon: 'fas fa-question' };
                     const isDay = index >= 8 && index < 16;
+                    const isCurrent = currentMuhuratData && currentMuhuratData.index === index;
+                    const rowClass = isCurrent ? 'table-warning fw-bold' : '';
                     const startTimeFormatted = formatTime(muhurat['start-time'], is24HourFormat);
                     const endTimeFormatted = formatTime(muhurat['end-time'], is24HourFormat);
                     
                     html += `
-                        <tr>
+                        <tr class="${rowClass}">
                             <td><strong>${index + 1}</strong></td>
                             <td>
                                 <i class="${info.icon} text-${info.color} me-2"></i>
