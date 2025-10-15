@@ -155,7 +155,8 @@
 
         .table-responsive {
             border-radius: 10px;
-            overflow: hidden;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         /* Current Muhurat Styles */
@@ -249,58 +250,442 @@
         }
 
         /* Mobile Responsiveness */
-        @media (max-width: 768px) {
-            #map {
-                height: 200px !important;
-            }
-            
+        @media (max-width: 992px) {
             .navbar .d-flex {
-                flex-direction: column;
+                flex-wrap: wrap;
                 gap: 0.5rem !important;
             }
             
+            .form-check {
+                margin: 0.25rem 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                font-size: 0.95rem;
+            }
+
+            #map {
+                height: 250px !important;
+            }
+            
+            .navbar-brand {
+                font-size: 1.3rem;
+            }
+
+            .navbar .d-flex {
+                width: 100%;
+                justify-content: center !important;
+            }
+
+            .form-check-label {
+                font-size: 0.8rem;
+            }
+
+            .btn-sm {
+                font-size: 0.75rem;
+                padding: 0.25rem 0.5rem;
+            }
+            
             .chaughadiya-table {
-                font-size: 0.85rem;
+                font-size: 0.8rem;
             }
             
             .chaughadiya-table th,
             .chaughadiya-table td {
-                padding: 8px 6px;
+                padding: 6px 4px;
+                white-space: nowrap;
+            }
+
+            .chaughadiya-table th:first-child,
+            .chaughadiya-table td:first-child {
+                padding-left: 8px;
+            }
+
+            .chaughadiya-table th:last-child,
+            .chaughadiya-table td:last-child {
+                padding-right: 8px;
             }
             
             .form-floating > label {
-                font-size: 0.9rem;
+                font-size: 0.85rem;
             }
             
             .card-body {
-                padding: 1rem;
+                padding: 0.75rem;
+            }
+
+            .card-header h5 {
+                font-size: 1rem;
             }
             
             .btn-primary {
-                padding: 10px 20px;
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+
+            /* Current Muhurat Banner - Mobile */
+            .current-muhurat-banner {
+                padding: 1rem;
+            }
+
+            .current-muhurat-banner .fa-4x {
+                font-size: 2.5rem;
+            }
+
+            .current-muhurat-banner h4 {
+                font-size: 1rem;
+            }
+
+            .current-muhurat-banner h2 {
+                font-size: 1.5rem;
+            }
+
+            .countdown-timer {
+                font-size: 1.3rem;
+            }
+
+            .live-clock {
                 font-size: 0.95rem;
             }
-            
-            .navbar-brand {
-                font-size: 1.2rem;
+
+            /* Time info cards */
+            .time-info i {
+                font-size: 2rem !important;
             }
-            
-            .form-check-label {
+
+            .time-info h5 {
+                font-size: 0.95rem;
+            }
+
+            .time-info h3 {
+                font-size: 1.5rem;
+            }
+
+            .time-info h6 {
                 font-size: 0.85rem;
+            }
+
+            /* Muhurat timeline cards */
+            .col-lg-3.col-md-4.col-sm-6 {
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
+            }
+
+            .card .fa-2x {
+                font-size: 1.5rem;
+            }
+
+            .card-title {
+                font-size: 0.9rem;
+            }
+
+            .badge {
+                font-size: 0.75rem;
+                padding: 4px 8px;
+            }
+
+            /* Muhurat meanings */
+            .muhurat-meanings .fa-lg {
+                font-size: 1.2rem !important;
+            }
+
+            /* Modals on mobile */
+            .modal-body {
+                padding: 1rem;
+            }
+
+            .modal-title {
+                font-size: 1.1rem;
             }
         }
 
         @media (max-width: 576px) {
+            body {
+                font-size: 0.9rem;
+            }
+
+            .container {
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
+            }
+
             .main-container {
-                padding: 1rem;
+                padding: 0.75rem;
+                margin-top: 1rem;
             }
             
             h1 {
-                font-size: 1.75rem;
+                font-size: 1.5rem;
             }
             
             .lead {
+                font-size: 0.9rem;
+            }
+
+            .navbar-brand {
+                font-size: 1.1rem;
+            }
+
+            #map {
+                height: 200px !important;
+            }
+
+            .form-check-label {
+                font-size: 0.7rem;
+            }
+
+            .btn-sm {
+                font-size: 0.7rem;
+                padding: 0.2rem 0.4rem;
+            }
+
+            .btn-sm i {
+                font-size: 0.8rem;
+            }
+
+            .card {
+                border-radius: 10px;
+                margin-bottom: 0.75rem;
+            }
+
+            .card-body {
+                padding: 0.5rem;
+            }
+
+            .card-header {
+                padding: 0.5rem 0.75rem;
+            }
+
+            .card-header h5 {
+                font-size: 0.9rem;
+            }
+
+            /* Current Muhurat Banner - Small mobile */
+            .current-muhurat-banner {
+                padding: 0.75rem;
+                margin-bottom: 1rem;
+            }
+
+            .current-muhurat-banner .fa-4x {
+                font-size: 2rem;
+            }
+
+            .current-muhurat-banner h4 {
+                font-size: 0.85rem;
+                margin-bottom: 0.25rem;
+            }
+
+            .current-muhurat-banner h2 {
+                font-size: 1.25rem;
+                margin-bottom: 0.25rem;
+            }
+
+            .current-muhurat-banner p {
+                font-size: 0.8rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .countdown-timer {
+                font-size: 1.1rem;
+            }
+
+            .live-clock {
+                font-size: 0.85rem;
+            }
+
+            /* Time info cards - Small mobile */
+            .time-info {
+                padding: 0.5rem;
+            }
+
+            .time-info i {
+                font-size: 1.5rem !important;
+            }
+
+            .time-info h5 {
+                font-size: 0.85rem;
+                margin-bottom: 0.25rem;
+            }
+
+            .time-info h3 {
+                font-size: 1.25rem;
+            }
+
+            .time-info h6 {
+                font-size: 0.75rem;
+            }
+
+            /* Table responsiveness */
+            .chaughadiya-table {
+                font-size: 0.7rem;
+            }
+
+            .chaughadiya-table th,
+            .chaughadiya-table td {
+                padding: 4px 2px;
+            }
+
+            .chaughadiya-table th:first-child,
+            .chaughadiya-table td:first-child {
+                padding-left: 4px;
+            }
+
+            .chaughadiya-table th:last-child,
+            .chaughadiya-table td:last-child {
+                padding-right: 4px;
+            }
+
+            .chaughadiya-table i {
+                display: none; /* Hide icons in table on very small screens */
+            }
+
+            /* Timeline cards - Small mobile */
+            .col-lg-3.col-md-4.col-sm-6 {
+                padding-left: 0.25rem;
+                padding-right: 0.25rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .card .card-body {
+                padding: 0.5rem;
+            }
+
+            .card .fa-2x {
+                font-size: 1.25rem;
+            }
+
+            .card-title {
+                font-size: 0.8rem;
+                margin-bottom: 0.25rem;
+            }
+
+            .card-text {
+                font-size: 0.7rem;
+                margin-bottom: 0.25rem;
+            }
+
+            .badge {
+                font-size: 0.65rem;
+                padding: 3px 6px;
+            }
+
+            /* Muhurat meanings - Small mobile */
+            .muhurat-meanings .col-lg-4 {
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
+            }
+
+            .muhurat-meanings .fa-lg {
+                font-size: 1rem !important;
+                margin-right: 0.5rem !important;
+            }
+
+            .muhurat-meanings strong {
+                font-size: 0.85rem;
+            }
+
+            .muhurat-meanings small {
+                font-size: 0.7rem;
+            }
+
+            /* Form elements */
+            .form-floating > .form-control,
+            .form-floating > .form-select {
+                height: calc(3rem + 2px);
+                font-size: 0.85rem;
+            }
+
+            .form-floating > label {
+                font-size: 0.75rem;
+                padding: 0.75rem 0.5rem;
+            }
+
+            .btn-primary {
+                padding: 8px 12px;
+                font-size: 0.85rem;
+            }
+
+            /* Alert messages */
+            .alert {
+                font-size: 0.85rem;
+                padding: 0.5rem 0.75rem;
+            }
+
+            /* Modal adjustments */
+            .modal-dialog {
+                margin: 0.5rem;
+            }
+
+            .modal-header,
+            .modal-footer {
+                padding: 0.75rem;
+            }
+
+            .modal-body {
+                padding: 0.75rem;
+            }
+
+            /* Date dropdowns on small screens */
+            .row.g-2 {
+                gap: 0.25rem !important;
+            }
+
+            /* Current muhurat highlight badge */
+            .current-muhurat-highlight::after {
+                font-size: 0.6rem;
+                padding: 1px 4px;
+                top: 2px;
+                right: 2px;
+            }
+        }
+
+        /* Landscape mobile phones */
+        @media (max-width: 768px) and (orientation: landscape) {
+            #map {
+                height: 180px !important;
+            }
+
+            .current-muhurat-banner {
+                padding: 0.75rem;
+            }
+
+            .current-muhurat-banner .row {
+                align-items: center;
+            }
+
+            .current-muhurat-banner .col-md-3,
+            .current-muhurat-banner .col-md-6,
+            .current-muhurat-banner .col-md-3 {
+                margin-bottom: 0 !important;
+            }
+        }
+
+        /* Very small screens / older phones */
+        @media (max-width: 375px) {
+            h1 {
+                font-size: 1.3rem;
+            }
+
+            .lead {
+                font-size: 0.85rem;
+            }
+
+            .navbar-brand {
                 font-size: 1rem;
+            }
+
+            .form-check-label {
+                font-size: 0.65rem;
+            }
+
+            .countdown-timer {
+                font-size: 1rem;
+            }
+
+            .time-info h3 {
+                font-size: 1.1rem;
             }
         }
 
@@ -396,6 +781,80 @@
             background-clip: text;
             font-weight: 700;
         }
+
+        /* Better touch targets for mobile */
+        @media (hover: none) and (pointer: coarse) {
+            .btn {
+                min-height: 44px;
+                min-width: 44px;
+            }
+
+            .form-check-input {
+                width: 2rem;
+                height: 1rem;
+            }
+
+            .form-check {
+                padding-left: 2.5rem;
+            }
+        }
+
+        /* Prevent zoom on input focus in iOS */
+        @media screen and (max-width: 768px) {
+            select,
+            textarea,
+            input[type="text"],
+            input[type="password"],
+            input[type="datetime"],
+            input[type="datetime-local"],
+            input[type="date"],
+            input[type="month"],
+            input[type="time"],
+            input[type="week"],
+            input[type="number"],
+            input[type="email"],
+            input[type="url"] {
+                font-size: 16px !important;
+            }
+        }
+
+        /* Improve scrolling performance */
+        .table-responsive,
+        .card-body {
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Hide horizontal scrollbar but keep functionality */
+        .table-responsive::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .table-responsive::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .table-responsive::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 10px;
+        }
+
+        /* Better spacing for location suggestions on mobile */
+        #location-suggestions {
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        @media (max-width: 576px) {
+            #location-suggestions {
+                max-height: 180px;
+            }
+
+            #location-suggestions .list-group-item {
+                font-size: 0.85rem;
+                padding: 0.5rem 0.75rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -404,23 +863,23 @@
             <a class="navbar-brand text-white" href="#">
                 <i class="fas fa-sun me-2"></i>Chaughadiya
             </a>
-            <div class="d-flex gap-3 ms-auto align-items-center">
+            <div class="d-flex gap-2 gap-md-3 ms-auto align-items-center flex-wrap justify-content-end">
                 <button class="btn btn-sm btn-outline-light" id="favoritesBtn" title="Favorite Locations">
-                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i><span class="d-none d-sm-inline ms-1">Favorites</span>
                 </button>
                 <button class="btn btn-sm btn-outline-light" id="shareBtn" title="Share Results" style="display: none;">
-                    <i class="fas fa-share-alt"></i>
+                    <i class="fas fa-share-alt"></i><span class="d-none d-sm-inline ms-1">Share</span>
                 </button>
-                <div class="form-check form-switch">
+                <div class="form-check form-switch mb-0">
                     <input class="form-check-input" type="checkbox" id="timeFormatSwitcher">
                     <label class="form-check-label text-white" for="timeFormatSwitcher">
-                        <i class="fas fa-clock me-1"></i>24-Hour
+                        <i class="fas fa-clock me-1"></i><span class="d-none d-md-inline">24-Hour</span>
                     </label>
                 </div>
-                <div class="form-check form-switch">
+                <div class="form-check form-switch mb-0">
                     <input class="form-check-input" type="checkbox" id="themeSwitcher">
                     <label class="form-check-label text-white" for="themeSwitcher">
-                        <i class="fas fa-moon me-1"></i>Dark Mode
+                        <i class="fas fa-moon me-1"></i><span class="d-none d-md-inline">Dark</span>
                     </label>
                 </div>
             </div>
@@ -492,7 +951,7 @@
                         </div>
                         
                         <div class="row mb-3">
-                            <div class="col-lg-8">
+                            <div class="col-lg-8 mb-3 mb-lg-0">
                                 <div id="map" style="height: 300px;"></div>
                             </div>
                             
@@ -542,11 +1001,11 @@
                 <div class="card-header bg-gradient text-white" style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));">
                     <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Muhurat Meanings</h5>
                 </div>
-                <div class="card-body">
+                <div class="card-body muhurat-meanings">
                     <div class="row">
                         <div class="col-lg-4 col-md-6 mb-3">
                             <div class="d-flex align-items-center">
-                                <i class="fas fa-gem fa-lg text-primary me-3"></i>
+                                <i class="fas fa-gem fa-lg text-primary me-2 me-md-3"></i>
                                 <div>
                                     <strong class="text-primary">Amrit</strong><br>
                                     <small class="text-muted">Nectar - Very auspicious</small>
@@ -555,7 +1014,7 @@
                         </div>
                         <div class="col-lg-4 col-md-6 mb-3">
                             <div class="d-flex align-items-center">
-                                <i class="fas fa-star fa-lg text-info me-3"></i>
+                                <i class="fas fa-star fa-lg text-info me-2 me-md-3"></i>
                                 <div>
                                     <strong class="text-info">Shubh</strong><br>
                                     <small class="text-muted">Auspicious - Good for all work</small>
@@ -564,7 +1023,7 @@
                         </div>
                         <div class="col-lg-4 col-md-6 mb-3">
                             <div class="d-flex align-items-center">
-                                <i class="fas fa-coins fa-lg text-success me-3"></i>
+                                <i class="fas fa-coins fa-lg text-success me-2 me-md-3"></i>
                                 <div>
                                     <strong class="text-success">Labh</strong><br>
                                     <small class="text-muted">Profit - Good for business</small>
@@ -573,7 +1032,7 @@
                         </div>
                         <div class="col-lg-4 col-md-6 mb-3">
                             <div class="d-flex align-items-center">
-                                <i class="fas fa-route fa-lg text-secondary me-3"></i>
+                                <i class="fas fa-route fa-lg text-secondary me-2 me-md-3"></i>
                                 <div>
                                     <strong class="text-secondary">Chal</strong><br>
                                     <small class="text-muted">Movement - Good for travel</small>
@@ -582,7 +1041,7 @@
                         </div>
                         <div class="col-lg-4 col-md-6 mb-3">
                             <div class="d-flex align-items-center">
-                                <i class="fas fa-user-injured fa-lg text-warning me-3"></i>
+                                <i class="fas fa-user-injured fa-lg text-warning me-2 me-md-3"></i>
                                 <div>
                                     <strong class="text-warning">Rog</strong><br>
                                     <small class="text-muted">Illness - Health concerns</small>
@@ -591,7 +1050,7 @@
                         </div>
                         <div class="col-lg-4 col-md-6 mb-3">
                             <div class="d-flex align-items-center">
-                                <i class="fas fa-times-circle fa-lg text-danger me-3"></i>
+                                <i class="fas fa-times-circle fa-lg text-danger me-2 me-md-3"></i>
                                 <div>
                                     <strong class="text-danger">Udveg</strong><br>
                                     <small class="text-muted">Inauspicious - Avoid important tasks</small>
@@ -600,7 +1059,7 @@
                         </div>
                         <div class="col-lg-4 col-md-6 mb-3">
                             <div class="d-flex align-items-center">
-                                <i class="fas fa-exclamation-triangle fa-lg text-dark me-3"></i>
+                                <i class="fas fa-exclamation-triangle fa-lg text-dark me-2 me-md-3"></i>
                                 <div>
                                     <strong class="text-dark">Kaal</strong><br>
                                     <small class="text-muted">Very Inauspicious - Not favorable for new ventures</small>
@@ -608,7 +1067,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="alert alert-info mt-3">
+                    <div class="alert alert-info mt-3 mb-0">
                         <i class="fas fa-lightbulb me-2"></i>
                         <strong>Tip:</strong> Use <strong>Amrit</strong> and <strong>Shubh</strong> muhurats for important activities. 
                         Avoid <strong>Kaal</strong> and <strong>Udveg</strong> periods for new ventures.
