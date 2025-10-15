@@ -404,7 +404,13 @@
             <a class="navbar-brand text-white" href="#">
                 <i class="fas fa-sun me-2"></i>Chaughadiya
             </a>
-            <div class="d-flex gap-3 ms-auto">
+            <div class="d-flex gap-3 ms-auto align-items-center">
+                <button class="btn btn-sm btn-outline-light" id="favoritesBtn" title="Favorite Locations">
+                    <i class="fas fa-star"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-light" id="shareBtn" title="Share Results" style="display: none;">
+                    <i class="fas fa-share-alt"></i>
+                </button>
                 <div class="form-check form-switch">
                     <input class="form-check-input" type="checkbox" id="timeFormatSwitcher">
                     <label class="form-check-label text-white" for="timeFormatSwitcher">
@@ -498,8 +504,11 @@
                                     <label for="timezone"><i class="fas fa-globe me-2"></i>Timezone</label>
                                 </div>
                                 
-                                <button type="submit" class="btn btn-primary w-100 mt-auto">
+                                <button type="submit" class="btn btn-primary w-100 mt-auto mb-2">
                                     <i class="fas fa-search me-2"></i>Get Chaughadiya
+                                </button>
+                                <button type="button" class="btn btn-outline-primary w-100" id="saveFavoriteBtn">
+                                    <i class="fas fa-star me-2"></i>Save as Favorite
                                 </button>
                             </div>
                         </div>
@@ -609,6 +618,58 @@
         </div>
     </div>
 
+    <!-- Favorites Modal -->
+    <div class="modal fade" id="favoritesModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-star me-2"></i>Favorite Locations</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="favoritesList"></div>
+                    <div class="text-muted text-center py-3" id="noFavorites" style="display: none;">
+                        <i class="fas fa-info-circle me-2"></i>No saved locations yet
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div class="modal fade" id="shareModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-share-alt me-2"></i>Share Chaughadiya</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Shareable Link</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="shareUrl" readonly>
+                            <button class="btn btn-primary" id="copyUrlBtn">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-success" id="exportImageBtn">
+                            <i class="fas fa-image me-2"></i>Export as Image
+                        </button>
+                        <button class="btn btn-info" id="exportCsvBtn">
+                            <i class="fas fa-file-csv me-2"></i>Export as CSV
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
@@ -686,6 +747,51 @@
 
             // Load preferences on page load
             loadPreferences();
+
+            // Initialize favorites and share functionality
+            const favoritesBtn = document.getElementById('favoritesBtn');
+            const shareBtn = document.getElementById('shareBtn');
+            const favoritesModal = new bootstrap.Modal(document.getElementById('favoritesModal'));
+            const shareModal = new bootstrap.Modal(document.getElementById('shareModal'));
+
+            favoritesBtn.addEventListener('click', () => {
+                updateFavoritesList();
+                favoritesModal.show();
+            });
+
+            shareBtn.addEventListener('click', () => {
+                const shareUrl = generateShareUrl();
+                document.getElementById('shareUrl').value = shareUrl;
+                shareModal.show();
+            });
+
+            document.getElementById('copyUrlBtn').addEventListener('click', () => {
+                const shareUrl = document.getElementById('shareUrl').value;
+                copyToClipboard(shareUrl);
+            });
+
+            document.getElementById('exportCsvBtn').addEventListener('click', () => {
+                exportToCSV();
+            });
+
+            document.getElementById('exportImageBtn').addEventListener('click', () => {
+                exportAsImage();
+            });
+
+            // Load from URL if parameters present
+            loadFromUrlParams();
+
+            // Save favorite button handler
+            document.getElementById('saveFavoriteBtn').addEventListener('click', () => {
+                if (!latitude || !longitude) {
+                    alert('Please select a location first');
+                    return;
+                }
+                
+                const name = locationInput.value || `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+                const timezone = timezoneSelect.value;
+                saveFavorite(name, latitude, longitude, timezone);
+            });
 
             // Live Muhurat Tracking
             let muhuratUpdateInterval = null;
@@ -823,6 +929,186 @@
                 if (muhuratUpdateInterval) {
                     clearInterval(muhuratUpdateInterval);
                     muhuratUpdateInterval = null;
+                }
+            }
+
+            // Favorites Management
+            function getFavorites() {
+                const favorites = localStorage.getItem('chaughadiya_favorites');
+                return favorites ? JSON.parse(favorites) : [];
+            }
+
+            function saveFavorite(name, lat, lng, timezone) {
+                const favorites = getFavorites();
+                
+                // Check if already exists
+                const exists = favorites.some(fav => fav.lat === lat && fav.lng === lng);
+                if (exists) {
+                    alert('This location is already in your favorites!');
+                    return;
+                }
+                
+                // Limit to 5 favorites
+                if (favorites.length >= 5) {
+                    alert('Maximum 5 favorite locations allowed. Please delete one to add new.');
+                    return;
+                }
+                
+                favorites.push({ name, lat, lng, timezone, addedAt: new Date().toISOString() });
+                localStorage.setItem('chaughadiya_favorites', JSON.stringify(favorites));
+                updateFavoritesList();
+                alert('Location saved to favorites!');
+            }
+
+            function deleteFavorite(index) {
+                if (!confirm('Remove this location from favorites?')) return;
+                
+                const favorites = getFavorites();
+                favorites.splice(index, 1);
+                localStorage.setItem('chaughadiya_favorites', JSON.stringify(favorites));
+                updateFavoritesList();
+            }
+
+            function loadFavorite(favorite) {
+                locationInput.value = favorite.name;
+                latitude = favorite.lat;
+                longitude = favorite.lng;
+                marker.setLatLng([latitude, longitude]);
+                map.setView([latitude, longitude], 10);
+                
+                if (favorite.timezone) {
+                    timezoneSelect.value = favorite.timezone;
+                }
+                
+                // Close modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('favoritesModal'));
+                if (modal) modal.hide();
+            }
+
+            function updateFavoritesList() {
+                const favorites = getFavorites();
+                const listEl = document.getElementById('favoritesList');
+                const noFavEl = document.getElementById('noFavorites');
+                
+                if (favorites.length === 0) {
+                    listEl.innerHTML = '';
+                    noFavEl.style.display = 'block';
+                    return;
+                }
+                
+                noFavEl.style.display = 'none';
+                listEl.innerHTML = favorites.map((fav, index) => `
+                    <div class="card mb-2">
+                        <div class="card-body p-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="flex-grow-1" style="cursor: pointer;" onclick="loadFavorite(getFavorites()[${index}])">
+                                    <strong>${fav.name}</strong><br>
+                                    <small class="text-muted">${fav.timezone || 'No timezone'}</small>
+                                </div>
+                                <button class="btn btn-sm btn-danger" onclick="deleteFavorite(${index})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Share functionality
+            function generateShareUrl() {
+                if (!window.currentData || !latitude || !longitude) return '';
+                
+                const params = new URLSearchParams({
+                    date: window.currentData.date,
+                    lat: latitude.toFixed(6),
+                    lng: longitude.toFixed(6),
+                    tz: window.currentTimezone,
+                    location: locationInput.value
+                });
+                
+                return `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+            }
+
+            function copyToClipboard(text) {
+                navigator.clipboard.writeText(text).then(() => {
+                    const btn = document.getElementById('copyUrlBtn');
+                    const originalHtml = btn.innerHTML;
+                    btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                    btn.classList.remove('btn-primary');
+                    btn.classList.add('btn-success');
+                    setTimeout(() => {
+                        btn.innerHTML = originalHtml;
+                        btn.classList.remove('btn-success');
+                        btn.classList.add('btn-primary');
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Failed to copy:', err);
+                    alert('Failed to copy link. Please copy manually.');
+                });
+            }
+
+            // Export to CSV
+            function exportToCSV() {
+                if (!window.currentData || !window.currentData.chaughadiya) {
+                    alert('No data to export');
+                    return;
+                }
+                
+                const data = window.currentData.chaughadiya;
+                let csv = 'Serial,Muhurat,Start Time,End Time,Period\n';
+                
+                data.forEach((muhurat, index) => {
+                    const isDay = index >= 8 && index < 16;
+                    const period = isDay ? 'Day' : 'Night';
+                    csv += `${index + 1},${muhurat.muhurat},${muhurat['start-time']},${muhurat['end-time']},${period}\n`;
+                });
+                
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `chaughadiya_${window.currentData.date}.csv`;
+                a.click();
+                window.URL.revokeObjectURL(url);
+            }
+
+            // Export as image (simplified version)
+            function exportAsImage() {
+                alert('Tip: You can use your browser\'s print function (Ctrl/Cmd + P) and save as PDF for a high-quality export!');
+                window.print();
+            }
+
+            // Load from URL parameters
+            function loadFromUrlParams() {
+                const params = new URLSearchParams(window.location.search);
+                
+                if (params.has('date') && params.has('lat') && params.has('lng')) {
+                    const date = params.get('date');
+                    const lat = parseFloat(params.get('lat'));
+                    const lng = parseFloat(params.get('lng'));
+                    const tz = params.get('tz');
+                    const location = params.get('location');
+                    
+                    // Parse date
+                    const [year, month, day] = date.split('-');
+                    daySelect.value = parseInt(day);
+                    monthSelect.value = parseInt(month);
+                    yearSelect.value = parseInt(year);
+                    
+                    // Set location
+                    latitude = lat;
+                    longitude = lng;
+                    if (location) locationInput.value = decodeURIComponent(location);
+                    marker.setLatLng([lat, lng]);
+                    map.setView([lat, lng], 10);
+                    
+                    // Set timezone
+                    if (tz && timezoneSelect.querySelector(`option[value="${tz}"]`)) {
+                        timezoneSelect.value = tz;
+                    }
+                    
+                    // Auto-submit
+                    setTimeout(() => form.dispatchEvent(new Event('submit')), 1000);
                 }
             }
 
@@ -1234,9 +1520,12 @@
                     resultsContainer.innerHTML = generateChaughadiyaTable(data, userTimezone);
                     // Start live updates
                     startLiveUpdates();
+                    // Show share button
+                    document.getElementById('shareBtn').style.display = 'inline-block';
                 } else {
                     resultsContainer.innerHTML = '<div class="alert alert-danger animate-fade-in"><i class="fas fa-exclamation-triangle me-2"></i>An unexpected error occurred.</div>';
                     stopLiveUpdates();
+                    document.getElementById('shareBtn').style.display = 'none';
                 }
             }
 
