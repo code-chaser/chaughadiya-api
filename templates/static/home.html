@@ -14,80 +14,298 @@
         :root {
             --primary-color: #FF9933; /* Saffron */
             --secondary-color: #800000; /* Maroon */
+            --accent-color: #138808; /* Green */
             --light-bg: #FDF5E6; /* Papaya Whip */
-            --dark-bg: #2C3E50; /* Dark Slate Blue */
+            --dark-bg: #1a1d29; /* Dark Blue Grey */
+            --card-bg-light: #ffffff;
+            --card-bg-dark: #2c3e50;
             --light-text: #333;
             --dark-text: #ECF0F1; /* Silver */
+            --border-light: #e0e0e0;
+            --border-dark: #444;
+            --shadow-light: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-dark: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
 
         [data-bs-theme="light"] {
             --bs-body-bg: var(--light-bg);
             --bs-body-color: var(--light-text);
+            --bs-border-color: var(--border-light);
         }
 
         [data-bs-theme="dark"] {
             --bs-body-bg: var(--dark-bg);
             --bs-body-color: var(--dark-text);
-            --bs-border-color: #444;
+            --bs-border-color: var(--border-dark);
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bs-body-bg) 0%, rgba(255, 153, 51, 0.1) 100%);
+            min-height: 100vh;
         }
 
         .navbar {
-            background-color: var(--secondary-color) !important;
+            background: linear-gradient(135deg, var(--secondary-color) 0%, #a04000 100%) !important;
+            box-shadow: var(--shadow-light);
+            border-bottom: 3px solid var(--primary-color);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: var(--shadow-light);
+            backdrop-filter: blur(10px);
+            background: var(--card-bg-light);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        [data-bs-theme="dark"] .card {
+            background: var(--card-bg-dark);
+            box-shadow: var(--shadow-dark);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 2px solid var(--border-light);
+            transition: all 0.3s ease;
+        }
+
+        [data-bs-theme="dark"] .form-control, 
+        [data-bs-theme="dark"] .form-select {
+            border-color: var(--border-dark);
+            background-color: #34495e;
+            color: var(--dark-text);
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(255, 153, 51, 0.25);
         }
 
         .btn-primary {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
+            background: linear-gradient(135deg, var(--primary-color) 0%, #E68A2E 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 153, 51, 0.3);
         }
 
         .btn-primary:hover {
-            background-color: #E68A2E;
-            border-color: #E68A2E;
+            background: linear-gradient(135deg, #E68A2E 0%, var(--primary-color) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 153, 51, 0.4);
+        }
+
+        #map {
+            border-radius: 15px;
+            box-shadow: var(--shadow-light);
+            border: 3px solid var(--primary-color);
+        }
+
+        .table {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: var(--shadow-light);
+        }
+
+        .badge {
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .section-title {
+            font-weight: 700;
+            color: var(--primary-color);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .main-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow-light);
+            margin-top: 2rem;
+        }
+
+        [data-bs-theme="dark"] .main-container {
+            background: rgba(44, 62, 80, 0.3);
+        }
+
+        .list-group-item {
+            border-radius: 8px;
+            margin-bottom: 2px;
+            border: 1px solid var(--border-light);
+            transition: all 0.2s ease;
+        }
+
+        .list-group-item:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        [data-bs-theme="dark"] .list-group-item {
+            background-color: var(--card-bg-dark);
+            border-color: var(--border-dark);
+            color: var(--dark-text);
+        }
+
+        .muhurat-card {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #E68A2E 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 6px 20px rgba(255, 153, 51, 0.3);
+        }
+
+        .time-info {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 1rem;
+            backdrop-filter: blur(5px);
+        }
+
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-floating > .form-control, .form-floating > .form-select {
+            height: calc(3.5rem + 2px);
+            line-height: 1.25;
+        }
+
+        .form-floating > label {
+            padding: 1rem 0.75rem;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
         }
     </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
-            <a class="navbar-brand text-white" href="#">Chaughadiya</a>
+            <a class="navbar-brand text-white" href="#">
+                <i class="fas fa-sun me-2"></i>Chaughadiya
+            </a>
             <div class="form-check form-switch ms-auto">
                 <input class="form-check-input" type="checkbox" id="themeSwitcher">
-                <label class="form-check-label text-white" for="themeSwitcher">Dark Mode</label>
+                <label class="form-check-label text-white" for="themeSwitcher">
+                    <i class="fas fa-moon me-1"></i>Dark Mode
+                </label>
             </div>
         </div>
     </nav>
 
-    <div class="container mt-5">
-        <div class="row">
-            <div class="col-md-6">
-                <h2>Enter Details</h2>
-                <form id="chaughadiya-form">
-                    <div class="mb-3">
-                        <label for="location" class="form-label">Location</label>
-                        <input type="text" class="form-control" id="location" placeholder="Enter a location">
-                    </div>
-                    <div id="map" style="height: 300px;" class="mb-3"></div>
-                    <div class="mb-3">
-                        <label for="date" class="form-label">Date</label>
-                        <input type="text" class="form-control" id="date" placeholder="Select a date">
-                    </div>
-                    <div class="mb-3">
-                        <label for="time" class="form-label">Time</label>
-                        <input type="text" class="form-control" id="time" placeholder="Select a time">
-                    </div>
-                    <div class="mb-3">
-                        <label for="timezone" class="form-label">Timezone</label>
-                        <select class="form-select" id="timezone"></select>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Get Chaughadiya</button>
-                </form>
+    <div class="container">
+        <div class="main-container">
+            <div class="text-center mb-4">
+                <h1 class="gradient-text">Chaughadiya Calculator</h1>
+                <p class="lead">Discover the auspicious and inauspicious times of the day according to Vedic astrology</p>
             </div>
-            <div class="col-md-6">
-                <h2>Results</h2>
-                <div id="results-container"></div>
+            
+            <div class="row g-4">
+                <div class="col-lg-5">
+                    <div class="card h-100">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Enter Details</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="chaughadiya-form">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="location" placeholder="Enter a location">
+                                    <label for="location"><i class="fas fa-map-marker-alt me-2"></i>Location</label>
+                                </div>
+                                
+                                <div id="map" style="height: 300px;" class="mb-3"></div>
+                                
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="date" placeholder="Select a date">
+                                    <label for="date"><i class="fas fa-calendar me-2"></i>Date</label>
+                                </div>
+                                
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="time" placeholder="Select a time (optional)">
+                                    <label for="time"><i class="fas fa-clock me-2"></i>Time (Optional)</label>
+                                </div>
+                                
+                                <div class="form-floating mb-3">
+                                    <select class="form-select" id="timezone">
+                                        <option value="">Select timezone</option>
+                                    </select>
+                                    <label for="timezone"><i class="fas fa-globe me-2"></i>Timezone</label>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-search me-2"></i>Get Chaughadiya
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-7">
+                    <div class="card h-100">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0"><i class="fas fa-star me-2"></i>Results</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="loading-spinner" id="loading-spinner">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <p class="mt-2">Calculating Chaughadiya...</p>
+                            </div>
+                            <div id="results-container">
+                                <div class="text-center text-muted">
+                                    <i class="fas fa-info-circle fa-3x mb-3"></i>
+                                    <p>Select a date and location to view the Chaughadiya timings</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Popperjs -->
 
     <!-- Popperjs -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha256-BRqBN7dYgABqtY9Hd4ynE+1slnEw+roEPFzQ7TRRfcg=" crossorigin="anonymous"></script>
@@ -118,6 +336,85 @@
             const form = document.getElementById('chaughadiya-form');
             const resultsContainer = document.getElementById('results-container');
             let latitude, longitude;
+            let searchTimeout;
+
+            // Add location search functionality
+            locationInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                const query = this.value.trim();
+                
+                if (query.length < 3) {
+                    hideLocationSuggestions();
+                    return;
+                }
+
+                searchTimeout = setTimeout(() => {
+                    searchLocations(query);
+                }, 300);
+            });
+
+            function searchLocations(query) {
+                fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`)
+                    .then(response => response.json())
+                    .then(data => {
+                        showLocationSuggestions(data);
+                    })
+                    .catch(error => {
+                        console.error('Location search error:', error);
+                        hideLocationSuggestions();
+                    });
+            }
+
+            function showLocationSuggestions(locations) {
+                hideLocationSuggestions(); // Remove any existing suggestions
+                
+                if (locations.length === 0) return;
+
+                const suggestionsDiv = document.createElement('div');
+                suggestionsDiv.className = 'list-group position-absolute w-100';
+                suggestionsDiv.style.zIndex = '1000';
+                suggestionsDiv.id = 'location-suggestions';
+
+                locations.forEach(location => {
+                    const item = document.createElement('button');
+                    item.type = 'button';
+                    item.className = 'list-group-item list-group-item-action';
+                    item.textContent = location.display_name;
+                    item.addEventListener('click', () => {
+                        selectLocation(location);
+                    });
+                    suggestionsDiv.appendChild(item);
+                });
+
+                locationInput.parentNode.style.position = 'relative';
+                locationInput.parentNode.appendChild(suggestionsDiv);
+            }
+
+            function hideLocationSuggestions() {
+                const suggestions = document.getElementById('location-suggestions');
+                if (suggestions) {
+                    suggestions.remove();
+                }
+            }
+
+            function selectLocation(location) {
+                locationInput.value = location.display_name;
+                latitude = parseFloat(location.lat);
+                longitude = parseFloat(location.lon);
+                
+                // Update map
+                marker.setLatLng([latitude, longitude]);
+                map.setView([latitude, longitude], 10);
+                
+                hideLocationSuggestions();
+            }
+
+            // Hide suggestions when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!locationInput.contains(event.target) && !document.getElementById('location-suggestions')?.contains(event.target)) {
+                    hideLocationSuggestions();
+                }
+            });
 
             function fetchLocation() {
                 if ('geolocation' in navigator) {
@@ -186,22 +483,37 @@
                 const timezone = timezoneSelect.value;
 
                 if (!dateValue || !latitude || !longitude) {
-                    resultsContainer.innerHTML = '<div class="alert alert-danger">Please select a date and location.</div>';
+                    resultsContainer.innerHTML = '<div class="alert alert-danger animate-fade-in"><i class="fas fa-exclamation-triangle me-2"></i>Please select a date and location.</div>';
                     return;
                 }
 
-                let apiEndpoint = '/api/get-chaughadiya';
-                let params = `date=${dateValue}&latitude=${latitude}&longitude=${longitude}`;
+                // Show loading state
+                const loadingSpinner = document.getElementById('loading-spinner');
+                loadingSpinner.style.display = 'block';
+                resultsContainer.innerHTML = '';
 
-                if (timeValue) {
-                    const timestamp = getTimestamp(dateValue, timeValue, timezone);
-                    apiEndpoint = '/api/get-muhurat';
-                    params = `timestamp=${timestamp}&latitude=${latitude}&longitude=${longitude}`;
+                try {
+                    let apiEndpoint = '/api/get-chaughadiya';
+                    let params = `date=${formatDateForAPI(dateValue)}&latitude=${latitude}&longitude=${longitude}`;
+
+                    if (timeValue) {
+                        const timestamp = getTimestamp(dateValue, timeValue, timezone);
+                        apiEndpoint = '/api/get-muhurat';
+                        params = `timestamp=${timestamp}&latitude=${latitude}&longitude=${longitude}`;
+                    }
+
+                    const response = await fetch(`${apiEndpoint}?${params}`);
+                    const data = await response.json();
+                    
+                    // Hide loading state
+                    loadingSpinner.style.display = 'none';
+                    
+                    displayResults(data);
+                } catch (error) {
+                    console.error('API Error:', error);
+                    loadingSpinner.style.display = 'none';
+                    resultsContainer.innerHTML = '<div class="alert alert-danger animate-fade-in"><i class="fas fa-exclamation-triangle me-2"></i>An error occurred while fetching the data. Please try again.</div>';
                 }
-
-                const response = await fetch(`${apiEndpoint}?${params}`);
-                const data = await response.json();
-                displayResults(data);
             });
 
             function getTimestamp(dateValue, timeValue, timezone) {
@@ -237,67 +549,223 @@
 
                 const correctTimestamp = utcDate + offset;
 
-                return new Date(correctTimestamp).toISOString();
+                return new Date(correctTimestamp).toISOString().slice(0, 19).replace('T', ' ');
+            }
+
+            function formatDateForAPI(dateValue) {
+                // Convert MM/DD/YYYY to YYYY-MM-DD format
+                const [month, day, year] = dateValue.split('/');
+                return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
             }
 
             function displayResults(data) {
                 if (!data) {
-                    resultsContainer.innerHTML = '<div class="alert alert-warning">No results found.</div>';
+                    resultsContainer.innerHTML = '<div class="alert alert-warning animate-fade-in"><i class="fas fa-exclamation-triangle me-2"></i>No results found.</div>';
                     return;
                 }
 
-                if (data.day_muhurat && data.night_muhurat) {
-                    let tableHtml = `<h3>Day Muhurat</h3>
-                                     <table class="table table-striped">
-                                         <thead>
-                                             <tr>
-                                                 <th>Time</th>
-                                                 <th>Chaughadiya</th>
-                                                 <th>Type</th>
-                                             </tr>
-                                         </thead>
-                                         <tbody>`;
-                    data.day_muhurat.forEach(muhurat => {
-                        tableHtml += `<tr>
-                                        <td>${muhurat.time}</td>
-                                        <td>${muhurat.chaughadiya}</td>
-                                        <td>${muhurat.type}</td>
-                                      </tr>`;
-                    });
-                    tableHtml += `</tbody></table>`;
+                // Check if this is a muhurat response (with current muhurat info)
+                if (data['current-muhurat']) {
+                    const muhuratInfo = {
+                        'Udveg': { color: 'danger', meaning: 'Inauspicious - Avoid important tasks', icon: 'fas fa-times-circle' },
+                        'Kaal': { color: 'dark', meaning: 'Very Inauspicious - Death period', icon: 'fas fa-skull' },
+                        'Rog': { color: 'warning', meaning: 'Disease - Health concerns', icon: 'fas fa-user-injured' },
+                        'Chal': { color: 'secondary', meaning: 'Movement - Good for travel', icon: 'fas fa-route' },
+                        'Labh': { color: 'success', meaning: 'Profit - Good for business', icon: 'fas fa-coins' },
+                        'Amrit': { color: 'primary', meaning: 'Nectar - Very auspicious', icon: 'fas fa-gem' },
+                        'Shubh': { color: 'info', meaning: 'Auspicious - Good for all work', icon: 'fas fa-star' }
+                    };
 
-                    tableHtml += `<h3>Night Muhurat</h3>
-                                  <table class="table table-striped">
-                                      <thead>
-                                          <tr>
-                                              <th>Time</th>
-                                              <th>Chaughadiya</th>
-                                              <th>Type</th>
-                                          </tr>
-                                      </thead>
-                                      <tbody>`;
-                    data.night_muhurat.forEach(muhurat => {
-                        tableHtml += `<tr>
-                                        <td>${muhurat.time}</td>
-                                        <td>${muhurat.chaughadiya}</td>
-                                        <td>${muhurat.type}</td>
-                                      </tr>`;
-                    });
-                    tableHtml += `</tbody></table>`;
-                    resultsContainer.innerHTML = tableHtml;
-                } else if (data.chaughadiya) {
-                    const cardHtml = `<div class="card">
-                                        <div class="card-header">Current Muhurat</div>
-                                        <div class="card-body">
-                                            <h5 class="card-title">${data.chaughadiya}</h5>
-                                            <p class="card-text"><strong>Time:</strong> ${data.time}</p>
-                                            <p class="card-text"><strong>Type:</strong> ${data.type}</p>
+                    const currentMuhurat = data['current-muhurat'];
+                    const info = muhuratInfo[currentMuhurat] || { color: 'secondary', meaning: 'Unknown', icon: 'fas fa-question' };
+                    
+                    let html = `
+                        <div class="animate-fade-in">
+                            <div class="card mb-4" style="border: 3px solid var(--bs-${info.color});">
+                                <div class="card-header bg-${info.color} text-white text-center">
+                                    <h4 class="mb-0">
+                                        <i class="${info.icon} me-2"></i>Current Muhurat
+                                    </h4>
+                                </div>
+                                <div class="card-body text-center">
+                                    <div class="muhurat-card mb-3">
+                                        <i class="${info.icon} fa-3x mb-3"></i>
+                                        <h2 class="mb-2">${currentMuhurat}</h2>
+                                        <p class="mb-3 lead">${info.meaning}</p>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <h6>Start Time</h6>
+                                                <p class="h5">${data['current-muhurat-start-time']}</p>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <h6>End Time</h6>
+                                                <p class="h5">${data['current-muhurat-end-time']}</p>
+                                            </div>
                                         </div>
-                                      </div>`;
-                    resultsContainer.innerHTML = cardHtml;
+                                        <small class="d-block mt-2">Date: ${data.date}</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Also show the full day's chaughadiya
+                    html += generateChaughadiyaTable(data);
+                    resultsContainer.innerHTML = html;
+                } else if (data.chaughadiya) {
+                    // Regular chaughadiya response
+                    resultsContainer.innerHTML = generateChaughadiyaTable(data);
                 } else {
-                    resultsContainer.innerHTML = '<div class="alert alert-danger">An unexpected error occurred.</div>';
+                    resultsContainer.innerHTML = '<div class="alert alert-danger animate-fade-in"><i class="fas fa-exclamation-triangle me-2"></i>An unexpected error occurred.</div>';
                 }
+            }
+
+            function generateChaughadiyaTable(data) {
+                if (!data.chaughadiya || !Array.isArray(data.chaughadiya)) {
+                    return '<div class="alert alert-warning animate-fade-in"><i class="fas fa-exclamation-triangle me-2"></i>No chaughadiya data available.</div>';
+                }
+
+                // Split chaughadiya into three parts: night (0-7), day (8-15), night (16-23)
+                const nightPart1 = data.chaughadiya.slice(0, 8);
+                const dayPart = data.chaughadiya.slice(8, 16);
+                const nightPart2 = data.chaughadiya.slice(16, 24);
+
+                // Muhurat types and their meanings
+                const muhuratInfo = {
+                    'Udveg': { color: 'danger', meaning: 'Inauspicious - Avoid important tasks', icon: 'fas fa-times-circle' },
+                    'Kaal': { color: 'dark', meaning: 'Very Inauspicious - Death period', icon: 'fas fa-skull' },
+                    'Rog': { color: 'warning', meaning: 'Disease - Health concerns', icon: 'fas fa-user-injured' },
+                    'Chal': { color: 'secondary', meaning: 'Movement - Good for travel', icon: 'fas fa-route' },
+                    'Labh': { color: 'success', meaning: 'Profit - Good for business', icon: 'fas fa-coins' },
+                    'Amrit': { color: 'primary', meaning: 'Nectar - Very auspicious', icon: 'fas fa-gem' },
+                    'Shubh': { color: 'info', meaning: 'Auspicious - Good for all work', icon: 'fas fa-star' }
+                };
+
+                let html = `
+                    <div class="animate-fade-in">
+                        <!-- Summary Card -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-gradient text-white" style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));">
+                                <h5 class="mb-0"><i class="fas fa-calendar-day me-2"></i>Chaughadiya for ${data.date}</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row text-center">
+                                    <div class="col-md-3 mb-3">
+                                        <div class="time-info">
+                                            <i class="fas fa-sunrise fa-2x text-warning mb-2"></i>
+                                            <h6>Sunrise</h6>
+                                            <strong>${data['sunrise-time']}</strong>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <div class="time-info">
+                                            <i class="fas fa-sunset fa-2x text-orange mb-2"></i>
+                                            <h6>Sunset</h6>
+                                            <strong>${data['sunset-time']}</strong>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <div class="time-info">
+                                            <i class="fas fa-sun fa-2x text-warning mb-2"></i>
+                                            <h6>Day Duration</h6>
+                                            <strong>${data['day-muhurat-length']}</strong>
+                                            <small class="d-block">per muhurat</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <div class="time-info">
+                                            <i class="fas fa-moon fa-2x text-primary mb-2"></i>
+                                            <h6>Night Duration</h6>
+                                            <strong>${data['night-muhurat-length']}</strong>
+                                            <small class="d-block">per muhurat</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Muhurat Timeline -->
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="fas fa-clock me-2"></i>24-Hour Muhurat Timeline</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                `;
+
+                // Create timeline for all 24 muhurats
+                const allMuhurats = [...nightPart1, ...dayPart, ...nightPart2];
+                allMuhurats.forEach((muhurat, index) => {
+                    const info = muhuratInfo[muhurat.muhurat] || { color: 'secondary', meaning: 'Unknown', icon: 'fas fa-question' };
+                    const isDay = index >= 8 && index < 16;
+                    const timelineClass = isDay ? 'border-warning' : 'border-primary';
+                    
+                    html += `
+                        <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                            <div class="card h-100 ${timelineClass}" style="border-width: 3px;">
+                                <div class="card-body text-center p-3">
+                                    <div class="mb-2">
+                                        <i class="${info.icon} fa-2x text-${info.color}"></i>
+                                    </div>
+                                    <h6 class="card-title mb-1">
+                                        <span class="badge bg-${info.color}">${muhurat.muhurat}</span>
+                                    </h6>
+                                    <p class="card-text small mb-2">
+                                        <strong>${muhurat['start-time']} - ${muhurat['end-time']}</strong>
+                                    </p>
+                                    <p class="card-text small text-muted">${info.meaning}</p>
+                                    <div class="mt-2">
+                                        <small class="badge ${isDay ? 'bg-warning text-dark' : 'bg-primary'}">
+                                            ${isDay ? 'Day' : 'Night'}
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += `
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Muhurat Legend -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Muhurat Meanings</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                `;
+
+                Object.entries(muhuratInfo).forEach(([muhurat, info]) => {
+                    html += `
+                        <div class="col-lg-4 col-md-6 mb-3">
+                            <div class="d-flex align-items-center">
+                                <i class="${info.icon} fa-lg text-${info.color} me-3"></i>
+                                <div>
+                                    <strong class="text-${info.color}">${muhurat}</strong><br>
+                                    <small class="text-muted">${info.meaning}</small>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += `
+                                </div>
+                                <div class="alert alert-info mt-3">
+                                    <i class="fas fa-lightbulb me-2"></i>
+                                    <strong>Tip:</strong> Use <strong>Amrit</strong> and <strong>Shubh</strong> muhurats for important activities. 
+                                    Avoid <strong>Kaal</strong> and <strong>Udveg</strong> periods for new ventures.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                return html;
             }
 
             // Commented out Google Maps integration
