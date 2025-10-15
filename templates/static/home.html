@@ -703,22 +703,6 @@
                     timeFormatSwitcher.checked = true;
                     is24HourFormat = true;
                 }
-
-                // Load last used location and timezone
-                const lastLocation = localStorage.getItem('chaughadiya_lastLocation');
-                if (lastLocation) {
-                    const locData = JSON.parse(lastLocation);
-                    locationInput.value = locData.name;
-                    latitude = locData.lat;
-                    longitude = locData.lng;
-                    marker.setLatLng([latitude, longitude]);
-                    map.setView([latitude, longitude], 10);
-                }
-
-                const lastTimezone = localStorage.getItem('chaughadiya_lastTimezone');
-                if (lastTimezone && timezoneSelect.querySelector(`option[value="${lastTimezone}"]`)) {
-                    timezoneSelect.value = lastTimezone;
-                }
             }
 
             // Save preference helper
@@ -853,6 +837,9 @@
 
             function updateLiveMuhurat() {
                 if (!window.currentData || !window.currentTimezone) return;
+
+                // Only update if viewing today's date
+                if (!isDateTodayInTimezone(window.currentData.date, window.currentTimezone)) return;
 
                 const current = getCurrentMuhurat(window.currentData, window.currentTimezone);
                 if (!current) return;
@@ -1406,14 +1393,6 @@
                     window.currentData = convertedData;
                     window.currentTimezone = timezone;
                     
-                    // Save last used location and timezone
-                    savePreference('lastLocation', JSON.stringify({
-                        name: locationInput.value,
-                        lat: latitude,
-                        lng: longitude
-                    }));
-                    savePreference('lastTimezone', timezone);
-                    
                     displayResults(convertedData, timezone);
                 } catch (error) {
                     console.error('API Error:', error);
@@ -1565,6 +1544,20 @@
                 return durationString;
             }
 
+            function isDateTodayInTimezone(dateString, timezone) {
+                // Get today's date in the specified timezone
+                const now = new Date();
+                const todayInTimezone = new Date(now.toLocaleString('en-US', { timeZone: timezone }));
+                
+                // Format as YYYY-MM-DD
+                const year = todayInTimezone.getFullYear();
+                const month = String(todayInTimezone.getMonth() + 1).padStart(2, '0');
+                const day = String(todayInTimezone.getDate()).padStart(2, '0');
+                const todayDateString = `${year}-${month}-${day}`;
+                
+                return dateString === todayDateString;
+            }
+
             function generateChaughadiyaTable(data, userTimezone) {
                 if (!data.chaughadiya || !Array.isArray(data.chaughadiya)) {
                     return '<div class="alert alert-warning animate-fade-in"><i class="fas fa-exclamation-triangle me-2"></i>No chaughadiya data available.</div>';
@@ -1589,8 +1582,11 @@
                 const sunriseRounded = roundTimeToMinute(data['sunrise-time']);
                 const sunsetRounded = roundTimeToMinute(data['sunset-time']);
                 
-                // Get current muhurat
-                const currentMuhuratData = getCurrentMuhurat(data, userTimezone);
+                // Check if the data date is today in the user's timezone
+                const isTodayInTimezone = isDateTodayInTimezone(data.date, userTimezone);
+                
+                // Get current muhurat only if viewing today's date
+                const currentMuhuratData = isTodayInTimezone ? getCurrentMuhurat(data, userTimezone) : null;
                 
                 let html = `
                     <div class="animate-fade-in">
