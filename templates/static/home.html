@@ -158,6 +158,152 @@
             overflow: hidden;
         }
 
+        /* Current Muhurat Styles */
+        .current-muhurat-banner {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(255, 153, 51, 0.4);
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .current-muhurat-banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.1) 75%, transparent 75%, transparent);
+            background-size: 50px 50px;
+            animation: stripes 2s linear infinite;
+        }
+
+        @keyframes stripes {
+            0% { background-position: 0 0; }
+            100% { background-position: 50px 50px; }
+        }
+
+        .current-muhurat-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .countdown-timer {
+            font-family: 'Courier New', monospace;
+            font-size: 2rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .live-clock {
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .current-muhurat-highlight {
+            background-color: rgba(255, 153, 51, 0.2) !important;
+            border: 3px solid var(--primary-color) !important;
+            position: relative;
+        }
+
+        .current-muhurat-highlight::after {
+            content: 'CURRENT';
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: var(--primary-color);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 5px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .progress-bar-muhurat {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #fff, rgba(255,255,255,0.6));
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .pulse-animation {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            #map {
+                height: 200px !important;
+            }
+            
+            .navbar .d-flex {
+                flex-direction: column;
+                gap: 0.5rem !important;
+            }
+            
+            .chaughadiya-table {
+                font-size: 0.85rem;
+            }
+            
+            .chaughadiya-table th,
+            .chaughadiya-table td {
+                padding: 8px 6px;
+            }
+            
+            .form-floating > label {
+                font-size: 0.9rem;
+            }
+            
+            .card-body {
+                padding: 1rem;
+            }
+            
+            .btn-primary {
+                padding: 10px 20px;
+                font-size: 0.95rem;
+            }
+            
+            .navbar-brand {
+                font-size: 1.2rem;
+            }
+            
+            .form-check-label {
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .main-container {
+                padding: 1rem;
+            }
+            
+            h1 {
+                font-size: 1.75rem;
+            }
+            
+            .lead {
+                font-size: 1rem;
+            }
+        }
+
         .badge {
             padding: 8px 12px;
             border-radius: 20px;
@@ -258,7 +404,13 @@
             <a class="navbar-brand text-white" href="#">
                 <i class="fas fa-sun me-2"></i>Chaughadiya
             </a>
-            <div class="d-flex gap-3 ms-auto">
+            <div class="d-flex gap-3 ms-auto align-items-center">
+                <button class="btn btn-sm btn-outline-light" id="favoritesBtn" title="Favorite Locations">
+                    <i class="fas fa-star"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-light" id="shareBtn" title="Share Results" style="display: none;">
+                    <i class="fas fa-share-alt"></i>
+                </button>
                 <div class="form-check form-switch">
                     <input class="form-check-input" type="checkbox" id="timeFormatSwitcher">
                     <label class="form-check-label text-white" for="timeFormatSwitcher">
@@ -352,8 +504,11 @@
                                     <label for="timezone"><i class="fas fa-globe me-2"></i>Timezone</label>
                                 </div>
                                 
-                                <button type="submit" class="btn btn-primary w-100 mt-auto">
+                                <button type="submit" class="btn btn-primary w-100 mt-auto mb-2">
                                     <i class="fas fa-search me-2"></i>Get Chaughadiya
+                                </button>
+                                <button type="button" class="btn btn-outline-primary w-100" id="saveFavoriteBtn">
+                                    <i class="fas fa-star me-2"></i>Save as Favorite
                                 </button>
                             </div>
                         </div>
@@ -463,6 +618,58 @@
         </div>
     </div>
 
+    <!-- Favorites Modal -->
+    <div class="modal fade" id="favoritesModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-star me-2"></i>Favorite Locations</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="favoritesList"></div>
+                    <div class="text-muted text-center py-3" id="noFavorites" style="display: none;">
+                        <i class="fas fa-info-circle me-2"></i>No saved locations yet
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div class="modal fade" id="shareModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-share-alt me-2"></i>Share Chaughadiya</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Shareable Link</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="shareUrl" readonly>
+                            <button class="btn btn-primary" id="copyUrlBtn">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-success" id="exportImageBtn">
+                            <i class="fas fa-image me-2"></i>Export as Image
+                        </button>
+                        <button class="btn btn-info" id="exportCsvBtn">
+                            <i class="fas fa-file-csv me-2"></i>Export as CSV
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
@@ -482,21 +689,428 @@
             const htmlElement = document.documentElement;
             let is24HourFormat = false;
 
+            // Load saved preferences
+            function loadPreferences() {
+                const savedDarkMode = localStorage.getItem('chaughadiya_darkMode') === 'true';
+                const saved24Hour = localStorage.getItem('chaughadiya_24hour') === 'true';
+                
+                if (savedDarkMode) {
+                    themeSwitcher.checked = true;
+                    htmlElement.setAttribute('data-bs-theme', 'dark');
+                }
+                
+                if (saved24Hour) {
+                    timeFormatSwitcher.checked = true;
+                    is24HourFormat = true;
+                }
+
+                // Load last used location and timezone
+                const lastLocation = localStorage.getItem('chaughadiya_lastLocation');
+                if (lastLocation) {
+                    const locData = JSON.parse(lastLocation);
+                    locationInput.value = locData.name;
+                    latitude = locData.lat;
+                    longitude = locData.lng;
+                    marker.setLatLng([latitude, longitude]);
+                    map.setView([latitude, longitude], 10);
+                }
+
+                const lastTimezone = localStorage.getItem('chaughadiya_lastTimezone');
+                if (lastTimezone && timezoneSelect.querySelector(`option[value="${lastTimezone}"]`)) {
+                    timezoneSelect.value = lastTimezone;
+                }
+            }
+
+            // Save preference helper
+            function savePreference(key, value) {
+                localStorage.setItem(`chaughadiya_${key}`, value);
+            }
+
             themeSwitcher.addEventListener('change', function () {
                 if (this.checked) {
                     htmlElement.setAttribute('data-bs-theme', 'dark');
+                    savePreference('darkMode', 'true');
                 } else {
                     htmlElement.setAttribute('data-bs-theme', 'light');
+                    savePreference('darkMode', 'false');
                 }
             });
 
             timeFormatSwitcher.addEventListener('change', function () {
                 is24HourFormat = this.checked;
+                savePreference('24hour', this.checked ? 'true' : 'false');
                 // Re-render results if they exist
                 if (window.currentData && window.currentTimezone) {
                     displayResults(window.currentData, window.currentTimezone);
                 }
             });
+
+            // Load preferences on page load
+            loadPreferences();
+
+            // Initialize favorites and share functionality
+            const favoritesBtn = document.getElementById('favoritesBtn');
+            const shareBtn = document.getElementById('shareBtn');
+            const favoritesModal = new bootstrap.Modal(document.getElementById('favoritesModal'));
+            const shareModal = new bootstrap.Modal(document.getElementById('shareModal'));
+
+            favoritesBtn.addEventListener('click', () => {
+                updateFavoritesList();
+                favoritesModal.show();
+            });
+
+            shareBtn.addEventListener('click', () => {
+                const shareUrl = generateShareUrl();
+                document.getElementById('shareUrl').value = shareUrl;
+                shareModal.show();
+            });
+
+            document.getElementById('copyUrlBtn').addEventListener('click', () => {
+                const shareUrl = document.getElementById('shareUrl').value;
+                copyToClipboard(shareUrl);
+            });
+
+            document.getElementById('exportCsvBtn').addEventListener('click', () => {
+                exportToCSV();
+            });
+
+            document.getElementById('exportImageBtn').addEventListener('click', () => {
+                exportAsImage();
+            });
+
+            // Load from URL if parameters present
+            loadFromUrlParams();
+
+            // Save favorite button handler
+            document.getElementById('saveFavoriteBtn').addEventListener('click', () => {
+                if (!latitude || !longitude) {
+                    alert('Please select a location first');
+                    return;
+                }
+                
+                const name = locationInput.value || `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+                const timezone = timezoneSelect.value;
+                saveFavorite(name, latitude, longitude, timezone);
+            });
+
+            // Live Muhurat Tracking
+            let muhuratUpdateInterval = null;
+            let clockUpdateInterval = null;
+
+            function getCurrentMuhurat(data, userTimezone) {
+                if (!data || !data.chaughadiya) return null;
+
+                // Get current time in user's timezone
+                const now = new Date();
+                const timeString = now.toLocaleString('en-US', { 
+                    timeZone: userTimezone, 
+                    hour12: false, 
+                    hour: '2-digit', 
+                    minute: '2-digit', 
+                    second: '2-digit' 
+                });
+                
+                const [hours, minutes, seconds] = timeString.split(':').map(Number);
+                const currentSeconds = hours * 3600 + minutes * 60 + seconds;
+
+                // Find current muhurat
+                for (let i = 0; i < data.chaughadiya.length; i++) {
+                    const muhurat = data.chaughadiya[i];
+                    const [startH, startM, startS] = muhurat['start-time'].split(':').map(Number);
+                    const [endH, endM, endS] = muhurat['end-time'].split(':').map(Number);
+                    
+                    const startSeconds = startH * 3600 + startM * 60 + startS;
+                    const endSeconds = endH * 3600 + endM * 60 + endS;
+                    
+                    // Handle midnight crossing
+                    if (endSeconds < startSeconds) {
+                        if (currentSeconds >= startSeconds || currentSeconds < endSeconds) {
+                            return { muhurat, index: i, startSeconds, endSeconds };
+                        }
+                    } else {
+                        if (currentSeconds >= startSeconds && currentSeconds < endSeconds) {
+                            return { muhurat, index: i, startSeconds, endSeconds };
+                        }
+                    }
+                }
+                
+                return null;
+            }
+
+            function formatCountdown(seconds) {
+                const hours = Math.floor(seconds / 3600);
+                const minutes = Math.floor((seconds % 3600) / 60);
+                const secs = seconds % 60;
+                
+                if (hours > 0) {
+                    return `${hours}h ${minutes}m ${secs}s`;
+                } else if (minutes > 0) {
+                    return `${minutes}m ${secs}s`;
+                } else {
+                    return `${secs}s`;
+                }
+            }
+
+            function updateLiveMuhurat() {
+                if (!window.currentData || !window.currentTimezone) return;
+
+                const current = getCurrentMuhurat(window.currentData, window.currentTimezone);
+                if (!current) return;
+
+                // Update current muhurat banner
+                const banner = document.getElementById('current-muhurat-banner');
+                if (banner) {
+                    const now = new Date();
+                    const timeString = now.toLocaleString('en-US', { 
+                        timeZone: window.currentTimezone, 
+                        hour12: false, 
+                        hour: '2-digit', 
+                        minute: '2-digit', 
+                        second: '2-digit' 
+                    });
+                    
+                    const [hours, minutes, seconds] = timeString.split(':').map(Number);
+                    const currentSeconds = hours * 3600 + minutes * 60 + seconds;
+                    
+                    // Calculate time remaining
+                    let timeRemaining;
+                    if (current.endSeconds < current.startSeconds) {
+                        // Crosses midnight
+                        if (currentSeconds >= current.startSeconds) {
+                            timeRemaining = (24 * 3600 - currentSeconds) + current.endSeconds;
+                        } else {
+                            timeRemaining = current.endSeconds - currentSeconds;
+                        }
+                    } else {
+                        timeRemaining = current.endSeconds - currentSeconds;
+                    }
+
+                    // Calculate progress
+                    let totalDuration;
+                    if (current.endSeconds < current.startSeconds) {
+                        totalDuration = (24 * 3600 - current.startSeconds) + current.endSeconds;
+                    } else {
+                        totalDuration = current.endSeconds - current.startSeconds;
+                    }
+                    const progress = ((totalDuration - timeRemaining) / totalDuration) * 100;
+
+                    // Update clock
+                    const clockElement = banner.querySelector('.live-clock');
+                    if (clockElement) {
+                        clockElement.textContent = formatTime(timeString, is24HourFormat);
+                    }
+
+                    // Update countdown
+                    const countdownElement = banner.querySelector('.countdown-timer');
+                    if (countdownElement) {
+                        countdownElement.textContent = formatCountdown(timeRemaining);
+                    }
+
+                    // Update progress bar
+                    const progressBar = banner.querySelector('.progress-bar-fill');
+                    if (progressBar) {
+                        progressBar.style.width = `${progress}%`;
+                    }
+
+                    // If muhurat changed, refresh display
+                    if (window.lastMuhuratIndex !== current.index) {
+                        window.lastMuhuratIndex = current.index;
+                        displayResults(window.currentData, window.currentTimezone);
+                    }
+                }
+            }
+
+            function startLiveUpdates() {
+                stopLiveUpdates();
+                muhuratUpdateInterval = setInterval(updateLiveMuhurat, 1000);
+            }
+
+            function stopLiveUpdates() {
+                if (muhuratUpdateInterval) {
+                    clearInterval(muhuratUpdateInterval);
+                    muhuratUpdateInterval = null;
+                }
+            }
+
+            // Favorites Management
+            function getFavorites() {
+                const favorites = localStorage.getItem('chaughadiya_favorites');
+                return favorites ? JSON.parse(favorites) : [];
+            }
+
+            function saveFavorite(name, lat, lng, timezone) {
+                const favorites = getFavorites();
+                
+                // Check if already exists
+                const exists = favorites.some(fav => fav.lat === lat && fav.lng === lng);
+                if (exists) {
+                    alert('This location is already in your favorites!');
+                    return;
+                }
+                
+                // Limit to 5 favorites
+                if (favorites.length >= 5) {
+                    alert('Maximum 5 favorite locations allowed. Please delete one to add new.');
+                    return;
+                }
+                
+                favorites.push({ name, lat, lng, timezone, addedAt: new Date().toISOString() });
+                localStorage.setItem('chaughadiya_favorites', JSON.stringify(favorites));
+                updateFavoritesList();
+                alert('Location saved to favorites!');
+            }
+
+            function deleteFavorite(index) {
+                if (!confirm('Remove this location from favorites?')) return;
+                
+                const favorites = getFavorites();
+                favorites.splice(index, 1);
+                localStorage.setItem('chaughadiya_favorites', JSON.stringify(favorites));
+                updateFavoritesList();
+            }
+
+            function loadFavorite(favorite) {
+                locationInput.value = favorite.name;
+                latitude = favorite.lat;
+                longitude = favorite.lng;
+                marker.setLatLng([latitude, longitude]);
+                map.setView([latitude, longitude], 10);
+                
+                if (favorite.timezone) {
+                    timezoneSelect.value = favorite.timezone;
+                }
+                
+                // Close modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('favoritesModal'));
+                if (modal) modal.hide();
+            }
+
+            function updateFavoritesList() {
+                const favorites = getFavorites();
+                const listEl = document.getElementById('favoritesList');
+                const noFavEl = document.getElementById('noFavorites');
+                
+                if (favorites.length === 0) {
+                    listEl.innerHTML = '';
+                    noFavEl.style.display = 'block';
+                    return;
+                }
+                
+                noFavEl.style.display = 'none';
+                listEl.innerHTML = favorites.map((fav, index) => `
+                    <div class="card mb-2">
+                        <div class="card-body p-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="flex-grow-1" style="cursor: pointer;" onclick="loadFavorite(getFavorites()[${index}])">
+                                    <strong>${fav.name}</strong><br>
+                                    <small class="text-muted">${fav.timezone || 'No timezone'}</small>
+                                </div>
+                                <button class="btn btn-sm btn-danger" onclick="deleteFavorite(${index})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Share functionality
+            function generateShareUrl() {
+                if (!window.currentData || !latitude || !longitude) return '';
+                
+                const params = new URLSearchParams({
+                    date: window.currentData.date,
+                    lat: latitude.toFixed(6),
+                    lng: longitude.toFixed(6),
+                    tz: window.currentTimezone,
+                    location: locationInput.value
+                });
+                
+                return `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+            }
+
+            function copyToClipboard(text) {
+                navigator.clipboard.writeText(text).then(() => {
+                    const btn = document.getElementById('copyUrlBtn');
+                    const originalHtml = btn.innerHTML;
+                    btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                    btn.classList.remove('btn-primary');
+                    btn.classList.add('btn-success');
+                    setTimeout(() => {
+                        btn.innerHTML = originalHtml;
+                        btn.classList.remove('btn-success');
+                        btn.classList.add('btn-primary');
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Failed to copy:', err);
+                    alert('Failed to copy link. Please copy manually.');
+                });
+            }
+
+            // Export to CSV
+            function exportToCSV() {
+                if (!window.currentData || !window.currentData.chaughadiya) {
+                    alert('No data to export');
+                    return;
+                }
+                
+                const data = window.currentData.chaughadiya;
+                let csv = 'Serial,Muhurat,Start Time,End Time,Period\n';
+                
+                data.forEach((muhurat, index) => {
+                    const isDay = index >= 8 && index < 16;
+                    const period = isDay ? 'Day' : 'Night';
+                    csv += `${index + 1},${muhurat.muhurat},${muhurat['start-time']},${muhurat['end-time']},${period}\n`;
+                });
+                
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `chaughadiya_${window.currentData.date}.csv`;
+                a.click();
+                window.URL.revokeObjectURL(url);
+            }
+
+            // Export as image (simplified version)
+            function exportAsImage() {
+                alert('Tip: You can use your browser\'s print function (Ctrl/Cmd + P) and save as PDF for a high-quality export!');
+                window.print();
+            }
+
+            // Load from URL parameters
+            function loadFromUrlParams() {
+                const params = new URLSearchParams(window.location.search);
+                
+                if (params.has('date') && params.has('lat') && params.has('lng')) {
+                    const date = params.get('date');
+                    const lat = parseFloat(params.get('lat'));
+                    const lng = parseFloat(params.get('lng'));
+                    const tz = params.get('tz');
+                    const location = params.get('location');
+                    
+                    // Parse date
+                    const [year, month, day] = date.split('-');
+                    daySelect.value = parseInt(day);
+                    monthSelect.value = parseInt(month);
+                    yearSelect.value = parseInt(year);
+                    
+                    // Set location
+                    latitude = lat;
+                    longitude = lng;
+                    if (location) locationInput.value = decodeURIComponent(location);
+                    marker.setLatLng([lat, lng]);
+                    map.setView([lat, lng], 10);
+                    
+                    // Set timezone
+                    if (tz && timezoneSelect.querySelector(`option[value="${tz}"]`)) {
+                        timezoneSelect.value = tz;
+                    }
+                    
+                    // Auto-submit
+                    setTimeout(() => form.dispatchEvent(new Event('submit')), 1000);
+                }
+            }
 
             const locationInput = document.getElementById('location');
             const daySelect = document.getElementById('day');
@@ -553,13 +1167,28 @@
 
             function searchLocations(query) {
                 fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`)
-                    .then(response => response.json())
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Location search service unavailable');
+                        }
+                        return response.json();
+                    })
                     .then(data => {
                         showLocationSuggestions(data);
                     })
                     .catch(error => {
                         console.error('Location search error:', error);
                         hideLocationSuggestions();
+                        // Show a temporary error message
+                        const errorMsg = document.createElement('div');
+                        errorMsg.className = 'alert alert-warning alert-dismissible fade show mt-2';
+                        errorMsg.innerHTML = `
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Location search temporarily unavailable. Please try selecting on the map.
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        `;
+                        locationInput.parentNode.appendChild(errorMsg);
+                        setTimeout(() => errorMsg.remove(), 5000);
                     });
             }
 
@@ -619,18 +1248,42 @@
                     navigator.geolocation.getCurrentPosition(async (position) => {
                         latitude = position.coords.latitude;
                         longitude = position.coords.longitude;
-                        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
-                        const data = await response.json();
-                        if (data && data.display_name) {
-                            locationInput.value = data.display_name;
+                        
+                        marker.setLatLng([latitude, longitude]);
+                        map.setView([latitude, longitude], 10);
+                        
+                        try {
+                            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+                            if (!response.ok) throw new Error('Geocoding service unavailable');
+                            const data = await response.json();
+                            if (data && data.display_name) {
+                                locationInput.value = data.display_name;
+                            }
+                        } catch (error) {
+                            console.error('Error fetching location name:', error);
+                            locationInput.value = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
                         }
                     }, (error) => {
                         console.error('Error getting location:', error);
-                        locationInput.placeholder = "Could not fetch location. Please enter manually.";
+                        let errorMessage = "Could not fetch location. ";
+                        switch(error.code) {
+                            case error.PERMISSION_DENIED:
+                                errorMessage += "Permission denied.";
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                errorMessage += "Position unavailable.";
+                                break;
+                            case error.TIMEOUT:
+                                errorMessage += "Request timed out.";
+                                break;
+                            default:
+                                errorMessage += "Unknown error.";
+                        }
+                        locationInput.placeholder = errorMessage + " Please search or click on map.";
                     });
                 } else {
                     console.error('Geolocation is not supported by this browser.');
-                    locationInput.placeholder = "Geolocation not supported. Please enter manually.";
+                    locationInput.placeholder = "Geolocation not supported. Please search or click on map.";
                 }
             }
 
@@ -650,10 +1303,18 @@
             });
 
             async function updateLocationInput(lat, lng) {
-                const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
-                const data = await response.json();
-                if (data && data.display_name) {
-                    locationInput.value = data.display_name;
+                try {
+                    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+                    if (!response.ok) throw new Error('Geocoding service unavailable');
+                    const data = await response.json();
+                    if (data && data.display_name) {
+                        locationInput.value = data.display_name;
+                    } else {
+                        locationInput.value = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+                    }
+                } catch (error) {
+                    console.error('Error updating location:', error);
+                    locationInput.value = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
                 }
             }
 
@@ -674,8 +1335,37 @@
                 const year = yearSelect.value;
                 const timezone = timezoneSelect.value;
 
-                if (!day || !month || !year || !latitude || !longitude) {
-                    resultsContainer.innerHTML = '<div class="alert alert-danger animate-fade-in"><i class="fas fa-exclamation-triangle me-2"></i>Please select a complete date and location.</div>';
+                // Validate all required fields
+                if (!day || !month || !year) {
+                    resultsContainer.innerHTML = '<div class="alert alert-danger animate-fade-in"><i class="fas fa-exclamation-triangle me-2"></i>Please select a complete date.</div>';
+                    return;
+                }
+
+                if (!latitude || !longitude) {
+                    resultsContainer.innerHTML = '<div class="alert alert-danger animate-fade-in"><i class="fas fa-exclamation-triangle me-2"></i>Please select a location on the map or search for one.</div>';
+                    return;
+                }
+
+                if (!timezone) {
+                    resultsContainer.innerHTML = '<div class="alert alert-danger animate-fade-in"><i class="fas fa-exclamation-triangle me-2"></i>Please select a timezone.</div>';
+                    return;
+                }
+
+                // Validate date is valid (e.g., not Feb 30)
+                const testDate = new Date(year, month - 1, day);
+                if (testDate.getMonth() + 1 !== parseInt(month) || testDate.getDate() !== parseInt(day)) {
+                    resultsContainer.innerHTML = '<div class="alert alert-danger animate-fade-in"><i class="fas fa-exclamation-triangle me-2"></i>Invalid date. Please check your selection.</div>';
+                    return;
+                }
+
+                // Validate coordinates
+                if (latitude < -90 || latitude > 90) {
+                    resultsContainer.innerHTML = '<div class="alert alert-danger animate-fade-in"><i class="fas fa-exclamation-triangle me-2"></i>Invalid latitude. Please select a valid location.</div>';
+                    return;
+                }
+
+                if (longitude < -180 || longitude > 180) {
+                    resultsContainer.innerHTML = '<div class="alert alert-danger animate-fade-in"><i class="fas fa-exclamation-triangle me-2"></i>Invalid longitude. Please select a valid location.</div>';
                     return;
                 }
 
@@ -692,7 +1382,19 @@
                     let params = `date=${dateString}&latitude=${latitude}&longitude=${longitude}`;
 
                     const response = await fetch(`${apiEndpoint}?${params}`);
+                    
+                    // Check if response is ok
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || 'Server error occurred');
+                    }
+                    
                     const data = await response.json();
+                    
+                    // Check if data has error property
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
                     
                     // Convert GMT times to user timezone
                     const convertedData = convertChaughadiyaTimesToUserTimezone(data, timezone);
@@ -704,11 +1406,22 @@
                     window.currentData = convertedData;
                     window.currentTimezone = timezone;
                     
+                    // Save last used location and timezone
+                    savePreference('lastLocation', JSON.stringify({
+                        name: locationInput.value,
+                        lat: latitude,
+                        lng: longitude
+                    }));
+                    savePreference('lastTimezone', timezone);
+                    
                     displayResults(convertedData, timezone);
                 } catch (error) {
                     console.error('API Error:', error);
                     loadingSpinner.style.display = 'none';
-                    resultsContainer.innerHTML = '<div class="alert alert-danger animate-fade-in"><i class="fas fa-exclamation-triangle me-2"></i>An error occurred while fetching the data. Please try again.</div>';
+                    resultsContainer.innerHTML = `<div class="alert alert-danger animate-fade-in">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Error:</strong> ${error.message || 'An error occurred while fetching the data. Please try again.'}
+                    </div>`;
                 }
             });
 
@@ -798,14 +1511,21 @@
             function displayResults(data, userTimezone) {
                 if (!data) {
                     resultsContainer.innerHTML = '<div class="alert alert-warning animate-fade-in"><i class="fas fa-exclamation-triangle me-2"></i>No results found.</div>';
+                    stopLiveUpdates();
                     return;
                 }
 
                 // Regular chaughadiya response
                 if (data.chaughadiya) {
                     resultsContainer.innerHTML = generateChaughadiyaTable(data, userTimezone);
+                    // Start live updates
+                    startLiveUpdates();
+                    // Show share button
+                    document.getElementById('shareBtn').style.display = 'inline-block';
                 } else {
                     resultsContainer.innerHTML = '<div class="alert alert-danger animate-fade-in"><i class="fas fa-exclamation-triangle me-2"></i>An unexpected error occurred.</div>';
+                    stopLiveUpdates();
+                    document.getElementById('shareBtn').style.display = 'none';
                 }
             }
 
@@ -869,8 +1589,46 @@
                 const sunriseRounded = roundTimeToMinute(data['sunrise-time']);
                 const sunsetRounded = roundTimeToMinute(data['sunset-time']);
                 
+                // Get current muhurat
+                const currentMuhuratData = getCurrentMuhurat(data, userTimezone);
+                
                 let html = `
                     <div class="animate-fade-in">
+                `;
+
+                // Add current muhurat banner if data is for today
+                if (currentMuhuratData) {
+                    const info = muhuratInfo[currentMuhuratData.muhurat.muhurat] || { color: 'secondary', meaning: 'Unknown', icon: 'fas fa-question' };
+                    html += `
+                        <!-- Current Muhurat Banner -->
+                        <div class="current-muhurat-banner pulse-animation" id="current-muhurat-banner">
+                            <div class="current-muhurat-content">
+                                <div class="row align-items-center">
+                                    <div class="col-md-3 text-center mb-3 mb-md-0">
+                                        <i class="${info.icon} fa-4x"></i>
+                                    </div>
+                                    <div class="col-md-6 text-center mb-3 mb-md-0">
+                                        <h4 class="mb-2">Current Muhurat</h4>
+                                        <h2 class="mb-1"><strong>${currentMuhuratData.muhurat.muhurat}</strong></h2>
+                                        <p class="mb-2">${info.meaning}</p>
+                                        <div class="live-clock mb-2">
+                                            <i class="fas fa-clock me-2"></i><span class="live-clock">Loading...</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <div class="mb-2">Time Remaining</div>
+                                        <div class="countdown-timer">Loading...</div>
+                                    </div>
+                                </div>
+                                <div class="progress-bar-muhurat">
+                                    <div class="progress-bar-fill" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                html += `
                         <!-- Sunrise and Sunset Times -->
                         <div class="card mb-4">
                             <div class="card-body">
@@ -935,12 +1693,16 @@
                     const isDay = index >= 8 && index < 16;
                     const timelineClass = isDay ? 'border-warning' : 'border-primary';
                     
+                    // Check if this is the current muhurat
+                    const isCurrent = currentMuhuratData && currentMuhuratData.index === index;
+                    const highlightClass = isCurrent ? 'current-muhurat-highlight' : '';
+                    
                     const startTimeFormatted = formatTime(muhurat['start-time'], is24HourFormat);
                     const endTimeFormatted = formatTime(muhurat['end-time'], is24HourFormat);
                     
                     html += `
                         <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
-                            <div class="card h-100 ${timelineClass}" style="border-width: 3px;">
+                            <div class="card h-100 ${timelineClass} ${highlightClass}" style="border-width: 3px;">
                                 <div class="card-body text-center p-3">
                                     <div class="mb-2">
                                         <i class="${info.icon} fa-2x text-${info.color}"></i>
@@ -992,11 +1754,13 @@
                 allMuhurats.forEach((muhurat, index) => {
                     const info = muhuratInfo[muhurat.muhurat] || { color: 'secondary', meaning: 'Unknown', icon: 'fas fa-question' };
                     const isDay = index >= 8 && index < 16;
+                    const isCurrent = currentMuhuratData && currentMuhuratData.index === index;
+                    const rowClass = isCurrent ? 'table-warning fw-bold' : '';
                     const startTimeFormatted = formatTime(muhurat['start-time'], is24HourFormat);
                     const endTimeFormatted = formatTime(muhurat['end-time'], is24HourFormat);
                     
                     html += `
-                        <tr>
+                        <tr class="${rowClass}">
                             <td><strong>${index + 1}</strong></td>
                             <td>
                                 <i class="${info.icon} text-${info.color} me-2"></i>
