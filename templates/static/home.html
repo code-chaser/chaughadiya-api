@@ -1384,7 +1384,10 @@
                     }
                     
                     // Convert GMT times to user timezone
-                    const convertedData = convertChaughadiyaTimesToUserTimezone(data, timezone);
+                    let convertedData = convertChaughadiyaTimesToUserTimezone(data, timezone);
+                    
+                    // Truncate muhurats to fit within 00:00:00 to 24:00:00 in user's timezone
+                    convertedData = truncateChaughadiyaToMidnight(convertedData, timezone);
                     
                     // Hide loading state
                     loadingSpinner.style.display = 'none';
@@ -1416,6 +1419,66 @@
                 
                 // Format as HH:MM:SS
                 return userDateTime.toTimeString().slice(0, 8);
+            }
+
+            function truncateChaughadiyaToMidnight(data, userTimezone) {
+                if (!data.chaughadiya || !userTimezone) return data;
+                
+                // Clone the data to avoid modifying the original
+                const truncatedData = JSON.parse(JSON.stringify(data));
+                const truncatedMuhurats = [];
+                
+                // Get the date boundaries in the user's timezone
+                const dateObj = new Date(data.date + 'T00:00:00');
+                const dayStartTime = '00:00:00';
+                const dayEndTime = '24:00:00'; // Represents midnight of next day
+                
+                for (const muhurat of truncatedData.chaughadiya) {
+                    const startTime = muhurat['start-time'];
+                    const endTime = muhurat['end-time'];
+                    
+                    // Convert time strings to comparable format (seconds since midnight)
+                    const parseTime = (timeStr) => {
+                        const [h, m, s] = timeStr.split(':').map(Number);
+                        return h * 3600 + m * 60 + s;
+                    };
+                    
+                    let startSeconds = parseTime(startTime);
+                    let endSeconds = parseTime(endTime);
+                    
+                    // Handle wrap-around (end time before start time means next day)
+                    if (endSeconds < startSeconds) {
+                        endSeconds += 24 * 3600;
+                    }
+                    
+                    const dayStartSeconds = 0;
+                    const dayEndSeconds = 24 * 3600;
+                    
+                    // Skip muhurats that are completely outside the day range
+                    if (endSeconds <= dayStartSeconds || startSeconds >= dayEndSeconds) {
+                        continue;
+                    }
+                    
+                    // Create a copy of the muhurat
+                    const truncatedMuhurat = { ...muhurat };
+                    
+                    // Truncate start time if it's before 00:00:00
+                    if (startSeconds < dayStartSeconds) {
+                        truncatedMuhurat['start-time'] = '00:00:00';
+                    }
+                    
+                    // Truncate end time if it's after 24:00:00 (represents as 00:00:00)
+                    if (endSeconds > dayEndSeconds) {
+                        truncatedMuhurat['end-time'] = '00:00:00'; // Represents 24:00:00/midnight
+                    } else if (endSeconds === dayEndSeconds) {
+                        truncatedMuhurat['end-time'] = '00:00:00'; // Exactly midnight
+                    }
+                    
+                    truncatedMuhurats.push(truncatedMuhurat);
+                }
+                
+                truncatedData.chaughadiya = truncatedMuhurats;
+                return truncatedData;
             }
 
             function convertChaughadiyaTimesToUserTimezone(data, userTimezone) {
