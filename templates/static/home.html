@@ -6,8 +6,6 @@
     <title>Chaughadiya</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <!-- Tempus Dominus CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.9.4/dist/css/tempus-dominus.min.css" crossorigin="anonymous">
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <style>
@@ -252,9 +250,43 @@
                                 
                                 <div id="map" style="height: 300px;" class="mb-3"></div>
                                 
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" id="date" placeholder="Select a date">
-                                    <label for="date"><i class="fas fa-calendar me-2"></i>Date</label>
+                                <div class="row mb-3">
+                                    <div class="col-md-4">
+                                        <div class="form-floating">
+                                            <select class="form-select" id="day" required>
+                                                <option value="">Day</option>
+                                            </select>
+                                            <label for="day"><i class="fas fa-calendar-day me-2"></i>Day</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-floating">
+                                            <select class="form-select" id="month" required>
+                                                <option value="">Month</option>
+                                                <option value="1">January</option>
+                                                <option value="2">February</option>
+                                                <option value="3">March</option>
+                                                <option value="4">April</option>
+                                                <option value="5">May</option>
+                                                <option value="6">June</option>
+                                                <option value="7">July</option>
+                                                <option value="8">August</option>
+                                                <option value="9">September</option>
+                                                <option value="10">October</option>
+                                                <option value="11">November</option>
+                                                <option value="12">December</option>
+                                            </select>
+                                            <label for="month"><i class="fas fa-calendar-alt me-2"></i>Month</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-floating">
+                                            <select class="form-select" id="year" required>
+                                                <option value="">Year</option>
+                                            </select>
+                                            <label for="year"><i class="fas fa-calendar me-2"></i>Year</label>
+                                        </div>
+                                    </div>
                                 </div>
                                 
                                 <div class="form-floating mb-3">
@@ -311,8 +343,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha256-BRqBN7dYgABqtY9Hd4ynE+1slnEw+roEPFzQ7TRRfcg=" crossorigin="anonymous"></script>
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-    <!-- Tempus Dominus JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/@eonasdan/tempus-dominus@6.9.4/dist/js/tempus-dominus.min.js" crossorigin="anonymous"></script>
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
@@ -330,13 +360,43 @@
             });
 
             const locationInput = document.getElementById('location');
-            const dateInput = document.getElementById('date');
+            const daySelect = document.getElementById('day');
+            const monthSelect = document.getElementById('month');
+            const yearSelect = document.getElementById('year');
             const timeInput = document.getElementById('time');
             const timezoneSelect = document.getElementById('timezone');
             const form = document.getElementById('chaughadiya-form');
             const resultsContainer = document.getElementById('results-container');
             let latitude, longitude;
             let searchTimeout;
+
+            // Initialize date dropdowns
+            function initializeDateDropdowns() {
+                // Populate days (1-31)
+                for (let day = 1; day <= 31; day++) {
+                    const option = document.createElement('option');
+                    option.value = day;
+                    option.textContent = day;
+                    daySelect.appendChild(option);
+                }
+
+                // Populate years (current year - 10 to current year + 10)
+                const currentYear = new Date().getFullYear();
+                for (let year = currentYear - 10; year <= currentYear + 10; year++) {
+                    const option = document.createElement('option');
+                    option.value = year;
+                    option.textContent = year;
+                    yearSelect.appendChild(option);
+                }
+
+                // Set current date as default
+                const today = new Date();
+                daySelect.value = today.getDate();
+                monthSelect.value = today.getMonth() + 1;
+                yearSelect.value = today.getFullYear();
+            }
+
+            initializeDateDropdowns();
 
             // Add location search functionality
             locationInput.addEventListener('input', function() {
@@ -459,13 +519,6 @@
                 }
             }
 
-            new tempusDominus.TempusDominus(document.getElementById('date'), {
-                display: { components: { decades: true, year: true, month: true, date: true, hours: false, minutes: false, seconds: false } }
-            });
-            new tempusDominus.TempusDominus(document.getElementById('time'), {
-                display: { components: { decades: false, year: false, month: false, date: false, hours: true, minutes: true, seconds: true } }
-            });
-
             const timezones = Intl.supportedValuesOf('timeZone');
             timezones.forEach(tz => {
                 const option = document.createElement('option');
@@ -478,14 +531,19 @@
 
             form.addEventListener('submit', async function(event) {
                 event.preventDefault();
-                const dateValue = dateInput.value;
+                const day = daySelect.value;
+                const month = monthSelect.value;
+                const year = yearSelect.value;
                 const timeValue = timeInput.value;
                 const timezone = timezoneSelect.value;
 
-                if (!dateValue || !latitude || !longitude) {
-                    resultsContainer.innerHTML = '<div class="alert alert-danger animate-fade-in"><i class="fas fa-exclamation-triangle me-2"></i>Please select a date and location.</div>';
+                if (!day || !month || !year || !latitude || !longitude) {
+                    resultsContainer.innerHTML = '<div class="alert alert-danger animate-fade-in"><i class="fas fa-exclamation-triangle me-2"></i>Please select a complete date and location.</div>';
                     return;
                 }
+
+                // Create date string in YYYY-MM-DD format
+                const dateString = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
 
                 // Show loading state
                 const loadingSpinner = document.getElementById('loading-spinner');
@@ -494,10 +552,10 @@
 
                 try {
                     let apiEndpoint = '/api/get-chaughadiya';
-                    let params = `date=${formatDateForAPI(dateValue)}&latitude=${latitude}&longitude=${longitude}`;
+                    let params = `date=${dateString}&latitude=${latitude}&longitude=${longitude}`;
 
                     if (timeValue) {
-                        const timestamp = getTimestamp(dateValue, timeValue, timezone);
+                        const timestamp = getTimestampFromComponents(year, month, day, timeValue, timezone);
                         apiEndpoint = '/api/get-muhurat';
                         params = `timestamp=${timestamp}&latitude=${latitude}&longitude=${longitude}`;
                     }
@@ -505,10 +563,13 @@
                     const response = await fetch(`${apiEndpoint}?${params}`);
                     const data = await response.json();
                     
+                    // Convert GMT times to user timezone
+                    const convertedData = convertChaughadiyaTimesToUserTimezone(data, timezone);
+                    
                     // Hide loading state
                     loadingSpinner.style.display = 'none';
                     
-                    displayResults(data);
+                    displayResults(convertedData, timezone);
                 } catch (error) {
                     console.error('API Error:', error);
                     loadingSpinner.style.display = 'none';
@@ -516,9 +577,8 @@
                 }
             });
 
-            function getTimestamp(dateValue, timeValue, timezone) {
-                const [month, day, year] = dateValue.split('/');
-                const [hour, minute, second] = timeValue.split(/:| /);
+            function getTimestampFromComponents(year, month, day, timeValue, timezone) {
+                const [hour, minute, second = 0] = timeValue.split(':');
 
                 const utcDate = Date.UTC(year, month - 1, day, hour, minute, second);
                 const tempDate = new Date(utcDate);
@@ -552,13 +612,90 @@
                 return new Date(correctTimestamp).toISOString().slice(0, 19).replace('T', ' ');
             }
 
-            function formatDateForAPI(dateValue) {
-                // Convert MM/DD/YYYY to YYYY-MM-DD format
-                const [month, day, year] = dateValue.split('/');
-                return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+            function convertGMTTimeToUserTimezone(timeString, dateString, userTimezone) {
+                // Parse the GMT time (HH:MM:SS format)
+                const [hours, minutes, seconds] = timeString.split(':').map(Number);
+                
+                // Create a Date object for the GMT time on the given date
+                const gmtDateTime = new Date(`${dateString}T${timeString}Z`);
+                
+                // Convert to user timezone
+                const userDateTime = new Date(gmtDateTime.toLocaleString("en-US", {timeZone: userTimezone}));
+                
+                // Format as HH:MM:SS
+                return userDateTime.toTimeString().slice(0, 8);
             }
 
-            function displayResults(data) {
+            function convertChaughadiyaTimesToUserTimezone(data, userTimezone) {
+                if (!data.chaughadiya || !userTimezone) return data;
+                
+                // Clone the data to avoid modifying the original
+                const convertedData = JSON.parse(JSON.stringify(data));
+                
+                // Convert each muhurat's times
+                convertedData.chaughadiya.forEach(muhurat => {
+                    muhurat['start-time'] = convertGMTTimeToUserTimezone(
+                        muhurat['start-time'], 
+                        data.date, 
+                        userTimezone
+                    );
+                    muhurat['end-time'] = convertGMTTimeToUserTimezone(
+                        muhurat['end-time'], 
+                        data.date, 
+                        userTimezone
+                    );
+                });
+
+                // Convert other time fields if they exist
+                if (convertedData['sunrise-time']) {
+                    convertedData['sunrise-time'] = convertGMTTimeToUserTimezone(
+                        convertedData['sunrise-time'], 
+                        data.date, 
+                        userTimezone
+                    );
+                }
+                if (convertedData['sunset-time']) {
+                    convertedData['sunset-time'] = convertGMTTimeToUserTimezone(
+                        convertedData['sunset-time'], 
+                        data.date, 
+                        userTimezone
+                    );
+                }
+                if (convertedData['prev-sunset-time']) {
+                    convertedData['prev-sunset-time'] = convertGMTTimeToUserTimezone(
+                        convertedData['prev-sunset-time'], 
+                        data.date, 
+                        userTimezone
+                    );
+                }
+                if (convertedData['next-sunrise-time']) {
+                    convertedData['next-sunrise-time'] = convertGMTTimeToUserTimezone(
+                        convertedData['next-sunrise-time'], 
+                        data.date, 
+                        userTimezone
+                    );
+                }
+
+                // Convert current muhurat times if they exist
+                if (convertedData['current-muhurat-start-time']) {
+                    convertedData['current-muhurat-start-time'] = convertGMTTimeToUserTimezone(
+                        convertedData['current-muhurat-start-time'], 
+                        data.date, 
+                        userTimezone
+                    );
+                }
+                if (convertedData['current-muhurat-end-time']) {
+                    convertedData['current-muhurat-end-time'] = convertGMTTimeToUserTimezone(
+                        convertedData['current-muhurat-end-time'], 
+                        data.date, 
+                        userTimezone
+                    );
+                }
+
+                return convertedData;
+            }
+
+            function displayResults(data, userTimezone) {
                 if (!data) {
                     resultsContainer.innerHTML = '<div class="alert alert-warning animate-fade-in"><i class="fas fa-exclamation-triangle me-2"></i>No results found.</div>';
                     return;
@@ -610,17 +747,17 @@
                     `;
                     
                     // Also show the full day's chaughadiya
-                    html += generateChaughadiyaTable(data);
+                    html += generateChaughadiyaTable(data, userTimezone);
                     resultsContainer.innerHTML = html;
                 } else if (data.chaughadiya) {
                     // Regular chaughadiya response
-                    resultsContainer.innerHTML = generateChaughadiyaTable(data);
+                    resultsContainer.innerHTML = generateChaughadiyaTable(data, userTimezone);
                 } else {
                     resultsContainer.innerHTML = '<div class="alert alert-danger animate-fade-in"><i class="fas fa-exclamation-triangle me-2"></i>An unexpected error occurred.</div>';
                 }
             }
 
-            function generateChaughadiyaTable(data) {
+            function generateChaughadiyaTable(data, userTimezone) {
                 if (!data.chaughadiya || !Array.isArray(data.chaughadiya)) {
                     return '<div class="alert alert-warning animate-fade-in"><i class="fas fa-exclamation-triangle me-2"></i>No chaughadiya data available.</div>';
                 }
@@ -647,6 +784,7 @@
                         <div class="card mb-4">
                             <div class="card-header bg-gradient text-white" style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));">
                                 <h5 class="mb-0"><i class="fas fa-calendar-day me-2"></i>Chaughadiya for ${data.date}</h5>
+                                ${userTimezone ? `<small class="text-light"><i class="fas fa-globe me-1"></i>All times shown in ${userTimezone}</small>` : ''}
                             </div>
                             <div class="card-body">
                                 <div class="row text-center">
