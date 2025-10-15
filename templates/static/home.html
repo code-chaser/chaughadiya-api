@@ -219,11 +219,19 @@
             <a class="navbar-brand text-white" href="#">
                 <i class="fas fa-sun me-2"></i>Chaughadiya
             </a>
-            <div class="form-check form-switch ms-auto">
-                <input class="form-check-input" type="checkbox" id="themeSwitcher">
-                <label class="form-check-label text-white" for="themeSwitcher">
-                    <i class="fas fa-moon me-1"></i>Dark Mode
-                </label>
+            <div class="d-flex gap-3 ms-auto">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="timeFormatSwitcher">
+                    <label class="form-check-label text-white" for="timeFormatSwitcher">
+                        <i class="fas fa-clock me-1"></i>24-Hour
+                    </label>
+                </div>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="themeSwitcher">
+                    <label class="form-check-label text-white" for="themeSwitcher">
+                        <i class="fas fa-moon me-1"></i>Dark Mode
+                    </label>
+                </div>
             </div>
         </div>
     </nav>
@@ -423,13 +431,23 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const themeSwitcher = document.getElementById('themeSwitcher');
+            const timeFormatSwitcher = document.getElementById('timeFormatSwitcher');
             const htmlElement = document.documentElement;
+            let is24HourFormat = false;
 
             themeSwitcher.addEventListener('change', function () {
                 if (this.checked) {
                     htmlElement.setAttribute('data-bs-theme', 'dark');
                 } else {
                     htmlElement.setAttribute('data-bs-theme', 'light');
+                }
+            });
+
+            timeFormatSwitcher.addEventListener('change', function () {
+                is24HourFormat = this.checked;
+                // Re-render results if they exist
+                if (window.currentData && window.currentTimezone) {
+                    displayResults(window.currentData, window.currentTimezone);
                 }
             });
 
@@ -635,6 +653,10 @@
                     // Hide loading state
                     loadingSpinner.style.display = 'none';
                     
+                    // Store data globally for time format switching
+                    window.currentData = convertedData;
+                    window.currentTimezone = timezone;
+                    
                     displayResults(convertedData, timezone);
                 } catch (error) {
                     console.error('API Error:', error);
@@ -740,6 +762,20 @@
                 }
             }
 
+            function convertTo12Hour(timeString) {
+                const [hours, minutes] = timeString.split(':').map(Number);
+                const period = hours >= 12 ? 'PM' : 'AM';
+                const displayHours = hours % 12 || 12;
+                return `${String(displayHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')} ${period}`;
+            }
+
+            function formatTime(timeString, use24Hour) {
+                if (use24Hour) {
+                    return timeString;
+                }
+                return convertTo12Hour(timeString);
+            }
+
             function roundTimeToMinute(timeString) {
                 const [hours, minutes, seconds] = timeString.split(':').map(Number);
                 const totalSeconds = hours * 3600 + minutes * 60 + seconds;
@@ -783,6 +819,9 @@
                     'Shubh': { color: 'info', meaning: 'Auspicious - Good for all work', icon: 'fas fa-star' }
                 };
 
+                const sunriseRounded = roundTimeToMinute(data['sunrise-time']);
+                const sunsetRounded = roundTimeToMinute(data['sunset-time']);
+                
                 let html = `
                     <div class="animate-fade-in">
                         <!-- Sunrise and Sunset Times -->
@@ -793,14 +832,14 @@
                                         <div class="time-info">
                                             <i class="fas fa-sunrise fa-3x text-warning mb-2"></i>
                                             <h5>Sunrise</h5>
-                                            <h3 class="mb-0" style="font-family: 'Courier New', monospace;">${roundTimeToMinute(data['sunrise-time'])}</h3>
+                                            <h3 class="mb-0" style="font-family: 'Courier New', monospace;">${formatTime(sunriseRounded, is24HourFormat)}</h3>
                                         </div>
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <div class="time-info">
                                             <i class="fas fa-sunset fa-3x text-orange mb-2"></i>
                                             <h5>Sunset</h5>
-                                            <h3 class="mb-0" style="font-family: 'Courier New', monospace;">${roundTimeToMinute(data['sunset-time'])}</h3>
+                                            <h3 class="mb-0" style="font-family: 'Courier New', monospace;">${formatTime(sunsetRounded, is24HourFormat)}</h3>
                                         </div>
                                     </div>
                                 </div>
@@ -849,6 +888,9 @@
                     const isDay = index >= 8 && index < 16;
                     const timelineClass = isDay ? 'border-warning' : 'border-primary';
                     
+                    const startTimeFormatted = formatTime(muhurat['start-time'], is24HourFormat);
+                    const endTimeFormatted = formatTime(muhurat['end-time'], is24HourFormat);
+                    
                     html += `
                         <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
                             <div class="card h-100 ${timelineClass}" style="border-width: 3px;">
@@ -860,7 +902,7 @@
                                         <span class="badge bg-${info.color}">${muhurat.muhurat}</span>
                                     </h6>
                                     <p class="card-text small mb-2" style="font-family: 'Courier New', monospace;">
-                                        <strong>${muhurat['start-time']} - ${muhurat['end-time']}</strong>
+                                        <strong>${startTimeFormatted} - ${endTimeFormatted}</strong>
                                     </p>
                                     <p class="card-text small text-muted">${info.meaning}</p>
                                     <div class="mt-2">
