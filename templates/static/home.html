@@ -258,7 +258,7 @@
         .creative-footer {
             background: linear-gradient(135deg, var(--secondary-color) 0%, #a04000 100%);
             color: white;
-            padding: 2rem 0;
+            padding: 3rem 0 2rem;
             margin-top: 4rem;
             position: relative;
             overflow: hidden;
@@ -270,8 +270,32 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 3px;
+            height: 4px;
             background: linear-gradient(90deg, var(--primary-color), var(--accent-color), var(--primary-color));
+            background-size: 200% 100%;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { background-position: 0% 0%; }
+            50% { background-position: 100% 0%; }
+        }
+
+        .creative-footer::after {
+            content: '🕉️ ☸️ 🙏 ✨ 🕉️ ☸️ 🙏 ✨';
+            position: absolute;
+            top: 50%;
+            left: -100%;
+            transform: translateY(-50%);
+            font-size: 2rem;
+            opacity: 0.1;
+            white-space: nowrap;
+            animation: scroll-symbols 30s linear infinite;
+        }
+
+        @keyframes scroll-symbols {
+            0% { left: -100%; }
+            100% { left: 100%; }
         }
 
         .footer-content {
@@ -280,14 +304,45 @@
             z-index: 1;
         }
 
-        .footer-text {
-            font-size: 1.1rem;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
+        .footer-divider {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            gap: 1rem;
+        }
+
+        .footer-divider-line {
+            height: 2px;
+            width: 80px;
+            background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+        }
+
+        .footer-divider-icon {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% {
+                text-shadow: 0 0 10px rgba(255, 153, 51, 0.5),
+                            0 0 20px rgba(255, 153, 51, 0.3);
+            }
+            50% {
+                text-shadow: 0 0 20px rgba(255, 153, 51, 0.8),
+                            0 0 30px rgba(255, 153, 51, 0.5);
+            }
+        }
+
+        .footer-text {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
             flex-wrap: wrap;
         }
 
@@ -295,19 +350,23 @@
             color: var(--primary-color);
             text-decoration: none;
             font-weight: 700;
+            font-size: 1.3rem;
             transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
-            gap: 0.3rem;
-            padding: 0.2rem 0.5rem;
-            border-radius: 5px;
+            gap: 0.4rem;
+            padding: 0.3rem 0.8rem;
+            border-radius: 8px;
+            background: rgba(255, 153, 51, 0.1);
+            border: 2px solid transparent;
         }
 
         .footer-link:hover {
             color: white;
             background: var(--primary-color);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(255, 153, 51, 0.4);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 6px 20px rgba(255, 153, 51, 0.5);
+            border-color: var(--accent-color);
         }
 
         .footer-icon {
@@ -316,24 +375,86 @@
 
         @keyframes bounce {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
+            50% { transform: translateY(-8px); }
         }
 
-        .footer-emoji {
-            font-size: 1.3rem;
-            animation: rotate 3s linear infinite;
+        .footer-heart {
+            font-size: 1.4rem;
+            color: #ff6b6b;
+            animation: heartbeat 1.5s ease-in-out infinite;
             display: inline-block;
+            filter: drop-shadow(0 0 5px rgba(255, 107, 107, 0.5));
         }
 
-        @keyframes rotate {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            10%, 30% { transform: scale(1.2); }
+            20%, 40% { transform: scale(1); }
         }
 
         .footer-subtext {
+            font-size: 1rem;
+            opacity: 0.95;
+            margin-top: 1rem;
+            font-style: italic;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-om {
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            animation: pulse-om 3s ease-in-out infinite;
+            display: inline-block;
+        }
+
+        @keyframes pulse-om {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.15);
+                opacity: 0.8;
+            }
+        }
+
+        .footer-quote {
+            max-width: 600px;
+            margin: 1.5rem auto 0;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            border-left: 4px solid var(--primary-color);
             font-size: 0.9rem;
+            font-style: italic;
             opacity: 0.9;
-            margin-top: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .footer-text {
+                font-size: 1rem;
+            }
+            
+            .footer-link {
+                font-size: 1.1rem;
+            }
+            
+            .footer-subtext {
+                font-size: 0.9rem;
+            }
+            
+            .footer-divider-line {
+                width: 50px;
+            }
+            
+            .footer-quote {
+                font-size: 0.85rem;
+                padding: 0.8rem;
+            }
         }
 
         /* Mobile Responsiveness */
@@ -1230,17 +1351,35 @@
     <footer class="creative-footer">
         <div class="container">
             <div class="footer-content">
+                <!-- Decorative Divider -->
+                <div class="footer-divider">
+                    <div class="footer-divider-line"></div>
+                    <span class="footer-divider-icon">🕉️</span>
+                    <div class="footer-divider-line"></div>
+                </div>
+
+                <!-- Main Attribution -->
                 <div class="footer-text">
-                    <span>Made with</span>
-                    <span class="footer-emoji">❤️</span>
-                    <span>by</span>
+                    <span>Crafted with</span>
+                    <span class="footer-heart">❤️</span>
                     <a href="https://github.com/code-chaser" target="_blank" rel="noopener noreferrer" class="footer-link">
                         <i class="fab fa-github footer-icon"></i>
                         <span>codechaser</span>
                     </a>
                 </div>
+
+                <!-- Subtitle -->
                 <div class="footer-subtext">
-                    <i class="fas fa-om me-1"></i> Empowering auspicious decisions through Vedic wisdom <i class="fas fa-om ms-1"></i>
+                    <span class="footer-om">🕉️</span>
+                    <span>Empowering auspicious decisions through ancient Vedic wisdom</span>
+                    <span class="footer-om">☸️</span>
+                </div>
+
+                <!-- Inspirational Quote -->
+                <div class="footer-quote">
+                    <i class="fas fa-quote-left me-2"></i>
+                    कालस्य महिमा महान् | Time is the greatest force
+                    <i class="fas fa-quote-right ms-2"></i>
                 </div>
             </div>
         </div>
