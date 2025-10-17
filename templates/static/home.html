@@ -1015,18 +1015,18 @@
                     <div class="row">
                         <div class="col-lg-4 col-md-6 mb-3">
                             <div class="d-flex align-items-center">
-                                <i class="fas fa-gem fa-lg text-primary me-2 me-md-3"></i>
+                                <i class="fas fa-gem fa-lg text-success me-2 me-md-3"></i>
                                 <div>
-                                    <strong class="text-primary">Amrit</strong><br>
+                                    <strong class="text-success">Amrit</strong><br>
                                     <small class="text-muted">Nectar - Very auspicious</small>
                                 </div>
                             </div>
                         </div>
                         <div class="col-lg-4 col-md-6 mb-3">
                             <div class="d-flex align-items-center">
-                                <i class="fas fa-star fa-lg text-info me-2 me-md-3"></i>
+                                <i class="fas fa-star fa-lg text-success me-2 me-md-3"></i>
                                 <div>
-                                    <strong class="text-info">Shubh</strong><br>
+                                    <strong class="text-success">Shubh</strong><br>
                                     <small class="text-muted">Auspicious - Good for all work</small>
                                 </div>
                             </div>
@@ -1051,9 +1051,9 @@
                         </div>
                         <div class="col-lg-4 col-md-6 mb-3">
                             <div class="d-flex align-items-center">
-                                <i class="fas fa-user-injured fa-lg text-warning me-2 me-md-3"></i>
+                                <i class="fas fa-user-injured fa-lg text-danger me-2 me-md-3"></i>
                                 <div>
-                                    <strong class="text-warning">Rog</strong><br>
+                                    <strong class="text-danger">Rog</strong><br>
                                     <small class="text-muted">Illness - Health concerns</small>
                                 </div>
                             </div>
@@ -1069,9 +1069,9 @@
                         </div>
                         <div class="col-lg-4 col-md-6 mb-3">
                             <div class="d-flex align-items-center">
-                                <i class="fas fa-exclamation-triangle fa-lg text-dark me-2 me-md-3"></i>
+                                <i class="fas fa-exclamation-triangle fa-lg text-danger me-2 me-md-3"></i>
                                 <div>
-                                    <strong class="text-dark">Kaal</strong><br>
+                                    <strong class="text-danger">Kaal</strong><br>
                                     <small class="text-muted">Very Inauspicious - Not favorable for new ventures</small>
                                 </div>
                             </div>
@@ -2121,14 +2121,15 @@
                 const nightPart2 = data.chaughadiya.slice(16, 24);
 
                 // Muhurat types and their meanings
+                // Using 3 colors: green (good), grey (neutral), red (bad)
                 const muhuratInfo = {
                     'Udveg': { color: 'danger', meaning: 'Inauspicious - Avoid important tasks', icon: 'fas fa-times-circle' },
-                    'Kaal': { color: 'dark', meaning: 'Very Inauspicious - Not favorable for new ventures', icon: 'fas fa-exclamation-triangle' },
-                    'Rog': { color: 'warning', meaning: 'Illness - Health concerns', icon: 'fas fa-user-injured' },
+                    'Kaal': { color: 'danger', meaning: 'Very Inauspicious - Not favorable for new ventures', icon: 'fas fa-exclamation-triangle' },
+                    'Rog': { color: 'danger', meaning: 'Illness - Health concerns', icon: 'fas fa-user-injured' },
                     'Chal': { color: 'secondary', meaning: 'Movement - Good for travel', icon: 'fas fa-route' },
                     'Labh': { color: 'success', meaning: 'Profit - Good for business', icon: 'fas fa-coins' },
-                    'Amrit': { color: 'primary', meaning: 'Nectar - Very auspicious', icon: 'fas fa-gem' },
-                    'Shubh': { color: 'info', meaning: 'Auspicious - Good for all work', icon: 'fas fa-star' }
+                    'Amrit': { color: 'success', meaning: 'Nectar - Very auspicious', icon: 'fas fa-gem' },
+                    'Shubh': { color: 'success', meaning: 'Auspicious - Good for all work', icon: 'fas fa-star' }
                 };
 
                 // Helper function to determine if a muhurat is during the day
