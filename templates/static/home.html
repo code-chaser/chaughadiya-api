@@ -61,9 +61,7 @@
             left: 0;
             right: 0;
             height: 4px;
-            background: linear-gradient(90deg, var(--primary-color), var(--primary-color), var(--secondary-color), var(--primary-color), var(--primary-color));
-            background-size: 200% 100%;
-            animation: shimmer 7s ease-in-out infinite;
+            background: var(--primary-color);
         }
 
         .navbar-brand {
@@ -284,9 +282,7 @@
             left: 0;
             right: 0;
             height: 4px;
-            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color), var(--primary-color));
-            background-size: 200% 100%;
-            animation: shimmer 3s ease-in-out infinite;
+            background: var(--primary-color);
         }
 
         @keyframes shimmer {
@@ -2470,9 +2466,9 @@
 
                         <!-- Summary Card -->
                         <div class="card mb-4">
-                            <div class="card-header bg-gradient text-white" style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));">
+                            <div class="card-header">
                                 <h5 class="mb-0"><i class="fas fa-calendar-day me-2"></i>Chaughadiya for ${data.date}</h5>
-                                ${userTimezone ? `<small class="text-light"><i class="fas fa-globe me-1"></i>All times shown in ${userTimezone}</small>` : ''}
+                                ${userTimezone ? `<small><i class="fas fa-globe me-1"></i>All times shown in ${userTimezone}</small>` : ''}
                             </div>
                             <div class="card-body">
                                 <div class="row text-center">
