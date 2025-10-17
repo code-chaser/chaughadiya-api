@@ -121,10 +121,6 @@ def get_chaughadiya(date: str, latitude: float, longitude: float):
     sunrise = sun.get_sunrise_time(date)
     sunset = sun.get_sunset_time(date)
     
-    # Handle edge case: if sunset < sunrise, add a day to sunset
-    if sunset < sunrise:
-        sunset = sunset + datetime.timedelta(days=1)
-    
     # Fetching sunset time of the previous day,
     # and sunrise time of the next day.
     prev_date = date - datetime.timedelta(days=1)
@@ -133,10 +129,9 @@ def get_chaughadiya(date: str, latitude: float, longitude: float):
     next_sunrise = sun.get_sunrise_time(next_date)
     
     # Handle edge cases for temporal ordering
-    if sunrise < prev_sunset:
-        prev_sunset = prev_sunset - datetime.timedelta(days=1)
-    while next_sunrise < sunset:
-        next_sunrise = next_sunrise + datetime.timedelta(days=1)
+    while sunset < sunrise:
+        prev_sunset = sunset
+        sunset = sunset + datetime.timedelta(days=1)
     
     # Calculating the length of muhurats (3 kinds).
     part_1_muhurat_length = (sunrise - prev_sunset).total_seconds() / 8
