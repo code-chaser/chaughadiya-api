@@ -1843,7 +1843,10 @@
                     }
                     
                     // Convert GMT times to user timezone
-                    const convertedData = convertChaughadiyaTimesToUserTimezone(data, timezone);
+                    let convertedData = convertChaughadiyaTimesToUserTimezone(data, timezone);
+                    
+                    // Apply truncation filters to ensure muhurats fit within 00:00:00 to 24:00:00
+                    convertedData = truncateMuhuratsToMidnight(convertedData);
                     
                     // Hide loading state
                     loadingSpinner.style.display = 'none';
@@ -1944,6 +1947,75 @@
                 }
 
                 return convertedData;
+            }
+
+            function truncateMuhuratsToMidnight(data) {
+                if (!data.chaughadiya || !Array.isArray(data.chaughadiya)) return data;
+                
+                // Clone the data
+                const truncatedData = { ...data };
+                let muhurats = [...data.chaughadiya];
+                
+                // Helper function to convert time string "HH:MM:SS" to seconds since midnight
+                const timeToSeconds = (timeStr) => {
+                    const [h, m, s] = timeStr.split(':').map(Number);
+                    return h * 3600 + m * 60 + s;
+                };
+                
+                // Helper function to check if end_time < start_time (wraps to next day)
+                const isWrappedToNextDay = (startTime, endTime) => {
+                    return timeToSeconds(endTime) <= timeToSeconds(startTime);
+                };
+                
+                // Filter 1: Remove muhurats from the start until we find one where:
+                // (end_time < start_time) OR (start_time == 00:00:00)
+                let startIndex = 0;
+                for (let i = 0; i < muhurats.length; i++) {
+                    const muhurat = muhurats[i];
+                    const startTime = muhurat['start-time'];
+                    const endTime = muhurat['end-time'];
+                    
+                    if (isWrappedToNextDay(startTime, endTime) || startTime === '00:00:00') {
+                        startIndex = i;
+                        // Set start time to 00:00:00 for this muhurat
+                        muhurats[i] = { ...muhurat, 'start-time': '00:00:00' };
+                        break;
+                    }
+                }
+                
+                // Remove muhurats before startIndex
+                muhurats = muhurats.slice(startIndex);
+                
+                // Filter 2: Remove muhurats from the end (in reverse) until we find one where:
+                // (end_time < start_time) OR (end_time == 00:00:00)
+                let endIndex = muhurats.length;
+                for (let i = muhurats.length - 1; i >= 0; i--) {
+                    const muhurat = muhurats[i];
+                    const startTime = muhurat['start-time'];
+                    const endTime = muhurat['end-time'];
+                    
+                    if (isWrappedToNextDay(startTime, endTime) || endTime === '00:00:00') {
+                        endIndex = i + 1;
+                        // Set end time to 00:00:00 (representing 24:00:00/midnight of next day)
+                        muhurats[i] = { ...muhurat, 'end-time': '00:00:00' };
+                        break;
+                    }
+                }
+                
+                // Keep muhurats up to endIndex
+                muhurats = muhurats.slice(0, endIndex);
+                
+                truncatedData.chaughadiya = muhurats;
+                
+                // Log for debugging
+                console.log('Truncation applied:');
+                console.log('  Total muhurats after truncation:', muhurats.length);
+                if (muhurats.length > 0) {
+                    console.log('  First muhurat:', muhurats[0]);
+                    console.log('  Last muhurat:', muhurats[muhurats.length - 1]);
+                }
+                
+                return truncatedData;
             }
 
             function displayResults(data, userTimezone) {
