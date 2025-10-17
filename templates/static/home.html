@@ -254,6 +254,88 @@
             50% { transform: scale(1.05); }
         }
 
+        /* Footer Styles */
+        .creative-footer {
+            background: linear-gradient(135deg, var(--secondary-color) 0%, #a04000 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .creative-footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color), var(--primary-color));
+        }
+
+        .footer-content {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer-text {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 5px;
+        }
+
+        .footer-link:hover {
+            color: white;
+            background: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(255, 153, 51, 0.4);
+        }
+
+        .footer-icon {
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .footer-emoji {
+            font-size: 1.3rem;
+            animation: rotate 3s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .footer-subtext {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-top: 0.5rem;
+        }
+
         /* Mobile Responsiveness */
         @media (max-width: 992px) {
             .navbar .d-flex {
@@ -1143,6 +1225,26 @@
             </div>
         </div>
     </div>
+
+    <!-- Creative Footer -->
+    <footer class="creative-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-text">
+                    <span>Made with</span>
+                    <span class="footer-emoji">❤️</span>
+                    <span>by</span>
+                    <a href="https://github.com/code-chaser" target="_blank" rel="noopener noreferrer" class="footer-link">
+                        <i class="fab fa-github footer-icon"></i>
+                        <span>codechaser</span>
+                    </a>
+                </div>
+                <div class="footer-subtext">
+                    <i class="fas fa-om me-1"></i> Empowering auspicious decisions through Vedic wisdom <i class="fas fa-om ms-1"></i>
+                </div>
+            </div>
+        </div>
+    </footer>
 
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
