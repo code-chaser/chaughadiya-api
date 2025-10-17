@@ -9,6 +9,12 @@
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <style>
+        @property --gradient-angle {
+            syntax: '<angle>';
+            initial-value: 0deg;
+            inherits: false;
+        }
+
         :root {
             --primary-color: #FF9933; /* Saffron */
             --secondary-color: #800000; /* Maroon */
@@ -45,7 +51,17 @@
         .navbar {
             background: linear-gradient(135deg, var(--secondary-color) 0%, #a04000 100%) !important;
             box-shadow: var(--shadow-light);
-            border-bottom: 3px solid var(--primary-color);
+            position: relative;
+        }
+
+        .navbar::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-color);
         }
 
         .navbar-brand {
@@ -71,6 +87,11 @@
         .card:hover {
             transform: translateY(-5px);
             box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .card-header {
+            border-top-left-radius: 15px !important;
+            border-top-right-radius: 15px !important;
         }
 
         .form-control, .form-select {
@@ -155,31 +176,32 @@
 
         .table-responsive {
             border-radius: 10px;
-            overflow: hidden;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .div-heading-headers {
+            background: linear-gradient(135deg, var(--secondary-color) 0%, #a04000 100%)
         }
 
         /* Current Muhurat Styles */
         .current-muhurat-banner {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            color: white;
-            padding: 1.5rem;
-            border-radius: 15px;
-            box-shadow: 0 8px 20px rgba(255, 153, 51, 0.4);
+            padding: 0.25rem;
+            border-radius: 19px;
+            box-shadow: 0 0.5px 20px rgba(255, 153, 51, 0.4);
             margin-bottom: 2rem;
             position: relative;
-            overflow: hidden;
+            background: conic-gradient(
+                from var(--gradient-angle),
+                var(--primary-color) 0deg,
+                var(--secondary-color) 180deg
+            );
+            animation: rotateGradient 7s linear infinite;
         }
 
-        .current-muhurat-banner::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.1) 75%, transparent 75%, transparent);
-            background-size: 50px 50px;
-            animation: stripes 2s linear infinite;
+        @keyframes rotateGradient {
+            from { --gradient-angle: 0deg; }
+            to { --gradient-angle: 360deg; }
         }
 
         @keyframes stripes {
@@ -190,6 +212,10 @@
         .current-muhurat-content {
             position: relative;
             z-index: 1;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border-radius: 15px;
+            padding: 1.5rem;
+            color: white;
         }
 
         .countdown-timer {
@@ -239,68 +265,674 @@
             transition: width 0.3s ease;
         }
 
-        .pulse-animation {
-            animation: pulse 2s ease-in-out infinite;
+        /* Footer Styles */
+        .creative-footer {
+            background: linear-gradient(135deg, var(--secondary-color) 0%, #a04000 100%);
+            color: white;
+            padding: 3rem 0 2rem;
+            margin-top: 4rem;
+            position: relative;
+            overflow: hidden;
         }
 
-        @keyframes pulse {
+        .creative-footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-color);
+        }
+
+        @keyframes shimmer {
+            0%, 100% { background-position: 0% 0%; }
+            50% { background-position: 100% 0%; }
+        }
+
+        .creative-footer::after {
+            content: '🕉️   ☸️   ✨   🙏   ✨   🙏   ✨   ☸️   🕉️';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 4rem;
+            opacity: 0.05;
+            white-space: nowrap;
+            letter-spacing: 4rem;
+            pointer-events: none;
+            padding-left: 4rem;
+        }
+
+        [data-bs-theme="dark"] .creative-footer::after {
+            opacity: 0.07;
+        }
+
+        .footer-content {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer-divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            gap: 1rem;
+        }
+
+        .footer-divider-line {
+            height: 2px;
+            width: 80px;
+            background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+        }
+
+        .footer-divider-icon {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            animation: glow 5s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% {
+                text-shadow: 0 0 10px rgba(255, 153, 51, 0.5),
+                            0 0 20px rgba(255, 153, 51, 0.3);
+            }
+            50% {
+                text-shadow: 0 0 20px rgba(255, 153, 51, 0.8),
+                            0 0 30px rgba(255, 153, 51, 0.5);
+            }
+        }
+
+        .footer-text {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-link-container {
+            display: inline-block;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .footer-link {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.3rem 0.8rem;
+            border-radius: 8px;
+            background: rgba(255, 153, 51, 0.1);
+            color: var(--primary-color);
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .footer-link.flipped {
+            transform: rotateX(180deg);
+        }
+
+        .footer-link-front,
+        .footer-link-back {
+            backface-visibility: hidden;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .footer-link-back {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            align-items: center;
+            font-size: 0.79rem;
+            /*align vertically middle*/
+            height: 100%;
+            padding: auto;
+            justify-content: center;
+            transform: rotateX(180deg);
+        }
+
+        .footer-icon {
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        .footer-heart {
+            font-size: 1.4rem;
+            color: #ff6b6b;
+            animation: heartbeat 1.9s linear infinite;
+            display: inline-block;
+            filter: drop-shadow(0 0 5px rgba(255, 107, 107, 0.5));
+        }
+
+        @keyframes heartbeat {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+            10%, 30% { transform: scale(1.2); }
+            20%, 40% { transform: scale(1); }
+        }
+
+        .footer-subtext {
+            font-size: 1rem;
+            opacity: 0.95;
+            margin-top: 1rem;
+            font-style: italic;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        @keyframes pulse-om {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.15);
+                opacity: 0.8;
+            }
+        }
+
+        .footer-quote {
+            max-width: 600px;
+            margin: 1.5rem auto 0;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            border-left: 4px solid var(--primary-color);
+            border-right: 4px solid var(--primary-color);
+            font-size: 0.9rem;
+            font-style: italic;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .footer-text {
+                font-size: 1rem;
+            }
+            
+            .footer-link {
+                font-size: 1.1rem;
+            }
+            
+            .footer-subtext {
+                font-size: 0.9rem;
+            }
+            
+            .footer-divider-line {
+                width: 50px;
+            }
+            
+            .footer-quote {
+                font-size: 0.85rem;
+                padding: 0.8rem;
+            }
         }
 
         /* Mobile Responsiveness */
-        @media (max-width: 768px) {
-            #map {
-                height: 200px !important;
-            }
-            
+        @media (max-width: 992px) {
             .navbar .d-flex {
-                flex-direction: column;
+                flex-wrap: wrap;
                 gap: 0.5rem !important;
             }
             
+            .form-check {
+                margin: 0.25rem 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                font-size: 0.95rem;
+            }
+
+            #map {
+                height: 250px !important;
+            }
+            
+            .navbar .container-fluid {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+            
+            .navbar-brand {
+                font-size: 1.3rem;
+                margin: 0 auto;
+            }
+
+            .navbar .d-flex {
+                width: 100%;
+                justify-content: center !important;
+            }
+
+            .form-check-label {
+                font-size: 0.8rem;
+            }
+
+            .btn-sm {
+                font-size: 0.75rem;
+                padding: 0.25rem 0.5rem;
+            }
+            
             .chaughadiya-table {
-                font-size: 0.85rem;
+                font-size: 0.8rem;
             }
             
             .chaughadiya-table th,
             .chaughadiya-table td {
-                padding: 8px 6px;
+                padding: 6px 4px;
+                white-space: nowrap;
+            }
+
+            .chaughadiya-table th:first-child,
+            .chaughadiya-table td:first-child {
+                padding-left: 8px;
+            }
+
+            .chaughadiya-table th:last-child,
+            .chaughadiya-table td:last-child {
+                padding-right: 8px;
             }
             
             .form-floating > label {
-                font-size: 0.9rem;
+                font-size: 0.85rem;
             }
             
             .card-body {
-                padding: 1rem;
+                padding: 0.75rem;
+            }
+
+            .card-header h5 {
+                font-size: 1rem;
             }
             
             .btn-primary {
-                padding: 10px 20px;
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+
+            /* Current Muhurat Banner - Mobile */
+            .current-muhurat-banner {
+                padding: 0.25rem;  /* Match your desktop border thickness */
+            }
+
+            .current-muhurat-banner .fa-4x {
+                font-size: 2.5rem;
+            }
+
+            .current-muhurat-banner h4 {
+                font-size: 1rem;
+            }
+
+            .current-muhurat-banner h2 {
+                font-size: 1.5rem;
+            }
+
+            .countdown-timer {
+                font-size: 1.3rem;
+            }
+
+            .live-clock {
                 font-size: 0.95rem;
             }
-            
-            .navbar-brand {
-                font-size: 1.2rem;
+
+            /* Time info cards */
+            .time-info i {
+                font-size: 2rem !important;
             }
-            
-            .form-check-label {
+
+            .time-info h5 {
+                font-size: 0.95rem;
+            }
+
+            .time-info h3 {
+                font-size: 1.5rem;
+            }
+
+            .time-info h6 {
                 font-size: 0.85rem;
+            }
+
+            /* Muhurat timeline cards - better mobile layout */
+            .col-lg-3.col-md-4.col-sm-6 {
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
+                flex: 0 0 50%;
+                max-width: 50%;
+            }
+
+            .card .fa-2x {
+                font-size: 1.5rem;
+            }
+
+            .card-title {
+                font-size: 0.9rem;
+            }
+
+            .badge {
+                font-size: 0.75rem;
+                padding: 4px 8px;
+            }
+
+            .card-text {
+                font-size: 0.85rem;
+            }
+
+            /* Muhurat meanings */
+            .muhurat-meanings .fa-lg {
+                font-size: 1.2rem !important;
+            }
+
+            /* Modals on mobile */
+            .modal-body {
+                padding: 1rem;
+            }
+
+            .modal-title {
+                font-size: 1.1rem;
             }
         }
 
         @media (max-width: 576px) {
+            body {
+                font-size: 0.9rem;
+            }
+
+            .container {
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
+            }
+
             .main-container {
-                padding: 1rem;
+                padding: 0.75rem;
+                margin-top: 1rem;
             }
             
             h1 {
-                font-size: 1.75rem;
+                font-size: 1.5rem;
             }
             
             .lead {
+                font-size: 0.9rem;
+            }
+
+            .navbar-brand {
+                font-size: 1.1rem;
+            }
+
+            #map {
+                height: 200px !important;
+            }
+
+            .form-check-label {
+                font-size: 0.7rem;
+            }
+
+            .btn-sm {
+                font-size: 0.7rem;
+                padding: 0.2rem 0.4rem;
+            }
+
+            .btn-sm i {
+                font-size: 0.8rem;
+            }
+
+            .card {
+                border-radius: 10px;
+                margin-bottom: 0.75rem;
+            }
+
+            .card-body {
+                padding: 0.5rem;
+            }
+
+            .card-header {
+                padding: 0.5rem 0.75rem;
+            }
+
+            .card-header h5 {
+                font-size: 0.9rem;
+            }
+
+            /* Current Muhurat Banner - Small mobile */
+            .current-muhurat-banner {
+                padding: 0.25rem;  /* Match your desktop border thickness */
+                margin-bottom: 1rem;
+            }
+
+            .current-muhurat-banner .fa-4x {
+                font-size: 2rem;
+            }
+
+            .current-muhurat-banner h4 {
+                font-size: 0.85rem;
+                margin-bottom: 0.25rem;
+            }
+
+            .current-muhurat-banner h2 {
+                font-size: 1.25rem;
+                margin-bottom: 0.25rem;
+            }
+
+            .current-muhurat-banner p {
+                font-size: 0.8rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .countdown-timer {
+                font-size: 1.1rem;
+            }
+
+            .live-clock {
+                font-size: 0.85rem;
+            }
+
+            /* Time info cards - Small mobile */
+            .time-info {
+                padding: 0.5rem;
+            }
+
+            .time-info i {
+                font-size: 1.5rem !important;
+            }
+
+            .time-info h5 {
+                font-size: 0.85rem;
+                margin-bottom: 0.25rem;
+            }
+
+            .time-info h3 {
+                font-size: 1.25rem;
+            }
+
+            .time-info h6 {
+                font-size: 0.75rem;
+            }
+
+            /* Table responsiveness */
+            .chaughadiya-table {
+                font-size: 0.7rem;
+            }
+
+            .chaughadiya-table th,
+            .chaughadiya-table td {
+                padding: 4px 2px;
+            }
+
+            .chaughadiya-table th:first-child,
+            .chaughadiya-table td:first-child {
+                padding-left: 4px;
+            }
+
+            .chaughadiya-table th:last-child,
+            .chaughadiya-table td:last-child {
+                padding-right: 4px;
+            }
+
+            .chaughadiya-table i {
+                display: none; /* Hide icons in table on very small screens */
+            }
+
+            /* Timeline cards - Small mobile - single column */
+            .col-lg-3.col-md-4.col-sm-6 {
+                padding-left: 0.25rem;
+                padding-right: 0.25rem;
+                margin-bottom: 0.5rem;
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+
+            .card .card-body {
+                padding: 0.75rem;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .card .fa-2x {
+                font-size: 1.5rem;
+            }
+
+            .card-title {
+                font-size: 0.9rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .card-text {
+                font-size: 0.8rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .badge {
+                font-size: 0.7rem;
+                padding: 4px 8px;
+            }
+
+            /* Muhurat meanings - Small mobile */
+            .muhurat-meanings .col-lg-4 {
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
+            }
+
+            .muhurat-meanings .fa-lg {
+                font-size: 1rem !important;
+                margin-right: 0.5rem !important;
+            }
+
+            .muhurat-meanings strong {
+                font-size: 0.85rem;
+            }
+
+            .muhurat-meanings small {
+                font-size: 0.7rem;
+            }
+
+            /* Form elements */
+            .form-floating > .form-control,
+            .form-floating > .form-select {
+                height: calc(3rem + 2px);
+                font-size: 0.85rem;
+            }
+
+            .form-floating > label {
+                font-size: 0.75rem;
+                padding: 0.75rem 0.5rem;
+            }
+
+            .btn-primary {
+                padding: 8px 12px;
+                font-size: 0.85rem;
+            }
+
+            /* Alert messages */
+            .alert {
+                font-size: 0.85rem;
+                padding: 0.5rem 0.75rem;
+            }
+
+            /* Modal adjustments */
+            .modal-dialog {
+                margin: 0.5rem;
+            }
+
+            .modal-header,
+            .modal-footer {
+                padding: 0.75rem;
+            }
+
+            .modal-body {
+                padding: 0.75rem;
+            }
+
+            /* Date dropdowns on small screens */
+            .row.g-2 {
+                gap: 0.25rem !important;
+            }
+
+            /* Current muhurat highlight badge */
+            .current-muhurat-highlight::after {
+                font-size: 0.6rem;
+                padding: 1px 4px;
+                top: 2px;
+                right: 2px;
+            }
+        }
+
+        /* Landscape mobile phones */
+        @media (max-width: 768px) and (orientation: landscape) {
+            #map {
+                height: 180px !important;
+            }
+
+            .current-muhurat-banner {
+                padding: 0.25rem;  /* Match your desktop border thickness */
+            }
+
+            .current-muhurat-banner .row {
+                align-items: center;
+            }
+
+            .current-muhurat-banner .col-md-3,
+            .current-muhurat-banner .col-md-6,
+            .current-muhurat-banner .col-md-3 {
+                margin-bottom: 0 !important;
+            }
+        }
+
+        /* Very small screens / older phones */
+        @media (max-width: 375px) {
+            h1 {
+                font-size: 1.3rem;
+            }
+
+            .lead {
+                font-size: 0.85rem;
+            }
+
+            .navbar-brand {
                 font-size: 1rem;
+            }
+
+            .form-check-label {
+                font-size: 0.65rem;
+            }
+
+            .countdown-timer {
+                font-size: 1rem;
+            }
+
+            .time-info h3 {
+                font-size: 1.1rem;
             }
         }
 
@@ -365,6 +997,65 @@
             backdrop-filter: blur(5px);
         }
 
+        /* Enhanced Sunrise/Sunset Icons */
+        .sun-icon-container,
+        .moon-icon-container {
+            position: relative;
+            display: inline-block;
+            animation: iconFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes iconFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .sunrise-info {
+            background: linear-gradient(135deg, rgba(255, 165, 0, 0.15), rgba(255, 215, 0, 0.1));
+            border: 2px solid rgba(255, 165, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .sunrise-info:hover {
+            background: linear-gradient(135deg, rgba(255, 165, 0, 0.2), rgba(255, 215, 0, 0.15));
+            border-color: rgba(255, 165, 0, 0.5);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 165, 0, 0.3);
+        }
+
+        .sunset-info {
+            background: linear-gradient(135deg, rgba(255, 99, 71, 0.15), rgba(255, 69, 0, 0.1));
+            border: 2px solid rgba(255, 99, 71, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .sunset-info:hover {
+            background: linear-gradient(135deg, rgba(255, 99, 71, 0.2), rgba(255, 69, 0, 0.15));
+            border-color: rgba(255, 99, 71, 0.5);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 99, 71, 0.3);
+        }
+
+        .sunrise-info .fa-sun {
+            filter: drop-shadow(0 0 10px rgba(255, 165, 0, 0.6));
+        }
+
+        .sunset-info .fa-moon {
+            filter: drop-shadow(0 0 10px rgba(255, 99, 71, 0.6));
+        }
+
+        .sunrise-info:hover .sun-icon-container,
+        .sunset-info:hover .moon-icon-container {
+            animation: iconBounce 0.6s ease;
+        }
+
+        @keyframes iconBounce {
+            0%, 100% { transform: translateY(0); }
+            25% { transform: translateY(-10px); }
+            50% { transform: translateY(0); }
+            75% { transform: translateY(-5px); }
+        }
+
         .loading-spinner {
             display: none;
             text-align: center;
@@ -396,6 +1087,80 @@
             background-clip: text;
             font-weight: 700;
         }
+
+        /* Better touch targets for mobile */
+        @media (hover: none) and (pointer: coarse) {
+            .btn {
+                min-height: 44px;
+                min-width: 44px;
+            }
+
+            .form-check-input {
+                width: 2rem;
+                height: 1rem;
+            }
+
+            .form-check {
+                padding-left: 2.5rem;
+            }
+        }
+
+        /* Prevent zoom on input focus in iOS */
+        @media screen and (max-width: 768px) {
+            select,
+            textarea,
+            input[type="text"],
+            input[type="password"],
+            input[type="datetime"],
+            input[type="datetime-local"],
+            input[type="date"],
+            input[type="month"],
+            input[type="time"],
+            input[type="week"],
+            input[type="number"],
+            input[type="email"],
+            input[type="url"] {
+                font-size: 16px !important;
+            }
+        }
+
+        /* Improve scrolling performance */
+        .table-responsive,
+        .card-body {
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Hide horizontal scrollbar but keep functionality */
+        .table-responsive::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .table-responsive::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .table-responsive::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 10px;
+        }
+
+        /* Better spacing for location suggestions on mobile */
+        #location-suggestions {
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        @media (max-width: 576px) {
+            #location-suggestions {
+                max-height: 180px;
+            }
+
+            #location-suggestions .list-group-item {
+                font-size: 0.85rem;
+                padding: 0.5rem 0.75rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -404,23 +1169,23 @@
             <a class="navbar-brand text-white" href="#">
                 <i class="fas fa-sun me-2"></i>Chaughadiya
             </a>
-            <div class="d-flex gap-3 ms-auto align-items-center">
+            <div class="d-flex gap-2 gap-md-3 ms-auto align-items-center flex-wrap justify-content-end">
                 <button class="btn btn-sm btn-outline-light" id="favoritesBtn" title="Favorite Locations">
-                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i><span class="d-none d-sm-inline ms-1">Favorites</span>
                 </button>
                 <button class="btn btn-sm btn-outline-light" id="shareBtn" title="Share Results" style="display: none;">
-                    <i class="fas fa-share-alt"></i>
+                    <i class="fas fa-share-alt"></i><span class="d-none d-sm-inline ms-1">Share</span>
                 </button>
-                <div class="form-check form-switch">
+                <div class="form-check form-switch mb-0">
                     <input class="form-check-input" type="checkbox" id="timeFormatSwitcher">
                     <label class="form-check-label text-white" for="timeFormatSwitcher">
-                        <i class="fas fa-clock me-1"></i>24-Hour
+                        <i class="fas fa-clock me-1"></i><span class="d-none d-md-inline">24-Hour</span>
                     </label>
                 </div>
-                <div class="form-check form-switch">
+                <div class="form-check form-switch mb-0">
                     <input class="form-check-input" type="checkbox" id="themeSwitcher">
                     <label class="form-check-label text-white" for="themeSwitcher">
-                        <i class="fas fa-moon me-1"></i>Dark Mode
+                        <i class="fas fa-moon me-1"></i><span class="d-none d-md-inline">Dark</span>
                     </label>
                 </div>
             </div>
@@ -436,7 +1201,7 @@
             
             <!-- Input Section -->
             <div class="card mb-4">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header div-heading-headers text-white">
                     <h5 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Enter Details</h5>
                 </div>
                 <div class="card-body">
@@ -492,7 +1257,7 @@
                         </div>
                         
                         <div class="row mb-3">
-                            <div class="col-lg-8">
+                            <div class="col-lg-8 mb-3 mb-lg-0">
                                 <div id="map" style="height: 300px;"></div>
                             </div>
                             
@@ -518,7 +1283,7 @@
 
             <!-- Results Section -->
             <div class="card mb-4">
-                <div class="card-header bg-info text-white">
+                <div class="card-header div-heading-headers text-white">
                     <h5 class="mb-0"><i class="fas fa-star me-2"></i>Results</h5>
                 </div>
                 <div class="card-body">
@@ -539,32 +1304,32 @@
 
             <!-- Muhurat Information (Always visible) -->
             <div class="card mt-4">
-                <div class="card-header bg-gradient text-white" style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));">
+                <div class="card-header div-heading-headers text-white">
                     <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Muhurat Meanings</h5>
                 </div>
-                <div class="card-body">
+                <div class="card-body muhurat-meanings">
                     <div class="row">
                         <div class="col-lg-4 col-md-6 mb-3">
                             <div class="d-flex align-items-center">
-                                <i class="fas fa-gem fa-lg text-primary me-3"></i>
+                                <i class="fas fa-gem fa-lg text-success me-2 me-md-3"></i>
                                 <div>
-                                    <strong class="text-primary">Amrit</strong><br>
+                                    <strong class="text-success">Amrit</strong><br>
                                     <small class="text-muted">Nectar - Very auspicious</small>
                                 </div>
                             </div>
                         </div>
                         <div class="col-lg-4 col-md-6 mb-3">
                             <div class="d-flex align-items-center">
-                                <i class="fas fa-star fa-lg text-info me-3"></i>
+                                <i class="fas fa-star fa-lg text-success me-2 me-md-3"></i>
                                 <div>
-                                    <strong class="text-info">Shubh</strong><br>
+                                    <strong class="text-success">Shubh</strong><br>
                                     <small class="text-muted">Auspicious - Good for all work</small>
                                 </div>
                             </div>
                         </div>
                         <div class="col-lg-4 col-md-6 mb-3">
                             <div class="d-flex align-items-center">
-                                <i class="fas fa-coins fa-lg text-success me-3"></i>
+                                <i class="fas fa-coins fa-lg text-success me-2 me-md-3"></i>
                                 <div>
                                     <strong class="text-success">Labh</strong><br>
                                     <small class="text-muted">Profit - Good for business</small>
@@ -573,7 +1338,7 @@
                         </div>
                         <div class="col-lg-4 col-md-6 mb-3">
                             <div class="d-flex align-items-center">
-                                <i class="fas fa-route fa-lg text-secondary me-3"></i>
+                                <i class="fas fa-route fa-lg text-secondary me-2 me-md-3"></i>
                                 <div>
                                     <strong class="text-secondary">Chal</strong><br>
                                     <small class="text-muted">Movement - Good for travel</small>
@@ -582,16 +1347,16 @@
                         </div>
                         <div class="col-lg-4 col-md-6 mb-3">
                             <div class="d-flex align-items-center">
-                                <i class="fas fa-user-injured fa-lg text-warning me-3"></i>
+                                <i class="fas fa-user-injured fa-lg text-danger me-2 me-md-3"></i>
                                 <div>
-                                    <strong class="text-warning">Rog</strong><br>
+                                    <strong class="text-danger">Rog</strong><br>
                                     <small class="text-muted">Illness - Health concerns</small>
                                 </div>
                             </div>
                         </div>
                         <div class="col-lg-4 col-md-6 mb-3">
                             <div class="d-flex align-items-center">
-                                <i class="fas fa-times-circle fa-lg text-danger me-3"></i>
+                                <i class="fas fa-times-circle fa-lg text-danger me-2 me-md-3"></i>
                                 <div>
                                     <strong class="text-danger">Udveg</strong><br>
                                     <small class="text-muted">Inauspicious - Avoid important tasks</small>
@@ -600,15 +1365,15 @@
                         </div>
                         <div class="col-lg-4 col-md-6 mb-3">
                             <div class="d-flex align-items-center">
-                                <i class="fas fa-exclamation-triangle fa-lg text-dark me-3"></i>
+                                <i class="fas fa-exclamation-triangle fa-lg text-danger me-2 me-md-3"></i>
                                 <div>
-                                    <strong class="text-dark">Kaal</strong><br>
+                                    <strong class="text-danger">Kaal</strong><br>
                                     <small class="text-muted">Very Inauspicious - Not favorable for new ventures</small>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="alert alert-info mt-3">
+                    <div class="alert alert-info mt-3 mb-0">
                         <i class="fas fa-lightbulb me-2"></i>
                         <strong>Tip:</strong> Use <strong>Amrit</strong> and <strong>Shubh</strong> muhurats for important activities. 
                         Avoid <strong>Kaal</strong> and <strong>Udveg</strong> periods for new ventures.
@@ -670,6 +1435,51 @@
         </div>
     </div>
 
+    <!-- Creative Footer -->
+    <footer class="creative-footer">
+        <div class="container">
+            <div class="footer-content">
+                <!-- Decorative Divider -->
+                <div class="footer-divider">
+                    <div class="footer-divider-line"></div>
+                    <span class="footer-divider-icon">🕉️</span>
+                    <div class="footer-divider-line"></div>
+                </div>
+
+                <!-- Main Attribution -->
+                <div class="footer-text">
+                    <span>Crafted with</span>
+                    <span class="footer-heart">❤️</span>
+                    <span>by</span>
+                    <div class="footer-link-container" id="footerFlipCard">
+                        <div class="footer-link">
+                            <div class="footer-link-front">
+                                <i class="fab fa-github footer-icon"></i>
+                                <span>codechaser</span>
+                            </div>
+                            <div class="footer-link-back">
+                                <i class="fas fa-user footer-icon"></i>
+                                <span>Yashvardhan Baid</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Subtitle -->
+                <div class="footer-subtext">
+                    <span>Empowering auspicious decisions through ancient Vedic wisdom</span>
+                </div>
+
+                <!-- Inspirational Quote -->
+                <div class="footer-quote">
+                    <i class="fas fa-quote-left me-2"></i>
+                    कालस्य महिमा महान् | Time is the greatest force
+                    <i class="fas fa-quote-right ms-2"></i>
+                </div>
+            </div>
+        </div>
+    </footer>
+
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
@@ -689,6 +1499,15 @@
             const htmlElement = document.documentElement;
             let is24HourFormat = false;
 
+            // Footer flip card functionality
+            const footerFlipCard = document.getElementById('footerFlipCard');
+            if (footerFlipCard) {
+                footerFlipCard.addEventListener('click', function() {
+                    const card = this.querySelector('.footer-link');
+                    card.classList.toggle('flipped');
+                });
+            }
+
             // Load saved preferences
             function loadPreferences() {
                 const savedDarkMode = localStorage.getItem('chaughadiya_darkMode') === 'true';
@@ -702,22 +1521,6 @@
                 if (saved24Hour) {
                     timeFormatSwitcher.checked = true;
                     is24HourFormat = true;
-                }
-
-                // Load last used location and timezone
-                const lastLocation = localStorage.getItem('chaughadiya_lastLocation');
-                if (lastLocation) {
-                    const locData = JSON.parse(lastLocation);
-                    locationInput.value = locData.name;
-                    latitude = locData.lat;
-                    longitude = locData.lng;
-                    marker.setLatLng([latitude, longitude]);
-                    map.setView([latitude, longitude], 10);
-                }
-
-                const lastTimezone = localStorage.getItem('chaughadiya_lastTimezone');
-                if (lastTimezone && timezoneSelect.querySelector(`option[value="${lastTimezone}"]`)) {
-                    timezoneSelect.value = lastTimezone;
                 }
             }
 
@@ -853,6 +1656,9 @@
 
             function updateLiveMuhurat() {
                 if (!window.currentData || !window.currentTimezone) return;
+
+                // Only update if viewing today's date
+                if (!isDateTodayInTimezone(window.currentData.date, window.currentTimezone)) return;
 
                 const current = getCurrentMuhurat(window.currentData, window.currentTimezone);
                 if (!current) return;
@@ -1057,8 +1863,19 @@
                 const data = window.currentData.chaughadiya;
                 let csv = 'Serial,Muhurat,Start Time,End Time,Period\n';
                 
+                // Helper to determine day/night based on sunrise/sunset
+                const timeToSeconds = (timeStr) => {
+                    const [h, m, s] = timeStr.split(':').map(Number);
+                    return h * 3600 + m * 60 + s;
+                };
+                const sunriseSeconds = timeToSeconds(window.currentData['sunrise-time']);
+                const sunsetSeconds = timeToSeconds(window.currentData['sunset-time']);
+                
                 data.forEach((muhurat, index) => {
-                    const isDay = index >= 8 && index < 16;
+                    const muhuratSeconds = timeToSeconds(muhurat['start-time']);
+                    const isDay = sunsetSeconds < sunriseSeconds 
+                        ? (muhuratSeconds >= sunriseSeconds || muhuratSeconds < sunsetSeconds)
+                        : (muhuratSeconds >= sunriseSeconds && muhuratSeconds < sunsetSeconds);
                     const period = isDay ? 'Day' : 'Night';
                     csv += `${index + 1},${muhurat.muhurat},${muhurat['start-time']},${muhurat['end-time']},${period}\n`;
                 });
@@ -1397,7 +2214,10 @@
                     }
                     
                     // Convert GMT times to user timezone
-                    const convertedData = convertChaughadiyaTimesToUserTimezone(data, timezone);
+                    let convertedData = convertChaughadiyaTimesToUserTimezone(data, timezone);
+                    
+                    // Apply truncation filters to ensure muhurats fit within 00:00:00 to 24:00:00
+                    convertedData = truncateMuhuratsToMidnight(convertedData);
                     
                     // Hide loading state
                     loadingSpinner.style.display = 'none';
@@ -1405,14 +2225,6 @@
                     // Store data globally for time format switching
                     window.currentData = convertedData;
                     window.currentTimezone = timezone;
-                    
-                    // Save last used location and timezone
-                    savePreference('lastLocation', JSON.stringify({
-                        name: locationInput.value,
-                        lat: latitude,
-                        lng: longitude
-                    }));
-                    savePreference('lastTimezone', timezone);
                     
                     displayResults(convertedData, timezone);
                 } catch (error) {
@@ -1508,6 +2320,75 @@
                 return convertedData;
             }
 
+            function truncateMuhuratsToMidnight(data) {
+                if (!data.chaughadiya || !Array.isArray(data.chaughadiya)) return data;
+                
+                // Clone the data
+                const truncatedData = { ...data };
+                let muhurats = [...data.chaughadiya];
+                
+                // Helper function to convert time string "HH:MM:SS" to seconds since midnight
+                const timeToSeconds = (timeStr) => {
+                    const [h, m, s] = timeStr.split(':').map(Number);
+                    return h * 3600 + m * 60 + s;
+                };
+                
+                // Helper function to check if end_time < start_time (wraps to next day)
+                const isWrappedToNextDay = (startTime, endTime) => {
+                    return timeToSeconds(endTime) <= timeToSeconds(startTime);
+                };
+                
+                // Filter 1: Remove muhurats from the start until we find one where:
+                // (end_time < start_time) OR (start_time == 00:00:00)
+                let startIndex = 0;
+                for (let i = 0; i < muhurats.length; i++) {
+                    const muhurat = muhurats[i];
+                    const startTime = muhurat['start-time'];
+                    const endTime = muhurat['end-time'];
+                    
+                    if (isWrappedToNextDay(startTime, endTime) || startTime === '00:00:00') {
+                        startIndex = i;
+                        // Set start time to 00:00:00 for this muhurat
+                        muhurats[i] = { ...muhurat, 'start-time': '00:00:00' };
+                        break;
+                    }
+                }
+                
+                // Remove muhurats before startIndex
+                muhurats = muhurats.slice(startIndex);
+                
+                // Filter 2: Remove muhurats from the end (in reverse) until we find one where:
+                // (end_time < start_time) OR (end_time == 00:00:00)
+                let endIndex = muhurats.length;
+                for (let i = muhurats.length - 1; i >= 0; i--) {
+                    const muhurat = muhurats[i];
+                    const startTime = muhurat['start-time'];
+                    const endTime = muhurat['end-time'];
+                    
+                    if (isWrappedToNextDay(startTime, endTime) || endTime === '00:00:00') {
+                        endIndex = i + 1;
+                        // Set end time to 00:00:00 (representing 24:00:00/midnight of next day)
+                        muhurats[i] = { ...muhurat, 'end-time': '00:00:00' };
+                        break;
+                    }
+                }
+                
+                // Keep muhurats up to endIndex
+                muhurats = muhurats.slice(0, endIndex);
+                
+                truncatedData.chaughadiya = muhurats;
+                
+                // Log for debugging
+                console.log('Truncation applied:');
+                console.log('  Total muhurats after truncation:', muhurats.length);
+                if (muhurats.length > 0) {
+                    console.log('  First muhurat:', muhurats[0]);
+                    console.log('  Last muhurat:', muhurats[muhurats.length - 1]);
+                }
+                
+                return truncatedData;
+            }
+
             function displayResults(data, userTimezone) {
                 if (!data) {
                     resultsContainer.innerHTML = '<div class="alert alert-warning animate-fade-in"><i class="fas fa-exclamation-triangle me-2"></i>No results found.</div>';
@@ -1565,6 +2446,20 @@
                 return durationString;
             }
 
+            function isDateTodayInTimezone(dateString, timezone) {
+                // Get today's date in the specified timezone
+                const now = new Date();
+                const todayInTimezone = new Date(now.toLocaleString('en-US', { timeZone: timezone }));
+                
+                // Format as YYYY-MM-DD
+                const year = todayInTimezone.getFullYear();
+                const month = String(todayInTimezone.getMonth() + 1).padStart(2, '0');
+                const day = String(todayInTimezone.getDate()).padStart(2, '0');
+                const todayDateString = `${year}-${month}-${day}`;
+                
+                return dateString === todayDateString;
+            }
+
             function generateChaughadiyaTable(data, userTimezone) {
                 if (!data.chaughadiya || !Array.isArray(data.chaughadiya)) {
                     return '<div class="alert alert-warning animate-fade-in"><i class="fas fa-exclamation-triangle me-2"></i>No chaughadiya data available.</div>';
@@ -1576,21 +2471,46 @@
                 const nightPart2 = data.chaughadiya.slice(16, 24);
 
                 // Muhurat types and their meanings
+                // Using 3 colors: green (good), grey (neutral), red (bad)
                 const muhuratInfo = {
                     'Udveg': { color: 'danger', meaning: 'Inauspicious - Avoid important tasks', icon: 'fas fa-times-circle' },
-                    'Kaal': { color: 'dark', meaning: 'Very Inauspicious - Not favorable for new ventures', icon: 'fas fa-exclamation-triangle' },
-                    'Rog': { color: 'warning', meaning: 'Illness - Health concerns', icon: 'fas fa-user-injured' },
+                    'Kaal': { color: 'danger', meaning: 'Very Inauspicious - Not favorable for new ventures', icon: 'fas fa-exclamation-triangle' },
+                    'Rog': { color: 'danger', meaning: 'Illness - Health concerns', icon: 'fas fa-user-injured' },
                     'Chal': { color: 'secondary', meaning: 'Movement - Good for travel', icon: 'fas fa-route' },
                     'Labh': { color: 'success', meaning: 'Profit - Good for business', icon: 'fas fa-coins' },
-                    'Amrit': { color: 'primary', meaning: 'Nectar - Very auspicious', icon: 'fas fa-gem' },
-                    'Shubh': { color: 'info', meaning: 'Auspicious - Good for all work', icon: 'fas fa-star' }
+                    'Amrit': { color: 'success', meaning: 'Nectar - Very auspicious', icon: 'fas fa-gem' },
+                    'Shubh': { color: 'success', meaning: 'Auspicious - Good for all work', icon: 'fas fa-star' }
+                };
+
+                // Helper function to determine if a muhurat is during the day
+                const isMuhuratDuringDay = (muhuratStartTime, sunriseTime, sunsetTime) => {
+                    const timeToSeconds = (timeStr) => {
+                        const [h, m, s] = timeStr.split(':').map(Number);
+                        return h * 3600 + m * 60 + s;
+                    };
+                    
+                    const muhuratSeconds = timeToSeconds(muhuratStartTime);
+                    const sunriseSeconds = timeToSeconds(sunriseTime);
+                    const sunsetSeconds = timeToSeconds(sunsetTime);
+                    
+                    // Day is from sunrise to sunset
+                    // Handle case where sunset might be on next day (shouldn't happen after conversion, but safety check)
+                    if (sunsetSeconds < sunriseSeconds) {
+                        // Sunset is on next day
+                        return muhuratSeconds >= sunriseSeconds || muhuratSeconds < sunsetSeconds;
+                    } else {
+                        return muhuratSeconds >= sunriseSeconds && muhuratSeconds < sunsetSeconds;
+                    }
                 };
 
                 const sunriseRounded = roundTimeToMinute(data['sunrise-time']);
                 const sunsetRounded = roundTimeToMinute(data['sunset-time']);
                 
-                // Get current muhurat
-                const currentMuhuratData = getCurrentMuhurat(data, userTimezone);
+                // Check if the data date is today in the user's timezone
+                const isTodayInTimezone = isDateTodayInTimezone(data.date, userTimezone);
+                
+                // Get current muhurat only if viewing today's date
+                const currentMuhuratData = isTodayInTimezone ? getCurrentMuhurat(data, userTimezone) : null;
                 
                 let html = `
                     <div class="animate-fade-in">
@@ -1601,7 +2521,7 @@
                     const info = muhuratInfo[currentMuhuratData.muhurat.muhurat] || { color: 'secondary', meaning: 'Unknown', icon: 'fas fa-question' };
                     html += `
                         <!-- Current Muhurat Banner -->
-                        <div class="current-muhurat-banner pulse-animation" id="current-muhurat-banner">
+                        <div class="current-muhurat-banner" id="current-muhurat-banner">
                             <div class="current-muhurat-content">
                                 <div class="row align-items-center">
                                     <div class="col-md-3 text-center mb-3 mb-md-0">
@@ -1631,44 +2551,43 @@
                 html += `
                         <!-- Sunrise and Sunset Times -->
                         <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="fas fa-calendar-day me-2"></i>Chaughadiya for ${data.date}</h5>
+                                ${userTimezone ? `<small><i class="fas fa-globe me-1"></i>All times shown in ${userTimezone}</small>` : ''}
+                            </div>
                             <div class="card-body">
                                 <div class="row text-center">
                                     <div class="col-md-6 mb-3">
-                                        <div class="time-info">
-                                            <i class="fas fa-sunrise fa-3x text-warning mb-2"></i>
-                                            <h5>Sunrise</h5>
+                                        <div class="time-info sunrise-info">
+                                            <div class="sun-icon-container mb-2">
+                                                <i class="fas fa-sun fa-3x" style="color: #FFA500;"></i>
+                                                <i class="fas fa-arrow-up" style="position: absolute; font-size: 1.2rem; color: #FFD700; margin-left: -0.8rem; margin-top: 0.3rem;"></i>
+                                            </div>
+                                            <h5 class="mb-2"><i class="fas fa-cloud-sun me-2" style="color: #FFA500;"></i>Sunrise</h5>
                                             <h3 class="mb-0" style="font-family: 'Courier New', monospace;">${formatTime(sunriseRounded, is24HourFormat)}</h3>
                                         </div>
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <div class="time-info">
-                                            <i class="fas fa-sunset fa-3x text-orange mb-2"></i>
-                                            <h5>Sunset</h5>
+                                        <div class="time-info sunset-info">
+                                            <div class="moon-icon-container mb-2">
+                                                <i class="fas fa-moon fa-3x" style="color: #FF6347;"></i>
+                                                <i class="fas fa-arrow-down" style="position: absolute; font-size: 1.2rem; color: #FF4500; margin-left: -0.8rem; margin-top: 0.3rem;"></i>
+                                            </div>
+                                            <h5 class="mb-2"><i class="fas fa-cloud-moon me-2" style="color: #FF6347;"></i>Sunset</h5>
                                             <h3 class="mb-0" style="font-family: 'Courier New', monospace;">${formatTime(sunsetRounded, is24HourFormat)}</h3>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
 
-                        <!-- Summary Card -->
-                        <div class="card mb-4">
-                            <div class="card-header bg-gradient text-white" style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));">
-                                <h5 class="mb-0"><i class="fas fa-calendar-day me-2"></i>Chaughadiya for ${data.date}</h5>
-                                ${userTimezone ? `<small class="text-light"><i class="fas fa-globe me-1"></i>All times shown in ${userTimezone}</small>` : ''}
-                            </div>
-                            <div class="card-body">
                                 <div class="row text-center">
                                     <div class="col-md-6 mb-3">
                                         <div class="time-info">
-                                            <i class="fas fa-sun fa-2x text-warning mb-2"></i>
                                             <h6>Day Muhurat Duration</h6>
                                             <strong style="font-family: 'Courier New', monospace;">${formatDuration(data['day-muhurat-length'])}</strong>
                                         </div>
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <div class="time-info">
-                                            <i class="fas fa-moon fa-2x text-primary mb-2"></i>
                                             <h6>Night Muhurat Duration</h6>
                                             <strong style="font-family: 'Courier New', monospace;">${formatDuration(data['night-muhurat-length'])}</strong>
                                         </div>
@@ -1690,7 +2609,7 @@
                 const allMuhurats = [...nightPart1, ...dayPart, ...nightPart2];
                 allMuhurats.forEach((muhurat, index) => {
                     const info = muhuratInfo[muhurat.muhurat] || { color: 'secondary', meaning: 'Unknown', icon: 'fas fa-question' };
-                    const isDay = index >= 8 && index < 16;
+                    const isDay = isMuhuratDuringDay(muhurat['start-time'], data['sunrise-time'], data['sunset-time']);
                     const timelineClass = isDay ? 'border-warning' : 'border-primary';
                     
                     // Check if this is the current muhurat
@@ -1703,7 +2622,7 @@
                     html += `
                         <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
                             <div class="card h-100 ${timelineClass} ${highlightClass}" style="border-width: 3px;">
-                                <div class="card-body text-center p-3">
+                                <div class="card-body text-center p-3 d-flex flex-column">
                                     <div class="mb-2">
                                         <i class="${info.icon} fa-2x text-${info.color}"></i>
                                     </div>
@@ -1713,8 +2632,8 @@
                                     <p class="card-text small mb-2" style="font-family: 'Courier New', monospace;">
                                         <strong>${startTimeFormatted} - ${endTimeFormatted}</strong>
                                     </p>
-                                    <p class="card-text small text-muted">${info.meaning}</p>
-                                    <div class="mt-2">
+                                    <p class="card-text small text-muted mb-2">${info.meaning}</p>
+                                    <div class="mt-auto">
                                         <small class="badge ${isDay ? 'bg-warning text-dark' : 'bg-primary'}">
                                             ${isDay ? 'Day' : 'Night'}
                                         </small>
@@ -1753,7 +2672,7 @@
                 // Generate table rows
                 allMuhurats.forEach((muhurat, index) => {
                     const info = muhuratInfo[muhurat.muhurat] || { color: 'secondary', meaning: 'Unknown', icon: 'fas fa-question' };
-                    const isDay = index >= 8 && index < 16;
+                    const isDay = isMuhuratDuringDay(muhurat['start-time'], data['sunrise-time'], data['sunset-time']);
                     const isCurrent = currentMuhuratData && currentMuhuratData.index === index;
                     const rowClass = isCurrent ? 'table-warning fw-bold' : '';
                     const startTimeFormatted = formatTime(muhurat['start-time'], is24HourFormat);
