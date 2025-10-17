@@ -997,6 +997,65 @@
             backdrop-filter: blur(5px);
         }
 
+        /* Enhanced Sunrise/Sunset Icons */
+        .sun-icon-container,
+        .moon-icon-container {
+            position: relative;
+            display: inline-block;
+            animation: iconFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes iconFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .sunrise-info {
+            background: linear-gradient(135deg, rgba(255, 165, 0, 0.15), rgba(255, 215, 0, 0.1));
+            border: 2px solid rgba(255, 165, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .sunrise-info:hover {
+            background: linear-gradient(135deg, rgba(255, 165, 0, 0.2), rgba(255, 215, 0, 0.15));
+            border-color: rgba(255, 165, 0, 0.5);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 165, 0, 0.3);
+        }
+
+        .sunset-info {
+            background: linear-gradient(135deg, rgba(255, 99, 71, 0.15), rgba(255, 69, 0, 0.1));
+            border: 2px solid rgba(255, 99, 71, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .sunset-info:hover {
+            background: linear-gradient(135deg, rgba(255, 99, 71, 0.2), rgba(255, 69, 0, 0.15));
+            border-color: rgba(255, 99, 71, 0.5);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 99, 71, 0.3);
+        }
+
+        .sunrise-info .fa-sun {
+            filter: drop-shadow(0 0 10px rgba(255, 165, 0, 0.6));
+        }
+
+        .sunset-info .fa-moon {
+            filter: drop-shadow(0 0 10px rgba(255, 99, 71, 0.6));
+        }
+
+        .sunrise-info:hover .sun-icon-container,
+        .sunset-info:hover .moon-icon-container {
+            animation: iconBounce 0.6s ease;
+        }
+
+        @keyframes iconBounce {
+            0%, 100% { transform: translateY(0); }
+            25% { transform: translateY(-10px); }
+            50% { transform: translateY(0); }
+            75% { transform: translateY(-5px); }
+        }
+
         .loading-spinner {
             display: none;
             text-align: center;
@@ -1245,7 +1304,7 @@
 
             <!-- Muhurat Information (Always visible) -->
             <div class="card mt-4">
-                <div class="card-header bg-gradient text-white" style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));">
+                <div class="card-header div-heading-headers text-white">
                     <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Muhurat Meanings</h5>
                 </div>
                 <div class="card-body muhurat-meanings">
@@ -2492,28 +2551,6 @@
                 html += `
                         <!-- Sunrise and Sunset Times -->
                         <div class="card mb-4">
-                            <div class="card-body">
-                                <div class="row text-center">
-                                    <div class="col-md-6 mb-3">
-                                        <div class="time-info">
-                                            <i class="fas fa-sunrise fa-3x text-warning mb-2"></i>
-                                            <h5>Sunrise</h5>
-                                            <h3 class="mb-0" style="font-family: 'Courier New', monospace;">${formatTime(sunriseRounded, is24HourFormat)}</h3>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <div class="time-info">
-                                            <i class="fas fa-sunset fa-3x text-orange mb-2"></i>
-                                            <h5>Sunset</h5>
-                                            <h3 class="mb-0" style="font-family: 'Courier New', monospace;">${formatTime(sunsetRounded, is24HourFormat)}</h3>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Summary Card -->
-                        <div class="card mb-4">
                             <div class="card-header">
                                 <h5 class="mb-0"><i class="fas fa-calendar-day me-2"></i>Chaughadiya for ${data.date}</h5>
                                 ${userTimezone ? `<small><i class="fas fa-globe me-1"></i>All times shown in ${userTimezone}</small>` : ''}
@@ -2521,15 +2558,36 @@
                             <div class="card-body">
                                 <div class="row text-center">
                                     <div class="col-md-6 mb-3">
+                                        <div class="time-info sunrise-info">
+                                            <div class="sun-icon-container mb-2">
+                                                <i class="fas fa-sun fa-3x" style="color: #FFA500;"></i>
+                                                <i class="fas fa-arrow-up" style="position: absolute; font-size: 1.2rem; color: #FFD700; margin-left: -0.8rem; margin-top: 0.3rem;"></i>
+                                            </div>
+                                            <h5 class="mb-2"><i class="fas fa-cloud-sun me-2" style="color: #FFA500;"></i>Sunrise</h5>
+                                            <h3 class="mb-0" style="font-family: 'Courier New', monospace;">${formatTime(sunriseRounded, is24HourFormat)}</h3>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="time-info sunset-info">
+                                            <div class="moon-icon-container mb-2">
+                                                <i class="fas fa-moon fa-3x" style="color: #FF6347;"></i>
+                                                <i class="fas fa-arrow-down" style="position: absolute; font-size: 1.2rem; color: #FF4500; margin-left: -0.8rem; margin-top: 0.3rem;"></i>
+                                            </div>
+                                            <h5 class="mb-2"><i class="fas fa-cloud-moon me-2" style="color: #FF6347;"></i>Sunset</h5>
+                                            <h3 class="mb-0" style="font-family: 'Courier New', monospace;">${formatTime(sunsetRounded, is24HourFormat)}</h3>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row text-center">
+                                    <div class="col-md-6 mb-3">
                                         <div class="time-info">
-                                            <i class="fas fa-sun fa-2x text-warning mb-2"></i>
                                             <h6>Day Muhurat Duration</h6>
                                             <strong style="font-family: 'Courier New', monospace;">${formatDuration(data['day-muhurat-length'])}</strong>
                                         </div>
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <div class="time-info">
-                                            <i class="fas fa-moon fa-2x text-primary mb-2"></i>
                                             <h6>Night Muhurat Duration</h6>
                                             <strong style="font-family: 'Courier New', monospace;">${formatDuration(data['night-muhurat-length'])}</strong>
                                         </div>
