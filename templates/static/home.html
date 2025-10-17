@@ -1503,8 +1503,19 @@
                 const data = window.currentData.chaughadiya;
                 let csv = 'Serial,Muhurat,Start Time,End Time,Period\n';
                 
+                // Helper to determine day/night based on sunrise/sunset
+                const timeToSeconds = (timeStr) => {
+                    const [h, m, s] = timeStr.split(':').map(Number);
+                    return h * 3600 + m * 60 + s;
+                };
+                const sunriseSeconds = timeToSeconds(window.currentData['sunrise-time']);
+                const sunsetSeconds = timeToSeconds(window.currentData['sunset-time']);
+                
                 data.forEach((muhurat, index) => {
-                    const isDay = index >= 8 && index < 16;
+                    const muhuratSeconds = timeToSeconds(muhurat['start-time']);
+                    const isDay = sunsetSeconds < sunriseSeconds 
+                        ? (muhuratSeconds >= sunriseSeconds || muhuratSeconds < sunsetSeconds)
+                        : (muhuratSeconds >= sunriseSeconds && muhuratSeconds < sunsetSeconds);
                     const period = isDay ? 'Day' : 'Night';
                     csv += `${index + 1},${muhurat.muhurat},${muhurat['start-time']},${muhurat['end-time']},${period}\n`;
                 });
@@ -2110,6 +2121,27 @@
                     'Shubh': { color: 'info', meaning: 'Auspicious - Good for all work', icon: 'fas fa-star' }
                 };
 
+                // Helper function to determine if a muhurat is during the day
+                const isMuhuratDuringDay = (muhuratStartTime, sunriseTime, sunsetTime) => {
+                    const timeToSeconds = (timeStr) => {
+                        const [h, m, s] = timeStr.split(':').map(Number);
+                        return h * 3600 + m * 60 + s;
+                    };
+                    
+                    const muhuratSeconds = timeToSeconds(muhuratStartTime);
+                    const sunriseSeconds = timeToSeconds(sunriseTime);
+                    const sunsetSeconds = timeToSeconds(sunsetTime);
+                    
+                    // Day is from sunrise to sunset
+                    // Handle case where sunset might be on next day (shouldn't happen after conversion, but safety check)
+                    if (sunsetSeconds < sunriseSeconds) {
+                        // Sunset is on next day
+                        return muhuratSeconds >= sunriseSeconds || muhuratSeconds < sunsetSeconds;
+                    } else {
+                        return muhuratSeconds >= sunriseSeconds && muhuratSeconds < sunsetSeconds;
+                    }
+                };
+
                 const sunriseRounded = roundTimeToMinute(data['sunrise-time']);
                 const sunsetRounded = roundTimeToMinute(data['sunset-time']);
                 
@@ -2217,7 +2249,7 @@
                 const allMuhurats = [...nightPart1, ...dayPart, ...nightPart2];
                 allMuhurats.forEach((muhurat, index) => {
                     const info = muhuratInfo[muhurat.muhurat] || { color: 'secondary', meaning: 'Unknown', icon: 'fas fa-question' };
-                    const isDay = index >= 8 && index < 16;
+                    const isDay = isMuhuratDuringDay(muhurat['start-time'], data['sunrise-time'], data['sunset-time']);
                     const timelineClass = isDay ? 'border-warning' : 'border-primary';
                     
                     // Check if this is the current muhurat
@@ -2280,7 +2312,7 @@
                 // Generate table rows
                 allMuhurats.forEach((muhurat, index) => {
                     const info = muhuratInfo[muhurat.muhurat] || { color: 'secondary', meaning: 'Unknown', icon: 'fas fa-question' };
-                    const isDay = index >= 8 && index < 16;
+                    const isDay = isMuhuratDuringDay(muhurat['start-time'], data['sunrise-time'], data['sunset-time']);
                     const isCurrent = currentMuhuratData && currentMuhuratData.index === index;
                     const rowClass = isCurrent ? 'table-warning fw-bold' : '';
                     const startTimeFormatted = formatTime(muhurat['start-time'], is24HourFormat);
