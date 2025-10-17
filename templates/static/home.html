@@ -2273,7 +2273,7 @@
                     html += `
                         <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
                             <div class="card h-100 ${timelineClass} ${highlightClass}" style="border-width: 3px;">
-                                <div class="card-body text-center p-3">
+                                <div class="card-body text-center p-3 d-flex flex-column">
                                     <div class="mb-2">
                                         <i class="${info.icon} fa-2x text-${info.color}"></i>
                                     </div>
@@ -2283,8 +2283,8 @@
                                     <p class="card-text small mb-2" style="font-family: 'Courier New', monospace;">
                                         <strong>${startTimeFormatted} - ${endTimeFormatted}</strong>
                                     </p>
-                                    <p class="card-text small text-muted">${info.meaning}</p>
-                                    <div class="mt-2">
+                                    <p class="card-text small text-muted mb-2">${info.meaning}</p>
+                                    <div class="mt-auto">
                                         <small class="badge ${isDay ? 'bg-warning text-dark' : 'bg-primary'}">
                                             ${isDay ? 'Day' : 'Night'}
                                         </small>
