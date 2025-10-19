@@ -1975,7 +1975,7 @@
                 const width = 1200;
                 const muhuratCount = data.chaughadiya.length;
                 const rowHeight = 45;
-                const baseHeight = 450; // Header + footer + padding
+                const baseHeight = 670; // Header + info + stats + timeline + footer (with creator credit) + padding
                 const height = baseHeight + (muhuratCount * rowHeight);
                 
                 canvas.width = width * scale;
@@ -2054,39 +2054,163 @@
                 const locationText = locationInput.value || `${latitude.toFixed(4)}°, ${longitude.toFixed(4)}°`;
                 ctx.fillText('📍 ' + truncateText(locationText, 60), width / 2, yPos);
                 
-                yPos += 50;
+                yPos += 35;
                 
-                // Sunrise and Sunset info - compact inline style
-                ctx.font = '20px Arial, sans-serif';
-                ctx.fillStyle = colors.text;
-                const sunriseText = `☀️ Sunrise: ${formatTime(roundTimeToMinute(data['sunrise-time']), is24HourFormat)}`;
-                const sunsetText = `🌙 Sunset: ${formatTime(roundTimeToMinute(data['sunset-time']), is24HourFormat)}`;
+                // Timezone info
+                ctx.font = '18px Arial, sans-serif';
+                ctx.fillStyle = colors.textSecondary;
+                ctx.fillText(`🌍 ${timezoneSelect.value}`, width / 2, yPos);
+                
+                yPos += 45;
+                
+                // Sunrise and Sunset info box - enhanced
+                const sunInfoBoxHeight = 65;
+                const sunInfoBoxY = yPos;
+                
+                // Background box for sun info
+                ctx.fillStyle = isDarkTheme ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)';
+                ctx.fillRect(margin, sunInfoBoxY, contentWidth, sunInfoBoxHeight);
+                
+                // Border
+                ctx.strokeStyle = colors.border;
+                ctx.lineWidth = 1;
+                ctx.strokeRect(margin, sunInfoBoxY, contentWidth, sunInfoBoxHeight);
+                
+                // Sunrise section
+                ctx.font = 'bold 18px Arial, sans-serif';
+                ctx.fillStyle = '#FF8C00';
                 ctx.textAlign = 'center';
-                ctx.fillText(sunriseText + '  •  ' + sunsetText, width / 2, yPos);
+                ctx.fillText('☀️ SUNRISE', margin + contentWidth * 0.25, sunInfoBoxY + 25);
+                ctx.fillStyle = colors.text;
+                ctx.font = 'bold 24px Courier New, monospace';
+                ctx.fillText(formatTime(roundTimeToMinute(data['sunrise-time']), is24HourFormat), 
+                    margin + contentWidth * 0.25, sunInfoBoxY + 50);
                 
-                yPos += 50;
+                // Vertical divider
+                ctx.strokeStyle = colors.border;
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(width / 2, sunInfoBoxY + 10);
+                ctx.lineTo(width / 2, sunInfoBoxY + sunInfoBoxHeight - 10);
+                ctx.stroke();
+                
+                // Sunset section
+                ctx.font = 'bold 18px Arial, sans-serif';
+                ctx.fillStyle = '#FF6347';
+                ctx.fillText('🌙 SUNSET', margin + contentWidth * 0.75, sunInfoBoxY + 25);
+                ctx.fillStyle = colors.text;
+                ctx.font = 'bold 24px Courier New, monospace';
+                ctx.fillText(formatTime(roundTimeToMinute(data['sunset-time']), is24HourFormat), 
+                    margin + contentWidth * 0.75, sunInfoBoxY + 50);
+                
+                yPos += sunInfoBoxHeight + 40;
+                
+                // Quick Statistics Bar
+                const muhuratCounts = {
+                    'Auspicious': 0,
+                    'Neutral': 0,
+                    'Inauspicious': 0
+                };
+                
+                data.chaughadiya.forEach(m => {
+                    if (['Amrit', 'Shubh', 'Labh'].includes(m.muhurat)) {
+                        muhuratCounts['Auspicious']++;
+                    } else if (['Udveg', 'Kaal', 'Rog'].includes(m.muhurat)) {
+                        muhuratCounts['Inauspicious']++;
+                    } else {
+                        muhuratCounts['Neutral']++;
+                    }
+                });
+                
+                // Stats boxes
+                const statsBoxHeight = 55;
+                const statsBoxWidth = (contentWidth - 40) / 3;
+                
+                // Auspicious box
+                ctx.fillStyle = colors.success + '15';
+                ctx.fillRect(margin, yPos, statsBoxWidth, statsBoxHeight);
+                ctx.strokeStyle = colors.success;
+                ctx.lineWidth = 2;
+                ctx.strokeRect(margin, yPos, statsBoxWidth, statsBoxHeight);
+                
+                ctx.fillStyle = colors.success;
+                ctx.font = 'bold 24px Arial, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(muhuratCounts['Auspicious'], margin + statsBoxWidth / 2, yPos + 25);
+                ctx.font = '14px Arial, sans-serif';
+                ctx.fillText('Auspicious', margin + statsBoxWidth / 2, yPos + 45);
+                
+                // Neutral box
+                ctx.fillStyle = colors.info + '15';
+                ctx.fillRect(margin + statsBoxWidth + 20, yPos, statsBoxWidth, statsBoxHeight);
+                ctx.strokeStyle = colors.info;
+                ctx.lineWidth = 2;
+                ctx.strokeRect(margin + statsBoxWidth + 20, yPos, statsBoxWidth, statsBoxHeight);
+                
+                ctx.fillStyle = colors.info;
+                ctx.font = 'bold 24px Arial, sans-serif';
+                ctx.fillText(muhuratCounts['Neutral'], margin + statsBoxWidth + 20 + statsBoxWidth / 2, yPos + 25);
+                ctx.font = '14px Arial, sans-serif';
+                ctx.fillText('Neutral', margin + statsBoxWidth + 20 + statsBoxWidth / 2, yPos + 45);
+                
+                // Inauspicious box
+                ctx.fillStyle = colors.danger + '15';
+                ctx.fillRect(margin + (statsBoxWidth + 20) * 2, yPos, statsBoxWidth, statsBoxHeight);
+                ctx.strokeStyle = colors.danger;
+                ctx.lineWidth = 2;
+                ctx.strokeRect(margin + (statsBoxWidth + 20) * 2, yPos, statsBoxWidth, statsBoxHeight);
+                
+                ctx.fillStyle = colors.danger;
+                ctx.font = 'bold 24px Arial, sans-serif';
+                ctx.fillText(muhuratCounts['Inauspicious'], margin + (statsBoxWidth + 20) * 2 + statsBoxWidth / 2, yPos + 25);
+                ctx.font = '14px Arial, sans-serif';
+                ctx.fillText('Inauspicious', margin + (statsBoxWidth + 20) * 2 + statsBoxWidth / 2, yPos + 45);
+                
+                yPos += statsBoxHeight + 40;
                 
                 // Table Header
                 const tableX = margin;
-                const colWidths = [80, 300, 250, 250, 240]; // Serial, Muhurat, Start, End, Type
+                const colWidths = [80, 270, 250, 250, 227]; // Serial, Muhurat, Start, End, Period
                 const tableWidth = colWidths.reduce((a, b) => a + b, 0);
+                
+                // Shadow effect for table
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.1)';
+                ctx.shadowBlur = 10;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 2;
                 
                 // Draw table header background
                 ctx.fillStyle = colors.tableHeader;
                 ctx.fillRect(tableX, yPos, tableWidth, rowHeight);
+                
+                // Reset shadow
+                ctx.shadowColor = 'transparent';
+                ctx.shadowBlur = 0;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 0;
                 
                 // Table header border
                 ctx.strokeStyle = colors.tableBorder;
                 ctx.lineWidth = 2;
                 ctx.strokeRect(tableX, yPos, tableWidth, rowHeight);
                 
+                // Draw vertical column dividers in header
+                let xPos = tableX;
+                for (let i = 0; i < colWidths.length - 1; i++) {
+                    xPos += colWidths[i];
+                    ctx.beginPath();
+                    ctx.moveTo(xPos, yPos);
+                    ctx.lineTo(xPos, yPos + rowHeight);
+                    ctx.stroke();
+                }
+                
                 // Table header text
                 ctx.fillStyle = colors.text;
-                ctx.font = 'bold 20px Arial, sans-serif';
+                ctx.font = 'bold 18px Arial, sans-serif';
                 ctx.textAlign = 'center';
                 
                 const headers = ['#', 'Muhurat', 'Start Time', 'End Time', 'Period'];
-                let xPos = tableX;
+                xPos = tableX;
                 headers.forEach((header, index) => {
                     ctx.fillText(header, xPos + colWidths[index] / 2, yPos + 28);
                     xPos += colWidths[index];
@@ -2094,13 +2218,25 @@
                 
                 yPos += rowHeight;
                 
-                // Helper to determine day/night
+                // Helper to determine day/night with error handling
                 const timeToSeconds = (timeStr) => {
-                    const [h, m, s] = timeStr.split(':').map(Number);
+                    if (!timeStr || typeof timeStr !== 'string') {
+                        console.warn('Invalid time string:', timeStr);
+                        return 0;
+                    }
+                    const parts = timeStr.split(':');
+                    if (parts.length !== 3) {
+                        console.warn('Invalid time format:', timeStr);
+                        return 0;
+                    }
+                    const [h, m, s] = parts.map(Number);
                     return h * 3600 + m * 60 + s;
                 };
                 const sunriseSeconds = timeToSeconds(data['sunrise-time']);
                 const sunsetSeconds = timeToSeconds(data['sunset-time']);
+                
+                // Check if viewing today's date (needed for timeline and current muhurat)
+                const isTodayInTimezone = isDateTodayInTimezone(data.date, timezoneSelect.value);
                 
                 // Draw table rows
                 data.chaughadiya.forEach((muhurat, index) => {
@@ -2112,8 +2248,16 @@
                     
                     const info = muhuratInfo[muhurat.muhurat] || { color: colors.info, bg: '#e7f3f8', icon: '○', meaning: 'Neutral' };
                     
+                    // Calculate duration
+                    const startSeconds = timeToSeconds(muhurat['start-time']);
+                    const endSeconds = timeToSeconds(muhurat['end-time']);
+                    let durationSeconds = endSeconds - startSeconds;
+                    if (durationSeconds < 0) durationSeconds += 86400; // Handle midnight crossing
+                    const hours = Math.floor(durationSeconds / 3600);
+                    const minutes = Math.floor((durationSeconds % 3600) / 60);
+                    const durationText = `${hours}h ${minutes}m`;
+                    
                     // Highlight current muhurat
-                    const isTodayInTimezone = isDateTodayInTimezone(data.date, timezoneSelect.value);
                     const currentMuhuratData = isTodayInTimezone ? getCurrentMuhurat(data, timezoneSelect.value) : null;
                     const isCurrent = currentMuhuratData && currentMuhuratData.muhurat.muhurat === muhurat.muhurat &&
                                      currentMuhuratData.muhurat['start-time'] === muhurat['start-time'];
@@ -2126,31 +2270,59 @@
                     }
                     ctx.fillRect(tableX, yPos, tableWidth, rowHeight);
                     
+                    // Left border accent for current muhurat
+                    if (isCurrent) {
+                        ctx.fillStyle = info.color;
+                        ctx.fillRect(tableX, yPos, 5, rowHeight);
+                    }
+                    
                     // Row border
                     ctx.strokeStyle = colors.tableBorder;
                     ctx.lineWidth = 1;
                     ctx.strokeRect(tableX, yPos, tableWidth, rowHeight);
                     
+                    // Draw vertical column dividers
+                    xPos = tableX;
+                    for (let i = 0; i < colWidths.length - 1; i++) {
+                        xPos += colWidths[i];
+                        ctx.strokeStyle = colors.tableBorder;
+                        ctx.lineWidth = 0.5;
+                        ctx.beginPath();
+                        ctx.moveTo(xPos, yPos);
+                        ctx.lineTo(xPos, yPos + rowHeight);
+                        ctx.stroke();
+                    }
+                    
                     // Cell content
                     ctx.fillStyle = colors.text;
-                    ctx.font = '18px Arial, sans-serif';
+                    ctx.font = '17px Arial, sans-serif';
                     ctx.textAlign = 'center';
                     
                     xPos = tableX;
                     
-                    // Serial number
+                    // Serial number with circle background for current
+                    if (isCurrent) {
+                        ctx.fillStyle = info.color;
+                        ctx.beginPath();
+                        ctx.arc(xPos + colWidths[0] / 2, yPos + rowHeight / 2, 16, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.fillStyle = '#ffffff';
+                        ctx.font = 'bold 17px Arial, sans-serif';
+                    } else {
+                        ctx.fillStyle = colors.textSecondary;
+                    }
                     ctx.fillText(String(index + 1), xPos + colWidths[0] / 2, yPos + 28);
                     xPos += colWidths[0];
                     
                     // Muhurat name with icon and color
                     ctx.fillStyle = info.color;
-                    ctx.font = 'bold 20px Arial, sans-serif';
+                    ctx.font = 'bold 19px Arial, sans-serif';
                     ctx.fillText(`${info.icon} ${muhurat.muhurat}`, xPos + colWidths[1] / 2, yPos + 28);
                     xPos += colWidths[1];
                     
                     // Start time
                     ctx.fillStyle = colors.text;
-                    ctx.font = '18px Courier New, monospace';
+                    ctx.font = '17px Courier New, monospace';
                     ctx.fillText(formatTime(roundTimeToMinute(muhurat['start-time']), is24HourFormat), 
                         xPos + colWidths[2] / 2, yPos + 28);
                     xPos += colWidths[2];
@@ -2162,26 +2334,170 @@
                     
                     // Period
                     ctx.fillStyle = colors.textSecondary;
-                    ctx.font = '18px Arial, sans-serif';
+                    ctx.font = '17px Arial, sans-serif';
                     ctx.fillText(period, xPos + colWidths[4] / 2, yPos + 28);
                     
-                    // Add "CURRENT" badge if it's the current muhurat
+                    // Add "LIVE" pulse badge if it's the current muhurat
                     if (isCurrent) {
                         ctx.fillStyle = info.color;
-                        ctx.font = 'bold 14px Arial, sans-serif';
-                        ctx.textAlign = 'right';
-                        ctx.fillText('← CURRENT', tableX + tableWidth - 10, yPos + 16);
+                        ctx.font = 'bold 12px Arial, sans-serif';
+                        ctx.textAlign = 'left';
+                        
+                        // Draw pulsing circle (simulated)
+                        ctx.globalAlpha = 0.3;
+                        ctx.beginPath();
+                        ctx.arc(tableX + 15, yPos + 10, 8, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.globalAlpha = 1;
+                        
+                        ctx.beginPath();
+                        ctx.arc(tableX + 15, yPos + 10, 5, 0, Math.PI * 2);
+                        ctx.fill();
+                        
+                        ctx.fillStyle = '#ffffff';
+                        ctx.font = 'bold 10px Arial, sans-serif';
+                        ctx.textAlign = 'center';
+                        ctx.fillText('●', tableX + 15, yPos + 13);
                     }
                     
                     yPos += rowHeight;
                 });
                 
-                // Footer
-                yPos += 30;
+                // Footer with visual timeline
+                yPos += 40;
+                
+                // Add a visual 24-hour timeline
+                const timelineHeight = 60;
+                const timelineY = yPos;
+                const timelineWidth = contentWidth;
+                
+                // Timeline background
+                ctx.fillStyle = isDarkTheme ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
+                ctx.fillRect(margin, timelineY, timelineWidth, timelineHeight);
+                
+                // Timeline border
+                ctx.strokeStyle = colors.border;
+                ctx.lineWidth = 1;
+                ctx.strokeRect(margin, timelineY, timelineWidth, timelineHeight);
+                
+                // Draw timeline label
+                ctx.fillStyle = colors.text;
+                ctx.font = 'bold 14px Arial, sans-serif';
+                ctx.textAlign = 'left';
+                ctx.fillText('24-Hour Timeline:', margin + 10, timelineY + 18);
+                
+                // Draw muhurat blocks on timeline
+                const timelineBarY = timelineY + 28;
+                const timelineBarHeight = 25;
+                const pixelsPerSecond = timelineWidth / 86400; // 24 hours in seconds
+                
+                data.chaughadiya.forEach((muhurat, index) => {
+                    const info = muhuratInfo[muhurat.muhurat] || { color: colors.info, bg: '#e7f3f8', icon: '○', meaning: 'Neutral' };
+                    const startSeconds = timeToSeconds(muhurat['start-time']);
+                    const endSeconds = timeToSeconds(muhurat['end-time']);
+                    let durationSeconds = endSeconds - startSeconds;
+                    if (durationSeconds < 0) durationSeconds += 86400;
+                    
+                    const blockX = margin + (startSeconds * pixelsPerSecond);
+                    const blockWidth = durationSeconds * pixelsPerSecond;
+                    
+                    ctx.fillStyle = info.color + '80'; // Semi-transparent
+                    ctx.fillRect(blockX, timelineBarY, blockWidth, timelineBarHeight);
+                    
+                    // Block border
+                    ctx.strokeStyle = info.color;
+                    ctx.lineWidth = 0.5;
+                    ctx.strokeRect(blockX, timelineBarY, blockWidth, timelineBarHeight);
+                });
+                
+                // Add sunrise and sunset markers
+                const sunriseSecondsTimeline = timeToSeconds(data['sunrise-time']);
+                const sunsetSecondsTimeline = timeToSeconds(data['sunset-time']);
+                
+                // Sunrise marker
+                const sunriseX = margin + (sunriseSecondsTimeline * pixelsPerSecond);
+                ctx.strokeStyle = '#FF8C00';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(sunriseX, timelineBarY);
+                ctx.lineTo(sunriseX, timelineBarY + timelineBarHeight);
+                ctx.stroke();
+                
+                // Sunset marker
+                const sunsetX = margin + (sunsetSecondsTimeline * pixelsPerSecond);
+                ctx.strokeStyle = '#FF6347';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(sunsetX, timelineBarY);
+                ctx.lineTo(sunsetX, timelineBarY + timelineBarHeight);
+                ctx.stroke();
+                
+                // Current time marker if today
+                if (isTodayInTimezone) {
+                    try {
+                        const now = new Date();
+                        const timeString = now.toLocaleString('en-US', { 
+                            timeZone: timezoneSelect.value, 
+                            hour12: false, 
+                            hour: '2-digit', 
+                            minute: '2-digit', 
+                            second: '2-digit' 
+                        });
+                        
+                        // Extract time portion (format can vary, so handle both "date, time" and just "time")
+                        let currentTime;
+                        if (timeString.includes(',')) {
+                            currentTime = timeString.split(', ')[1];
+                        } else {
+                            // If no comma, try to extract just the time part
+                            const timeParts = timeString.match(/(\d{2}):(\d{2}):(\d{2})/);
+                            if (timeParts) {
+                                currentTime = `${timeParts[1]}:${timeParts[2]}:${timeParts[3]}`;
+                            }
+                        }
+                        
+                        if (currentTime) {
+                            const currentSeconds = timeToSeconds(currentTime);
+                            const currentX = margin + (currentSeconds * pixelsPerSecond);
+                            
+                            // Draw pulsing marker
+                            ctx.strokeStyle = '#FF0000';
+                            ctx.lineWidth = 3;
+                            ctx.beginPath();
+                            ctx.moveTo(currentX, timelineBarY - 5);
+                            ctx.lineTo(currentX, timelineBarY + timelineBarHeight + 5);
+                            ctx.stroke();
+                            
+                            // Arrow at top
+                            ctx.fillStyle = '#FF0000';
+                            ctx.beginPath();
+                            ctx.moveTo(currentX, timelineBarY - 5);
+                            ctx.lineTo(currentX - 5, timelineBarY - 10);
+                            ctx.lineTo(currentX + 5, timelineBarY - 10);
+                            ctx.closePath();
+                            ctx.fill();
+                        }
+                    } catch (error) {
+                        console.warn('Could not draw current time marker:', error);
+                    }
+                }
+                
+                yPos += timelineHeight + 30;
+                
+                // Footer text with creator credit
                 ctx.fillStyle = colors.textSecondary;
-                ctx.font = '16px Arial, sans-serif';
+                ctx.font = '15px Arial, sans-serif';
                 ctx.textAlign = 'center';
-                ctx.fillText('Generated by Chaughadiya App  •  ' + new Date().toLocaleString(), width / 2, yPos);
+                
+                // Main line
+                ctx.fillText('Generated by Chaughadiya App  •  ' + new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }), width / 2, yPos);
+                
+                yPos += 22;
+                
+                // Creator credit - subtle and smaller
+                ctx.font = '13px Arial, sans-serif';
+                ctx.fillStyle = isDarkTheme ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.4)';
+                ctx.fillText('created by codechaser / Yashvardhan Baid', width / 2, yPos);
                 
                 return canvas;
             }
