@@ -9,6 +9,12 @@
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <style>
+        @property --gradient-angle {
+            syntax: '<angle>';
+            initial-value: 0deg;
+            inherits: false;
+        }
+
         :root {
             --primary-color: #FF9933; /* Saffron */
             --secondary-color: #800000; /* Maroon */
@@ -45,7 +51,19 @@
         .navbar {
             background: linear-gradient(135deg, var(--secondary-color) 0%, #a04000 100%) !important;
             box-shadow: var(--shadow-light);
-            border-bottom: 3px solid var(--primary-color);
+            position: sticky;
+            top: 0;
+            z-index: 1030;
+        }
+
+        .navbar::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-color);
         }
 
         .navbar-brand {
@@ -69,8 +87,12 @@
         }
 
         .card:hover {
-            transform: translateY(-5px);
             box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .card-header {
+            border-top-left-radius: 15px !important;
+            border-top-right-radius: 15px !important;
         }
 
         .form-control, .form-select {
@@ -155,31 +177,32 @@
 
         .table-responsive {
             border-radius: 10px;
-            overflow: hidden;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .div-heading-headers {
+            background: linear-gradient(135deg, var(--secondary-color) 0%, #a04000 100%)
         }
 
         /* Current Muhurat Styles */
         .current-muhurat-banner {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            color: white;
-            padding: 1.5rem;
-            border-radius: 15px;
-            box-shadow: 0 8px 20px rgba(255, 153, 51, 0.4);
+            padding: 0.25rem;
+            border-radius: 19px;
+            box-shadow: 0 0.5px 20px rgba(255, 153, 51, 0.4);
             margin-bottom: 2rem;
             position: relative;
-            overflow: hidden;
+            background: conic-gradient(
+                from var(--gradient-angle),
+                var(--primary-color) 0deg,
+                var(--secondary-color) 180deg
+            );
+            animation: rotateGradient 7s linear infinite;
         }
 
-        .current-muhurat-banner::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.1) 75%, transparent 75%, transparent);
-            background-size: 50px 50px;
-            animation: stripes 2s linear infinite;
+        @keyframes rotateGradient {
+            from { --gradient-angle: 0deg; }
+            to { --gradient-angle: 360deg; }
         }
 
         @keyframes stripes {
@@ -190,6 +213,10 @@
         .current-muhurat-content {
             position: relative;
             z-index: 1;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border-radius: 15px;
+            padding: 1.5rem;
+            color: white;
         }
 
         .countdown-timer {
@@ -239,68 +266,674 @@
             transition: width 0.3s ease;
         }
 
-        .pulse-animation {
-            animation: pulse 2s ease-in-out infinite;
+        /* Footer Styles */
+        .creative-footer {
+            background: linear-gradient(135deg, var(--secondary-color) 0%, #a04000 100%);
+            color: white;
+            padding: 3rem 0 2rem;
+            margin-top: 4rem;
+            position: relative;
+            overflow: hidden;
         }
 
-        @keyframes pulse {
+        .creative-footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-color);
+        }
+
+        @keyframes shimmer {
+            0%, 100% { background-position: 0% 0%; }
+            50% { background-position: 100% 0%; }
+        }
+
+        .creative-footer::after {
+            content: '🕉️   ☸️   ✨   🙏   ✨   🙏   ✨   ☸️   🕉️';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 4rem;
+            opacity: 0.05;
+            white-space: nowrap;
+            letter-spacing: 4rem;
+            pointer-events: none;
+            padding-left: 4rem;
+        }
+
+        [data-bs-theme="dark"] .creative-footer::after {
+            opacity: 0.07;
+        }
+
+        .footer-content {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer-divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            gap: 1rem;
+        }
+
+        .footer-divider-line {
+            height: 2px;
+            width: 80px;
+            background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+        }
+
+        .footer-divider-icon {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            animation: glow 5s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% {
+                text-shadow: 0 0 10px rgba(255, 153, 51, 0.5),
+                            0 0 20px rgba(255, 153, 51, 0.3);
+            }
+            50% {
+                text-shadow: 0 0 20px rgba(255, 153, 51, 0.8),
+                            0 0 30px rgba(255, 153, 51, 0.5);
+            }
+        }
+
+        .footer-text {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-link-container {
+            display: inline-block;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .footer-link {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.3rem 0.8rem;
+            border-radius: 8px;
+            background: rgba(255, 153, 51, 0.1);
+            color: var(--primary-color);
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .footer-link.flipped {
+            transform: rotateX(180deg);
+        }
+
+        .footer-link-front,
+        .footer-link-back {
+            backface-visibility: hidden;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .footer-link-back {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            align-items: center;
+            font-size: 0.79rem;
+            /*align vertically middle*/
+            height: 100%;
+            padding: auto;
+            justify-content: center;
+            transform: rotateX(180deg);
+        }
+
+        .footer-icon {
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        .footer-heart {
+            font-size: 1.4rem;
+            color: #ff6b6b;
+            animation: heartbeat 1.9s linear infinite;
+            display: inline-block;
+            filter: drop-shadow(0 0 5px rgba(255, 107, 107, 0.5));
+        }
+
+        @keyframes heartbeat {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+            10%, 30% { transform: scale(1.2); }
+            20%, 40% { transform: scale(1); }
+        }
+
+        .footer-subtext {
+            font-size: 1rem;
+            opacity: 0.95;
+            margin-top: 1rem;
+            font-style: italic;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        @keyframes pulse-om {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.15);
+                opacity: 0.8;
+            }
+        }
+
+        .footer-quote {
+            max-width: 600px;
+            margin: 1.5rem auto 0;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            border-left: 4px solid var(--primary-color);
+            border-right: 4px solid var(--primary-color);
+            font-size: 0.9rem;
+            font-style: italic;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .footer-text {
+                font-size: 1rem;
+            }
+            
+            .footer-link {
+                font-size: 1.1rem;
+            }
+            
+            .footer-subtext {
+                font-size: 0.9rem;
+            }
+            
+            .footer-divider-line {
+                width: 50px;
+            }
+            
+            .footer-quote {
+                font-size: 0.85rem;
+                padding: 0.8rem;
+            }
         }
 
         /* Mobile Responsiveness */
-        @media (max-width: 768px) {
-            #map {
-                height: 200px !important;
-            }
-            
+        @media (max-width: 992px) {
             .navbar .d-flex {
-                flex-direction: column;
+                flex-wrap: wrap;
                 gap: 0.5rem !important;
             }
             
+            .form-check {
+                margin: 0.25rem 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                font-size: 0.95rem;
+            }
+
+            #map {
+                height: 250px !important;
+            }
+            
+            .navbar .container-fluid {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+            
+            .navbar-brand {
+                font-size: 1.3rem;
+                margin: 0 auto;
+            }
+
+            .navbar .d-flex {
+                width: 100%;
+                justify-content: center !important;
+            }
+
+            .form-check-label {
+                font-size: 0.8rem;
+            }
+
+            .btn-sm {
+                font-size: 0.75rem;
+                padding: 0.25rem 0.5rem;
+            }
+            
             .chaughadiya-table {
-                font-size: 0.85rem;
+                font-size: 0.8rem;
             }
             
             .chaughadiya-table th,
             .chaughadiya-table td {
-                padding: 8px 6px;
+                padding: 6px 4px;
+                white-space: nowrap;
+            }
+
+            .chaughadiya-table th:first-child,
+            .chaughadiya-table td:first-child {
+                padding-left: 8px;
+            }
+
+            .chaughadiya-table th:last-child,
+            .chaughadiya-table td:last-child {
+                padding-right: 8px;
             }
             
             .form-floating > label {
-                font-size: 0.9rem;
+                font-size: 0.85rem;
             }
             
             .card-body {
-                padding: 1rem;
+                padding: 0.75rem;
+            }
+
+            .card-header h5 {
+                font-size: 1rem;
             }
             
             .btn-primary {
-                padding: 10px 20px;
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+
+            /* Current Muhurat Banner - Mobile */
+            .current-muhurat-banner {
+                padding: 0.25rem;  /* Match your desktop border thickness */
+            }
+
+            .current-muhurat-banner .fa-4x {
+                font-size: 2.5rem;
+            }
+
+            .current-muhurat-banner h4 {
+                font-size: 1rem;
+            }
+
+            .current-muhurat-banner h2 {
+                font-size: 1.5rem;
+            }
+
+            .countdown-timer {
+                font-size: 1.3rem;
+            }
+
+            .live-clock {
                 font-size: 0.95rem;
             }
-            
-            .navbar-brand {
-                font-size: 1.2rem;
+
+            /* Time info cards */
+            .time-info i {
+                font-size: 2rem !important;
             }
-            
-            .form-check-label {
+
+            .time-info h5 {
+                font-size: 0.95rem;
+            }
+
+            .time-info h3 {
+                font-size: 1.5rem;
+            }
+
+            .time-info h6 {
                 font-size: 0.85rem;
+            }
+
+            /* Muhurat timeline cards - better mobile layout */
+            .col-lg-3.col-md-4.col-sm-6 {
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
+                flex: 0 0 50%;
+                max-width: 50%;
+            }
+
+            .card .fa-2x {
+                font-size: 1.5rem;
+            }
+
+            .card-title {
+                font-size: 0.9rem;
+            }
+
+            .badge {
+                font-size: 0.75rem;
+                padding: 4px 8px;
+            }
+
+            .card-text {
+                font-size: 0.85rem;
+            }
+
+            /* Muhurat meanings */
+            .muhurat-meanings .fa-lg {
+                font-size: 1.2rem !important;
+            }
+
+            /* Modals on mobile */
+            .modal-body {
+                padding: 1rem;
+            }
+
+            .modal-title {
+                font-size: 1.1rem;
             }
         }
 
         @media (max-width: 576px) {
+            body {
+                font-size: 0.9rem;
+            }
+
+            .container {
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
+            }
+
             .main-container {
-                padding: 1rem;
+                padding: 0.75rem;
+                margin-top: 1rem;
             }
             
             h1 {
-                font-size: 1.75rem;
+                font-size: 1.5rem;
             }
             
             .lead {
+                font-size: 0.9rem;
+            }
+
+            .navbar-brand {
+                font-size: 1.1rem;
+            }
+
+            #map {
+                height: 200px !important;
+            }
+
+            .form-check-label {
+                font-size: 0.7rem;
+            }
+
+            .btn-sm {
+                font-size: 0.7rem;
+                padding: 0.2rem 0.4rem;
+            }
+
+            .btn-sm i {
+                font-size: 0.8rem;
+            }
+
+            .card {
+                border-radius: 10px;
+                margin-bottom: 0.75rem;
+            }
+
+            .card-body {
+                padding: 0.5rem;
+            }
+
+            .card-header {
+                padding: 0.5rem 0.75rem;
+            }
+
+            .card-header h5 {
+                font-size: 0.9rem;
+            }
+
+            /* Current Muhurat Banner - Small mobile */
+            .current-muhurat-banner {
+                padding: 0.25rem;  /* Match your desktop border thickness */
+                margin-bottom: 1rem;
+            }
+
+            .current-muhurat-banner .fa-4x {
+                font-size: 2rem;
+            }
+
+            .current-muhurat-banner h4 {
+                font-size: 0.85rem;
+                margin-bottom: 0.25rem;
+            }
+
+            .current-muhurat-banner h2 {
+                font-size: 1.25rem;
+                margin-bottom: 0.25rem;
+            }
+
+            .current-muhurat-banner p {
+                font-size: 0.8rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .countdown-timer {
+                font-size: 1.1rem;
+            }
+
+            .live-clock {
+                font-size: 0.85rem;
+            }
+
+            /* Time info cards - Small mobile */
+            .time-info {
+                padding: 0.5rem;
+            }
+
+            .time-info i {
+                font-size: 1.5rem !important;
+            }
+
+            .time-info h5 {
+                font-size: 0.85rem;
+                margin-bottom: 0.25rem;
+            }
+
+            .time-info h3 {
+                font-size: 1.25rem;
+            }
+
+            .time-info h6 {
+                font-size: 0.75rem;
+            }
+
+            /* Table responsiveness */
+            .chaughadiya-table {
+                font-size: 0.7rem;
+            }
+
+            .chaughadiya-table th,
+            .chaughadiya-table td {
+                padding: 4px 2px;
+            }
+
+            .chaughadiya-table th:first-child,
+            .chaughadiya-table td:first-child {
+                padding-left: 4px;
+            }
+
+            .chaughadiya-table th:last-child,
+            .chaughadiya-table td:last-child {
+                padding-right: 4px;
+            }
+
+            .chaughadiya-table i {
+                display: none; /* Hide icons in table on very small screens */
+            }
+
+            /* Timeline cards - Small mobile - single column */
+            .col-lg-3.col-md-4.col-sm-6 {
+                padding-left: 0.25rem;
+                padding-right: 0.25rem;
+                margin-bottom: 0.5rem;
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+
+            .card .card-body {
+                padding: 0.75rem;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .card .fa-2x {
+                font-size: 1.5rem;
+            }
+
+            .card-title {
+                font-size: 0.9rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .card-text {
+                font-size: 0.8rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .badge {
+                font-size: 0.7rem;
+                padding: 4px 8px;
+            }
+
+            /* Muhurat meanings - Small mobile */
+            .muhurat-meanings .col-lg-4 {
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
+            }
+
+            .muhurat-meanings .fa-lg {
+                font-size: 1rem !important;
+                margin-right: 0.5rem !important;
+            }
+
+            .muhurat-meanings strong {
+                font-size: 0.85rem;
+            }
+
+            .muhurat-meanings small {
+                font-size: 0.7rem;
+            }
+
+            /* Form elements */
+            .form-floating > .form-control,
+            .form-floating > .form-select {
+                height: calc(3rem + 2px);
+                font-size: 0.85rem;
+            }
+
+            .form-floating > label {
+                font-size: 0.75rem;
+                padding: 0.75rem 0.5rem;
+            }
+
+            .btn-primary {
+                padding: 8px 12px;
+                font-size: 0.85rem;
+            }
+
+            /* Alert messages */
+            .alert {
+                font-size: 0.85rem;
+                padding: 0.5rem 0.75rem;
+            }
+
+            /* Modal adjustments */
+            .modal-dialog {
+                margin: 0.5rem;
+            }
+
+            .modal-header,
+            .modal-footer {
+                padding: 0.75rem;
+            }
+
+            .modal-body {
+                padding: 0.75rem;
+            }
+
+            /* Date dropdowns on small screens */
+            .row.g-2 {
+                gap: 0.25rem !important;
+            }
+
+            /* Current muhurat highlight badge */
+            .current-muhurat-highlight::after {
+                font-size: 0.6rem;
+                padding: 1px 4px;
+                top: 2px;
+                right: 2px;
+            }
+        }
+
+        /* Landscape mobile phones */
+        @media (max-width: 768px) and (orientation: landscape) {
+            #map {
+                height: 180px !important;
+            }
+
+            .current-muhurat-banner {
+                padding: 0.25rem;  /* Match your desktop border thickness */
+            }
+
+            .current-muhurat-banner .row {
+                align-items: center;
+            }
+
+            .current-muhurat-banner .col-md-3,
+            .current-muhurat-banner .col-md-6,
+            .current-muhurat-banner .col-md-3 {
+                margin-bottom: 0 !important;
+            }
+        }
+
+        /* Very small screens / older phones */
+        @media (max-width: 375px) {
+            h1 {
+                font-size: 1.3rem;
+            }
+
+            .lead {
+                font-size: 0.85rem;
+            }
+
+            .navbar-brand {
                 font-size: 1rem;
+            }
+
+            .form-check-label {
+                font-size: 0.65rem;
+            }
+
+            .countdown-timer {
+                font-size: 1rem;
+            }
+
+            .time-info h3 {
+                font-size: 1.1rem;
             }
         }
 
@@ -365,6 +998,65 @@
             backdrop-filter: blur(5px);
         }
 
+        /* Enhanced Sunrise/Sunset Icons */
+        .sun-icon-container,
+        .moon-icon-container {
+            position: relative;
+            display: inline-block;
+            animation: iconFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes iconFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .sunrise-info {
+            background: linear-gradient(135deg, rgba(255, 165, 0, 0.15), rgba(255, 215, 0, 0.1));
+            border: 2px solid rgba(255, 165, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .sunrise-info:hover {
+            background: linear-gradient(135deg, rgba(255, 165, 0, 0.2), rgba(255, 215, 0, 0.15));
+            border-color: rgba(255, 165, 0, 0.5);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 165, 0, 0.3);
+        }
+
+        .sunset-info {
+            background: linear-gradient(135deg, rgba(255, 99, 71, 0.15), rgba(255, 69, 0, 0.1));
+            border: 2px solid rgba(255, 99, 71, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .sunset-info:hover {
+            background: linear-gradient(135deg, rgba(255, 99, 71, 0.2), rgba(255, 69, 0, 0.15));
+            border-color: rgba(255, 99, 71, 0.5);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 99, 71, 0.3);
+        }
+
+        .sunrise-info .fa-sun {
+            filter: drop-shadow(0 0 10px rgba(255, 165, 0, 0.6));
+        }
+
+        .sunset-info .fa-moon {
+            filter: drop-shadow(0 0 10px rgba(255, 99, 71, 0.6));
+        }
+
+        .sunrise-info:hover .sun-icon-container,
+        .sunset-info:hover .moon-icon-container {
+            animation: iconBounce 0.6s ease;
+        }
+
+        @keyframes iconBounce {
+            0%, 100% { transform: translateY(0); }
+            25% { transform: translateY(-10px); }
+            50% { transform: translateY(0); }
+            75% { transform: translateY(-5px); }
+        }
+
         .loading-spinner {
             display: none;
             text-align: center;
@@ -396,6 +1088,80 @@
             background-clip: text;
             font-weight: 700;
         }
+
+        /* Better touch targets for mobile */
+        @media (hover: none) and (pointer: coarse) {
+            .btn {
+                min-height: 44px;
+                min-width: 44px;
+            }
+
+            .form-check-input {
+                width: 2rem;
+                height: 1rem;
+            }
+
+            .form-check {
+                padding-left: 2.5rem;
+            }
+        }
+
+        /* Prevent zoom on input focus in iOS */
+        @media screen and (max-width: 768px) {
+            select,
+            textarea,
+            input[type="text"],
+            input[type="password"],
+            input[type="datetime"],
+            input[type="datetime-local"],
+            input[type="date"],
+            input[type="month"],
+            input[type="time"],
+            input[type="week"],
+            input[type="number"],
+            input[type="email"],
+            input[type="url"] {
+                font-size: 16px !important;
+            }
+        }
+
+        /* Improve scrolling performance */
+        .table-responsive,
+        .card-body {
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Hide horizontal scrollbar but keep functionality */
+        .table-responsive::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .table-responsive::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .table-responsive::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 10px;
+        }
+
+        /* Better spacing for location suggestions on mobile */
+        #location-suggestions {
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        @media (max-width: 576px) {
+            #location-suggestions {
+                max-height: 180px;
+            }
+
+            #location-suggestions .list-group-item {
+                font-size: 0.85rem;
+                padding: 0.5rem 0.75rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -404,23 +1170,23 @@
             <a class="navbar-brand text-white" href="#">
                 <i class="fas fa-sun me-2"></i>Chaughadiya
             </a>
-            <div class="d-flex gap-3 ms-auto align-items-center">
+            <div class="d-flex gap-2 gap-md-3 ms-auto align-items-center flex-wrap justify-content-end">
                 <button class="btn btn-sm btn-outline-light" id="favoritesBtn" title="Favorite Locations">
-                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i><span class="d-none d-sm-inline ms-1">Favorites</span>
                 </button>
                 <button class="btn btn-sm btn-outline-light" id="shareBtn" title="Share Results" style="display: none;">
-                    <i class="fas fa-share-alt"></i>
+                    <i class="fas fa-share-alt"></i><span class="d-none d-sm-inline ms-1">Share</span>
                 </button>
-                <div class="form-check form-switch">
+                <div class="form-check form-switch mb-0">
                     <input class="form-check-input" type="checkbox" id="timeFormatSwitcher">
                     <label class="form-check-label text-white" for="timeFormatSwitcher">
-                        <i class="fas fa-clock me-1"></i>24-Hour
+                        <i class="fas fa-clock me-1"></i><span class="d-none d-md-inline">24-Hour</span>
                     </label>
                 </div>
-                <div class="form-check form-switch">
+                <div class="form-check form-switch mb-0">
                     <input class="form-check-input" type="checkbox" id="themeSwitcher">
                     <label class="form-check-label text-white" for="themeSwitcher">
-                        <i class="fas fa-moon me-1"></i>Dark Mode
+                        <i class="fas fa-moon me-1"></i><span class="d-none d-md-inline">Dark</span>
                     </label>
                 </div>
             </div>
@@ -436,7 +1202,7 @@
             
             <!-- Input Section -->
             <div class="card mb-4">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header div-heading-headers text-white">
                     <h5 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Enter Details</h5>
                 </div>
                 <div class="card-body">
@@ -492,7 +1258,7 @@
                         </div>
                         
                         <div class="row mb-3">
-                            <div class="col-lg-8">
+                            <div class="col-lg-8 mb-3 mb-lg-0">
                                 <div id="map" style="height: 300px;"></div>
                             </div>
                             
@@ -518,7 +1284,7 @@
 
             <!-- Results Section -->
             <div class="card mb-4">
-                <div class="card-header bg-info text-white">
+                <div class="card-header div-heading-headers text-white">
                     <h5 class="mb-0"><i class="fas fa-star me-2"></i>Results</h5>
                 </div>
                 <div class="card-body">
@@ -539,32 +1305,32 @@
 
             <!-- Muhurat Information (Always visible) -->
             <div class="card mt-4">
-                <div class="card-header bg-gradient text-white" style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));">
+                <div class="card-header div-heading-headers text-white">
                     <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Muhurat Meanings</h5>
                 </div>
-                <div class="card-body">
+                <div class="card-body muhurat-meanings">
                     <div class="row">
                         <div class="col-lg-4 col-md-6 mb-3">
                             <div class="d-flex align-items-center">
-                                <i class="fas fa-gem fa-lg text-primary me-3"></i>
+                                <i class="fas fa-gem fa-lg text-success me-2 me-md-3"></i>
                                 <div>
-                                    <strong class="text-primary">Amrit</strong><br>
+                                    <strong class="text-success">Amrit</strong><br>
                                     <small class="text-muted">Nectar - Very auspicious</small>
                                 </div>
                             </div>
                         </div>
                         <div class="col-lg-4 col-md-6 mb-3">
                             <div class="d-flex align-items-center">
-                                <i class="fas fa-star fa-lg text-info me-3"></i>
+                                <i class="fas fa-star fa-lg text-success me-2 me-md-3"></i>
                                 <div>
-                                    <strong class="text-info">Shubh</strong><br>
+                                    <strong class="text-success">Shubh</strong><br>
                                     <small class="text-muted">Auspicious - Good for all work</small>
                                 </div>
                             </div>
                         </div>
                         <div class="col-lg-4 col-md-6 mb-3">
                             <div class="d-flex align-items-center">
-                                <i class="fas fa-coins fa-lg text-success me-3"></i>
+                                <i class="fas fa-coins fa-lg text-success me-2 me-md-3"></i>
                                 <div>
                                     <strong class="text-success">Labh</strong><br>
                                     <small class="text-muted">Profit - Good for business</small>
@@ -573,7 +1339,7 @@
                         </div>
                         <div class="col-lg-4 col-md-6 mb-3">
                             <div class="d-flex align-items-center">
-                                <i class="fas fa-route fa-lg text-secondary me-3"></i>
+                                <i class="fas fa-route fa-lg text-secondary me-2 me-md-3"></i>
                                 <div>
                                     <strong class="text-secondary">Chal</strong><br>
                                     <small class="text-muted">Movement - Good for travel</small>
@@ -582,16 +1348,16 @@
                         </div>
                         <div class="col-lg-4 col-md-6 mb-3">
                             <div class="d-flex align-items-center">
-                                <i class="fas fa-user-injured fa-lg text-warning me-3"></i>
+                                <i class="fas fa-user-injured fa-lg text-danger me-2 me-md-3"></i>
                                 <div>
-                                    <strong class="text-warning">Rog</strong><br>
+                                    <strong class="text-danger">Rog</strong><br>
                                     <small class="text-muted">Illness - Health concerns</small>
                                 </div>
                             </div>
                         </div>
                         <div class="col-lg-4 col-md-6 mb-3">
                             <div class="d-flex align-items-center">
-                                <i class="fas fa-times-circle fa-lg text-danger me-3"></i>
+                                <i class="fas fa-times-circle fa-lg text-danger me-2 me-md-3"></i>
                                 <div>
                                     <strong class="text-danger">Udveg</strong><br>
                                     <small class="text-muted">Inauspicious - Avoid important tasks</small>
@@ -600,15 +1366,15 @@
                         </div>
                         <div class="col-lg-4 col-md-6 mb-3">
                             <div class="d-flex align-items-center">
-                                <i class="fas fa-exclamation-triangle fa-lg text-dark me-3"></i>
+                                <i class="fas fa-exclamation-triangle fa-lg text-danger me-2 me-md-3"></i>
                                 <div>
-                                    <strong class="text-dark">Kaal</strong><br>
+                                    <strong class="text-danger">Kaal</strong><br>
                                     <small class="text-muted">Very Inauspicious - Not favorable for new ventures</small>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="alert alert-info mt-3">
+                    <div class="alert alert-info mt-3 mb-0">
                         <i class="fas fa-lightbulb me-2"></i>
                         <strong>Tip:</strong> Use <strong>Amrit</strong> and <strong>Shubh</strong> muhurats for important activities. 
                         Avoid <strong>Kaal</strong> and <strong>Udveg</strong> periods for new ventures.
@@ -648,15 +1414,6 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Shareable Link</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="shareUrl" readonly>
-                            <button class="btn btn-primary" id="copyUrlBtn">
-                                <i class="fas fa-copy"></i> Copy
-                            </button>
-                        </div>
-                    </div>
                     <div class="d-grid gap-2">
                         <button class="btn btn-success" id="exportImageBtn">
                             <i class="fas fa-image me-2"></i>Export as Image
@@ -669,6 +1426,51 @@
             </div>
         </div>
     </div>
+
+    <!-- Creative Footer -->
+    <footer class="creative-footer">
+        <div class="container">
+            <div class="footer-content">
+                <!-- Decorative Divider -->
+                <div class="footer-divider">
+                    <div class="footer-divider-line"></div>
+                    <span class="footer-divider-icon">🕉️</span>
+                    <div class="footer-divider-line"></div>
+                </div>
+
+                <!-- Main Attribution -->
+                <div class="footer-text">
+                    <span>Crafted with</span>
+                    <span class="footer-heart">❤️</span>
+                    <span>by</span>
+                    <div class="footer-link-container" id="footerFlipCard">
+                        <div class="footer-link">
+                            <div class="footer-link-front">
+                                <i class="fab fa-github footer-icon"></i>
+                                <span>codechaser</span>
+                            </div>
+                            <div class="footer-link-back">
+                                <i class="fas fa-user footer-icon"></i>
+                                <span>Yashvardhan Baid</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Subtitle -->
+                <div class="footer-subtext">
+                    <span>Empowering auspicious decisions through ancient Vedic wisdom</span>
+                </div>
+
+                <!-- Inspirational Quote -->
+                <div class="footer-quote">
+                    <i class="fas fa-quote-left me-2"></i>
+                    कालस्य महिमा महान् | Time is the greatest force
+                    <i class="fas fa-quote-right ms-2"></i>
+                </div>
+            </div>
+        </div>
+    </footer>
 
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -689,6 +1491,15 @@
             const htmlElement = document.documentElement;
             let is24HourFormat = false;
 
+            // Footer flip card functionality
+            const footerFlipCard = document.getElementById('footerFlipCard');
+            if (footerFlipCard) {
+                footerFlipCard.addEventListener('click', function() {
+                    const card = this.querySelector('.footer-link');
+                    card.classList.toggle('flipped');
+                });
+            }
+
             // Load saved preferences
             function loadPreferences() {
                 const savedDarkMode = localStorage.getItem('chaughadiya_darkMode') === 'true';
@@ -702,22 +1513,6 @@
                 if (saved24Hour) {
                     timeFormatSwitcher.checked = true;
                     is24HourFormat = true;
-                }
-
-                // Load last used location and timezone
-                const lastLocation = localStorage.getItem('chaughadiya_lastLocation');
-                if (lastLocation) {
-                    const locData = JSON.parse(lastLocation);
-                    locationInput.value = locData.name;
-                    latitude = locData.lat;
-                    longitude = locData.lng;
-                    marker.setLatLng([latitude, longitude]);
-                    map.setView([latitude, longitude], 10);
-                }
-
-                const lastTimezone = localStorage.getItem('chaughadiya_lastTimezone');
-                if (lastTimezone && timezoneSelect.querySelector(`option[value="${lastTimezone}"]`)) {
-                    timezoneSelect.value = lastTimezone;
                 }
             }
 
@@ -759,15 +1554,59 @@
                 favoritesModal.show();
             });
 
-            shareBtn.addEventListener('click', () => {
-                const shareUrl = generateShareUrl();
-                document.getElementById('shareUrl').value = shareUrl;
-                shareModal.show();
-            });
-
-            document.getElementById('copyUrlBtn').addEventListener('click', () => {
-                const shareUrl = document.getElementById('shareUrl').value;
-                copyToClipboard(shareUrl);
+            shareBtn.addEventListener('click', async () => {
+                if (!lastApiResponse) {
+                    alert('Please fetch chaughadiya data first');
+                    return;
+                }
+                
+                // Show a quick action menu instead of just the modal
+                // const choice = confirm('Generate shareable image card?\n\nOK = Generate & Download Image\nCancel = Show sharing options');
+                
+                const choice = false;
+                if (choice) {
+                    // Direct download
+                    const btn = shareBtn;
+                    const originalText = btn.innerHTML;
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span class="d-none d-sm-inline ms-1">Generating...</span>';
+                    btn.disabled = true;
+                    
+                    try {
+                        const canvas = await generateShareableCard(lastApiResponse);
+                        
+                        canvas.toBlob(function(blob) {
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = `chaughadiya-${lastApiResponse.date}-${locationInput.value.substring(0, 30).replace(/[^a-zA-Z0-9]/g, '-')}.png`;
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                            URL.revokeObjectURL(url);
+                            
+                            btn.innerHTML = originalText;
+                            btn.disabled = false;
+                            
+                            // Show success message
+                            const toast = document.createElement('div');
+                            toast.className = 'position-fixed top-0 start-50 translate-middle-x mt-3 alert alert-success animate-fade-in';
+                            toast.style.zIndex = '9999';
+                            toast.innerHTML = '<i class="fas fa-check-circle me-2"></i>Image downloaded successfully!';
+                            document.body.appendChild(toast);
+                            setTimeout(() => {
+                                toast.remove();
+                            }, 3000);
+                        }, 'image/png');
+                    } catch (error) {
+                        console.error('Error generating image:', error);
+                        alert('Failed to generate image. Please try again.');
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                    }
+                } else {
+                    // Show modal with more options
+                    shareModal.show();
+                }
             });
 
             document.getElementById('exportCsvBtn').addEventListener('click', () => {
@@ -853,6 +1692,9 @@
 
             function updateLiveMuhurat() {
                 if (!window.currentData || !window.currentTimezone) return;
+
+                // Only update if viewing today's date
+                if (!isDateTodayInTimezone(window.currentData.date, window.currentTimezone)) return;
 
                 const current = getCurrentMuhurat(window.currentData, window.currentTimezone);
                 if (!current) return;
@@ -1057,8 +1899,19 @@
                 const data = window.currentData.chaughadiya;
                 let csv = 'Serial,Muhurat,Start Time,End Time,Period\n';
                 
+                // Helper to determine day/night based on sunrise/sunset
+                const timeToSeconds = (timeStr) => {
+                    const [h, m, s] = timeStr.split(':').map(Number);
+                    return h * 3600 + m * 60 + s;
+                };
+                const sunriseSeconds = timeToSeconds(window.currentData['sunrise-time']);
+                const sunsetSeconds = timeToSeconds(window.currentData['sunset-time']);
+                
                 data.forEach((muhurat, index) => {
-                    const isDay = index >= 8 && index < 16;
+                    const muhuratSeconds = timeToSeconds(muhurat['start-time']);
+                    const isDay = sunsetSeconds < sunriseSeconds 
+                        ? (muhuratSeconds >= sunriseSeconds || muhuratSeconds < sunsetSeconds)
+                        : (muhuratSeconds >= sunriseSeconds && muhuratSeconds < sunsetSeconds);
                     const period = isDay ? 'Day' : 'Night';
                     csv += `${index + 1},${muhurat.muhurat},${muhurat['start-time']},${muhurat['end-time']},${period}\n`;
                 });
@@ -1072,10 +1925,635 @@
                 window.URL.revokeObjectURL(url);
             }
 
-            // Export as image (simplified version)
-            function exportAsImage() {
-                alert('Tip: You can use your browser\'s print function (Ctrl/Cmd + P) and save as PDF for a high-quality export!');
-                window.print();
+            // Export as image - generates a beautiful shareable card
+            async function exportAsImage() {
+                if (!lastApiResponse) {
+                    alert('Please fetch chaughadiya data first');
+                    return;
+                }
+                
+                // Show loading state
+                const btn = document.getElementById('exportImageBtn');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Generating...';
+                btn.disabled = true;
+                
+                try {
+                    const canvas = await generateShareableCard(lastApiResponse);
+                    
+                    // Convert canvas to blob and download
+                    canvas.toBlob(function(blob) {
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `chaughadiya-${lastApiResponse.date}-${locationInput.value.substring(0, 30)}.png`;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                        
+                        // Reset button state
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                    }, 'image/png');
+                } catch (error) {
+                    console.error('Error generating image:', error);
+                    alert('Failed to generate image. Please try again.');
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+            }
+            
+            // Generate professional shareable card with elegant table design
+            async function generateShareableCard(data) {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                // High resolution canvas for better quality - dynamic height based on muhurats
+                const scale = 2;
+                const width = 1200;
+                const muhuratCount = data.chaughadiya.length;
+                const rowHeight = 45;
+                const baseHeight = 670; // Header + info + stats + timeline + footer (with creator credit) + padding
+                const height = baseHeight + (muhuratCount * rowHeight);
+                
+                canvas.width = width * scale;
+                canvas.height = height * scale;
+                ctx.scale(scale, scale);
+                
+                
+                // Current theme
+                const isDarkTheme = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+                
+                // Professional color palette
+                const colors = {
+                    primary: '#FF9933',
+                    secondary: '#800000',
+                    accent: '#138808',
+                    background: isDarkTheme ? '#1a1d29' : '#FFFFFF',
+                    headerBg: '#800000',
+                    cardBg: isDarkTheme ? '#2c3e50' : '#FFFFFF',
+                    text: isDarkTheme ? '#ECF0F1' : '#1a1a1a',
+                    textSecondary: isDarkTheme ? '#BDC3C7' : '#555555',
+                    border: isDarkTheme ? '#555555' : '#DDDDDD',
+                    tableBorder: isDarkTheme ? '#444444' : '#CCCCCC',
+                    tableHeader: isDarkTheme ? '#34495e' : '#F5F5F5',
+                    success: '#28a745',
+                    danger: '#dc3545',
+                    info: '#17a2b8',
+                    lightBg: '#F9F9F9'
+                };
+                
+                // Muhurat info with colors and meanings
+                const muhuratInfo = {
+                    'Amrit': { color: colors.success, bg: '#d4edda', icon: '✓', meaning: 'Auspicious' },
+                    'Shubh': { color: colors.success, bg: '#d4edda', icon: '✓', meaning: 'Auspicious' },
+                    'Labh': { color: colors.success, bg: '#d4edda', icon: '✓', meaning: 'Auspicious' },
+                    'Chal': { color: colors.info, bg: '#d1ecf1', icon: '○', meaning: 'Neutral' },
+                    'Udveg': { color: colors.danger, bg: '#f8d7da', icon: '✗', meaning: 'Inauspicious' },
+                    'Kaal': { color: colors.danger, bg: '#f8d7da', icon: '✗', meaning: 'Inauspicious' },
+                    'Rog': { color: colors.danger, bg: '#f8d7da', icon: '✗', meaning: 'Inauspicious' }
+                };
+                
+                // Clean background
+                ctx.fillStyle = colors.background;
+                ctx.fillRect(0, 0, width, height);
+                
+                // Header section with brand
+                const headerHeight = 100;
+                ctx.fillStyle = colors.headerBg;
+                ctx.fillRect(0, 0, width, headerHeight);
+                
+                // Accent line under header
+                ctx.fillStyle = colors.primary;
+                ctx.fillRect(0, headerHeight, width, 4);
+                
+                // Title - matching website header
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 48px Arial, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('☀️ Chaughadiya 🌙', width / 2, 65);
+                
+                // Content area
+                let yPos = headerHeight + 40;
+                const margin = 60;
+                const contentWidth = width - (margin * 2);
+                
+                // Date - larger and prominent
+                ctx.fillStyle = colors.text;
+                ctx.font = 'bold 34px Arial, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(formatDateForDisplay(data.date), width / 2, yPos);
+                
+                yPos += 40;
+                
+                // Location
+                ctx.font = '22px Arial, sans-serif';
+                ctx.fillStyle = colors.textSecondary;
+                const locationText = locationInput.value || `${latitude.toFixed(4)}°, ${longitude.toFixed(4)}°`;
+                ctx.fillText('📍 ' + truncateText(locationText, 60), width / 2, yPos);
+                
+                yPos += 35;
+                
+                // Timezone info
+                ctx.font = '18px Arial, sans-serif';
+                ctx.fillStyle = colors.textSecondary;
+                ctx.fillText(`🌍 ${timezoneSelect.value}`, width / 2, yPos);
+                
+                yPos += 45;
+                
+                // Sunrise and Sunset info box - enhanced
+                const sunInfoBoxHeight = 65;
+                const sunInfoBoxY = yPos;
+                
+                // Background box for sun info
+                ctx.fillStyle = isDarkTheme ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.03)';
+                ctx.fillRect(margin, sunInfoBoxY, contentWidth, sunInfoBoxHeight);
+                
+                // Border
+                ctx.strokeStyle = colors.border;
+                ctx.lineWidth = 1;
+                ctx.strokeRect(margin, sunInfoBoxY, contentWidth, sunInfoBoxHeight);
+                
+                // Sunrise section
+                ctx.font = 'bold 18px Arial, sans-serif';
+                ctx.fillStyle = '#FF8C00';
+                ctx.textAlign = 'center';
+                ctx.fillText('☀️ SUNRISE', margin + contentWidth * 0.25, sunInfoBoxY + 25);
+                ctx.fillStyle = colors.text;
+                ctx.font = 'bold 24px Courier New, monospace';
+                ctx.fillText(formatTime(roundTimeToMinute(data['sunrise-time']), is24HourFormat), 
+                    margin + contentWidth * 0.25, sunInfoBoxY + 50);
+                
+                // Vertical divider
+                ctx.strokeStyle = colors.border;
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(width / 2, sunInfoBoxY + 10);
+                ctx.lineTo(width / 2, sunInfoBoxY + sunInfoBoxHeight - 10);
+                ctx.stroke();
+                
+                // Sunset section
+                ctx.font = 'bold 18px Arial, sans-serif';
+                ctx.fillStyle = '#FF6347';
+                ctx.fillText('🌙 SUNSET', margin + contentWidth * 0.75, sunInfoBoxY + 25);
+                ctx.fillStyle = colors.text;
+                ctx.font = 'bold 24px Courier New, monospace';
+                ctx.fillText(formatTime(roundTimeToMinute(data['sunset-time']), is24HourFormat), 
+                    margin + contentWidth * 0.75, sunInfoBoxY + 50);
+                
+                yPos += sunInfoBoxHeight + 40;
+                
+                // Quick Statistics Bar
+                const muhuratCounts = {
+                    'Auspicious': 0,
+                    'Neutral': 0,
+                    'Inauspicious': 0
+                };
+                
+                data.chaughadiya.forEach(m => {
+                    if (['Amrit', 'Shubh', 'Labh'].includes(m.muhurat)) {
+                        muhuratCounts['Auspicious']++;
+                    } else if (['Udveg', 'Kaal', 'Rog'].includes(m.muhurat)) {
+                        muhuratCounts['Inauspicious']++;
+                    } else {
+                        muhuratCounts['Neutral']++;
+                    }
+                });
+                
+                // Stats boxes
+                const statsBoxHeight = 55;
+                const statsBoxWidth = (contentWidth - 40) / 3;
+                
+                // Auspicious box
+                ctx.fillStyle = colors.success + '15';
+                ctx.fillRect(margin, yPos, statsBoxWidth, statsBoxHeight);
+                ctx.strokeStyle = colors.success;
+                ctx.lineWidth = 2;
+                ctx.strokeRect(margin, yPos, statsBoxWidth, statsBoxHeight);
+                
+                ctx.fillStyle = colors.success;
+                ctx.font = 'bold 24px Arial, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(muhuratCounts['Auspicious'], margin + statsBoxWidth / 2, yPos + 25);
+                ctx.font = '14px Arial, sans-serif';
+                ctx.fillText('Auspicious', margin + statsBoxWidth / 2, yPos + 45);
+                
+                // Neutral box
+                ctx.fillStyle = colors.info + '15';
+                ctx.fillRect(margin + statsBoxWidth + 20, yPos, statsBoxWidth, statsBoxHeight);
+                ctx.strokeStyle = colors.info;
+                ctx.lineWidth = 2;
+                ctx.strokeRect(margin + statsBoxWidth + 20, yPos, statsBoxWidth, statsBoxHeight);
+                
+                ctx.fillStyle = colors.info;
+                ctx.font = 'bold 24px Arial, sans-serif';
+                ctx.fillText(muhuratCounts['Neutral'], margin + statsBoxWidth + 20 + statsBoxWidth / 2, yPos + 25);
+                ctx.font = '14px Arial, sans-serif';
+                ctx.fillText('Neutral', margin + statsBoxWidth + 20 + statsBoxWidth / 2, yPos + 45);
+                
+                // Inauspicious box
+                ctx.fillStyle = colors.danger + '15';
+                ctx.fillRect(margin + (statsBoxWidth + 20) * 2, yPos, statsBoxWidth, statsBoxHeight);
+                ctx.strokeStyle = colors.danger;
+                ctx.lineWidth = 2;
+                ctx.strokeRect(margin + (statsBoxWidth + 20) * 2, yPos, statsBoxWidth, statsBoxHeight);
+                
+                ctx.fillStyle = colors.danger;
+                ctx.font = 'bold 24px Arial, sans-serif';
+                ctx.fillText(muhuratCounts['Inauspicious'], margin + (statsBoxWidth + 20) * 2 + statsBoxWidth / 2, yPos + 25);
+                ctx.font = '14px Arial, sans-serif';
+                ctx.fillText('Inauspicious', margin + (statsBoxWidth + 20) * 2 + statsBoxWidth / 2, yPos + 45);
+                
+                yPos += statsBoxHeight + 40;
+                
+                // Table Header
+                const tableX = margin;
+                const colWidths = [80, 270, 250, 250, 227]; // Serial, Muhurat, Start, End, Period
+                const tableWidth = colWidths.reduce((a, b) => a + b, 0);
+                
+                // Shadow effect for table
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.1)';
+                ctx.shadowBlur = 10;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 2;
+                
+                // Draw table header background
+                ctx.fillStyle = colors.tableHeader;
+                ctx.fillRect(tableX, yPos, tableWidth, rowHeight);
+                
+                // Reset shadow
+                ctx.shadowColor = 'transparent';
+                ctx.shadowBlur = 0;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 0;
+                
+                // Table header border
+                ctx.strokeStyle = colors.tableBorder;
+                ctx.lineWidth = 2;
+                ctx.strokeRect(tableX, yPos, tableWidth, rowHeight);
+                
+                // Draw vertical column dividers in header
+                let xPos = tableX;
+                for (let i = 0; i < colWidths.length - 1; i++) {
+                    xPos += colWidths[i];
+                    ctx.beginPath();
+                    ctx.moveTo(xPos, yPos);
+                    ctx.lineTo(xPos, yPos + rowHeight);
+                    ctx.stroke();
+                }
+                
+                // Table header text
+                ctx.fillStyle = colors.text;
+                ctx.font = 'bold 18px Arial, sans-serif';
+                ctx.textAlign = 'center';
+                
+                const headers = ['#', 'Muhurat', 'Start Time', 'End Time', 'Period'];
+                xPos = tableX;
+                headers.forEach((header, index) => {
+                    ctx.fillText(header, xPos + colWidths[index] / 2, yPos + 28);
+                    xPos += colWidths[index];
+                });
+                
+                yPos += rowHeight;
+                
+                // Helper to determine day/night with error handling
+                const timeToSeconds = (timeStr) => {
+                    if (!timeStr || typeof timeStr !== 'string') {
+                        console.warn('Invalid time string:', timeStr);
+                        return 0;
+                    }
+                    const parts = timeStr.split(':');
+                    if (parts.length !== 3) {
+                        console.warn('Invalid time format:', timeStr);
+                        return 0;
+                    }
+                    const [h, m, s] = parts.map(Number);
+                    return h * 3600 + m * 60 + s;
+                };
+                const sunriseSeconds = timeToSeconds(data['sunrise-time']);
+                const sunsetSeconds = timeToSeconds(data['sunset-time']);
+                
+                // Check if viewing today's date (needed for timeline and current muhurat)
+                const isTodayInTimezone = isDateTodayInTimezone(data.date, timezoneSelect.value);
+                
+                // Draw table rows
+                data.chaughadiya.forEach((muhurat, index) => {
+                    const muhuratSeconds = timeToSeconds(muhurat['start-time']);
+                    const isDay = sunsetSeconds < sunriseSeconds 
+                        ? (muhuratSeconds >= sunriseSeconds || muhuratSeconds < sunsetSeconds)
+                        : (muhuratSeconds >= sunriseSeconds && muhuratSeconds < sunsetSeconds);
+                    const period = isDay ? '☀️ Day' : '🌙 Night';
+                    
+                    const info = muhuratInfo[muhurat.muhurat] || { color: colors.info, bg: '#e7f3f8', icon: '○', meaning: 'Neutral' };
+                    
+                    // Calculate duration
+                    const startSeconds = timeToSeconds(muhurat['start-time']);
+                    const endSeconds = timeToSeconds(muhurat['end-time']);
+                    let durationSeconds = endSeconds - startSeconds;
+                    if (durationSeconds < 0) durationSeconds += 86400; // Handle midnight crossing
+                    const hours = Math.floor(durationSeconds / 3600);
+                    const minutes = Math.floor((durationSeconds % 3600) / 60);
+                    const durationText = `${hours}h ${minutes}m`;
+                    
+                    // Highlight current muhurat
+                    const currentMuhuratData = isTodayInTimezone ? getCurrentMuhurat(data, timezoneSelect.value) : null;
+                    const isCurrent = currentMuhuratData && currentMuhuratData.muhurat.muhurat === muhurat.muhurat &&
+                                     currentMuhuratData.muhurat['start-time'] === muhurat['start-time'];
+                    
+                    // Row background - alternate colors
+                    if (isCurrent) {
+                        ctx.fillStyle = info.bg;
+                    } else {
+                        ctx.fillStyle = index % 2 === 0 ? colors.background : (isDarkTheme ? '#252b38' : '#FAFAFA');
+                    }
+                    ctx.fillRect(tableX, yPos, tableWidth, rowHeight);
+                    
+                    // Left border accent for current muhurat
+                    if (isCurrent) {
+                        ctx.fillStyle = info.color;
+                        ctx.fillRect(tableX, yPos, 5, rowHeight);
+                    }
+                    
+                    // Row border
+                    ctx.strokeStyle = colors.tableBorder;
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(tableX, yPos, tableWidth, rowHeight);
+                    
+                    // Draw vertical column dividers
+                    xPos = tableX;
+                    for (let i = 0; i < colWidths.length - 1; i++) {
+                        xPos += colWidths[i];
+                        ctx.strokeStyle = colors.tableBorder;
+                        ctx.lineWidth = 0.5;
+                        ctx.beginPath();
+                        ctx.moveTo(xPos, yPos);
+                        ctx.lineTo(xPos, yPos + rowHeight);
+                        ctx.stroke();
+                    }
+                    
+                    // Cell content
+                    ctx.fillStyle = colors.text;
+                    ctx.font = '17px Arial, sans-serif';
+                    ctx.textAlign = 'center';
+                    
+                    xPos = tableX;
+                    
+                    // Serial number with circle background for current
+                    if (isCurrent) {
+                        ctx.fillStyle = info.color;
+                        ctx.beginPath();
+                        ctx.arc(xPos + colWidths[0] / 2, yPos + rowHeight / 2, 16, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.fillStyle = '#ffffff';
+                        ctx.font = 'bold 17px Arial, sans-serif';
+                    } else {
+                        ctx.fillStyle = colors.textSecondary;
+                    }
+                    ctx.fillText(String(index + 1), xPos + colWidths[0] / 2, yPos + 28);
+                    xPos += colWidths[0];
+                    
+                    // Muhurat name with icon and color
+                    ctx.fillStyle = info.color;
+                    ctx.font = 'bold 19px Arial, sans-serif';
+                    ctx.fillText(`${info.icon} ${muhurat.muhurat}`, xPos + colWidths[1] / 2, yPos + 28);
+                    xPos += colWidths[1];
+                    
+                    // Start time
+                    ctx.fillStyle = colors.text;
+                    ctx.font = '17px Courier New, monospace';
+                    ctx.fillText(formatTime(roundTimeToMinute(muhurat['start-time']), is24HourFormat), 
+                        xPos + colWidths[2] / 2, yPos + 28);
+                    xPos += colWidths[2];
+                    
+                    // End time
+                    ctx.fillText(formatTime(roundTimeToMinute(muhurat['end-time']), is24HourFormat), 
+                        xPos + colWidths[3] / 2, yPos + 28);
+                    xPos += colWidths[3];
+                    
+                    // Period
+                    ctx.fillStyle = colors.textSecondary;
+                    ctx.font = '17px Arial, sans-serif';
+                    ctx.fillText(period, xPos + colWidths[4] / 2, yPos + 28);
+                    
+                    // Add "LIVE" pulse badge if it's the current muhurat
+                    if (isCurrent) {
+                        ctx.fillStyle = info.color;
+                        ctx.font = 'bold 12px Arial, sans-serif';
+                        ctx.textAlign = 'left';
+                        
+                        // Draw pulsing circle (simulated)
+                        ctx.globalAlpha = 0.3;
+                        ctx.beginPath();
+                        ctx.arc(tableX + 15, yPos + 10, 8, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.globalAlpha = 1;
+                        
+                        ctx.beginPath();
+                        ctx.arc(tableX + 15, yPos + 10, 5, 0, Math.PI * 2);
+                        ctx.fill();
+                        
+                        ctx.fillStyle = '#ffffff';
+                        ctx.font = 'bold 10px Arial, sans-serif';
+                        ctx.textAlign = 'center';
+                        ctx.fillText('●', tableX + 15, yPos + 13);
+                    }
+                    
+                    yPos += rowHeight;
+                });
+                
+                // Footer with visual timeline
+                yPos += 40;
+                
+                // Add a visual 24-hour timeline
+                const timelineHeight = 60;
+                const timelineY = yPos;
+                const timelineWidth = contentWidth;
+                
+                // Timeline background
+                ctx.fillStyle = isDarkTheme ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
+                ctx.fillRect(margin, timelineY, timelineWidth, timelineHeight);
+                
+                // Timeline border
+                ctx.strokeStyle = colors.border;
+                ctx.lineWidth = 1;
+                ctx.strokeRect(margin, timelineY, timelineWidth, timelineHeight);
+                
+                // Draw timeline label
+                ctx.fillStyle = colors.text;
+                ctx.font = 'bold 14px Arial, sans-serif';
+                ctx.textAlign = 'left';
+                ctx.fillText('24-Hour Timeline:', margin + 10, timelineY + 18);
+                
+                // Draw muhurat blocks on timeline
+                const timelineBarY = timelineY + 28;
+                const timelineBarHeight = 25;
+                const pixelsPerSecond = timelineWidth / 86400; // 24 hours in seconds
+                
+                data.chaughadiya.forEach((muhurat, index) => {
+                    const info = muhuratInfo[muhurat.muhurat] || { color: colors.info, bg: '#e7f3f8', icon: '○', meaning: 'Neutral' };
+                    const startSeconds = timeToSeconds(muhurat['start-time']);
+                    const endSeconds = timeToSeconds(muhurat['end-time']);
+                    let durationSeconds = endSeconds - startSeconds;
+                    if (durationSeconds < 0) durationSeconds += 86400;
+                    
+                    const blockX = margin + (startSeconds * pixelsPerSecond);
+                    const blockWidth = durationSeconds * pixelsPerSecond;
+                    
+                    ctx.fillStyle = info.color + '80'; // Semi-transparent
+                    ctx.fillRect(blockX, timelineBarY, blockWidth, timelineBarHeight);
+                    
+                    // Block border
+                    ctx.strokeStyle = info.color;
+                    ctx.lineWidth = 0.5;
+                    ctx.strokeRect(blockX, timelineBarY, blockWidth, timelineBarHeight);
+                });
+                
+                // Add sunrise and sunset markers
+                const sunriseSecondsTimeline = timeToSeconds(data['sunrise-time']);
+                const sunsetSecondsTimeline = timeToSeconds(data['sunset-time']);
+                
+                // Sunrise marker
+                const sunriseX = margin + (sunriseSecondsTimeline * pixelsPerSecond);
+                ctx.strokeStyle = '#FF8C00';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(sunriseX, timelineBarY);
+                ctx.lineTo(sunriseX, timelineBarY + timelineBarHeight);
+                ctx.stroke();
+                
+                // Sunset marker
+                const sunsetX = margin + (sunsetSecondsTimeline * pixelsPerSecond);
+                ctx.strokeStyle = '#FF6347';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(sunsetX, timelineBarY);
+                ctx.lineTo(sunsetX, timelineBarY + timelineBarHeight);
+                ctx.stroke();
+                
+                // Current time marker if today
+                if (isTodayInTimezone) {
+                    try {
+                        const now = new Date();
+                        const timeString = now.toLocaleString('en-US', { 
+                            timeZone: timezoneSelect.value, 
+                            hour12: false, 
+                            hour: '2-digit', 
+                            minute: '2-digit', 
+                            second: '2-digit' 
+                        });
+                        
+                        // Extract time portion (format can vary, so handle both "date, time" and just "time")
+                        let currentTime;
+                        if (timeString.includes(',')) {
+                            currentTime = timeString.split(', ')[1];
+                        } else {
+                            // If no comma, try to extract just the time part
+                            const timeParts = timeString.match(/(\d{2}):(\d{2}):(\d{2})/);
+                            if (timeParts) {
+                                currentTime = `${timeParts[1]}:${timeParts[2]}:${timeParts[3]}`;
+                            }
+                        }
+                        
+                        if (currentTime) {
+                            const currentSeconds = timeToSeconds(currentTime);
+                            const currentX = margin + (currentSeconds * pixelsPerSecond);
+                            
+                            // Draw pulsing marker
+                            ctx.strokeStyle = '#FF0000';
+                            ctx.lineWidth = 3;
+                            ctx.beginPath();
+                            ctx.moveTo(currentX, timelineBarY - 5);
+                            ctx.lineTo(currentX, timelineBarY + timelineBarHeight + 5);
+                            ctx.stroke();
+                            
+                            // Arrow at top
+                            ctx.fillStyle = '#FF0000';
+                            ctx.beginPath();
+                            ctx.moveTo(currentX, timelineBarY - 5);
+                            ctx.lineTo(currentX - 5, timelineBarY - 10);
+                            ctx.lineTo(currentX + 5, timelineBarY - 10);
+                            ctx.closePath();
+                            ctx.fill();
+                        }
+                    } catch (error) {
+                        console.warn('Could not draw current time marker:', error);
+                    }
+                }
+                
+                yPos += timelineHeight + 30;
+                
+                // Footer text with creator credit
+                ctx.fillStyle = colors.textSecondary;
+                ctx.font = '15px Arial, sans-serif';
+                ctx.textAlign = 'center';
+                
+                // Main line
+                ctx.fillText('Generated by Chaughadiya App  •  ' + new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }), width / 2, yPos);
+                
+                yPos += 22;
+                
+                // Creator credit - subtle and smaller
+                ctx.font = '13px Arial, sans-serif';
+                ctx.fillStyle = isDarkTheme ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.4)';
+                ctx.fillText('created by codechaser / Yashvardhan Baid', width / 2, yPos);
+                
+                return canvas;
+            }
+            
+            // Helper function to draw rounded rectangles
+            function roundRect(ctx, x, y, width, height, radius) {
+                ctx.beginPath();
+                ctx.moveTo(x + radius, y);
+                ctx.lineTo(x + width - radius, y);
+                ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+                ctx.lineTo(x + width, y + height - radius);
+                ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+                ctx.lineTo(x + radius, y + height);
+                ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+                ctx.lineTo(x, y + radius);
+                ctx.quadraticCurveTo(x, y, x + radius, y);
+                ctx.closePath();
+            }
+            
+            // Helper function to format date for display
+            function formatDateForDisplay(dateString) {
+                const date = new Date(dateString + 'T00:00:00');
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                return date.toLocaleDateString('en-US', options);
+            }
+            
+            // Helper function to truncate text
+            function truncateText(text, maxLength) {
+                if (text.length <= maxLength) return text;
+                return text.substring(0, maxLength - 3) + '...';
+            }
+            
+            // Helper function to find next auspicious muhurat
+            function findNextAuspiciousMuhurat(data, userTimezone) {
+                if (!isDateTodayInTimezone(data.date, userTimezone)) {
+                    return null;
+                }
+                
+                const now = new Date();
+                const currentTime = now.toLocaleString('en-US', { 
+                    timeZone: userTimezone, 
+                    hour12: false, 
+                    hour: '2-digit', 
+                    minute: '2-digit', 
+                    second: '2-digit' 
+                }).split(', ')[1];
+                
+                const auspiciousMuhurats = ['Amrit', 'Shubh', 'Labh'];
+                
+                for (const muhurat of data.chaughadiya) {
+                    if (auspiciousMuhurats.includes(muhurat.muhurat) && 
+                        muhurat['start-time'] > currentTime) {
+                        return muhurat;
+                    }
+                }
+                
+                return null;
             }
 
             // Load from URL parameters
@@ -1121,6 +2599,7 @@
             const resultsContainer = document.getElementById('results-container');
             let latitude, longitude;
             let searchTimeout;
+            let lastApiResponse = null; // Store last response for sharing
 
             // Initialize date dropdowns
             function initializeDateDropdowns() {
@@ -1397,7 +2876,10 @@
                     }
                     
                     // Convert GMT times to user timezone
-                    const convertedData = convertChaughadiyaTimesToUserTimezone(data, timezone);
+                    let convertedData = convertChaughadiyaTimesToUserTimezone(data, timezone);
+                    
+                    // Apply truncation filters to ensure muhurats fit within 00:00:00 to 24:00:00
+                    convertedData = truncateMuhuratsToMidnight(convertedData);
                     
                     // Hide loading state
                     loadingSpinner.style.display = 'none';
@@ -1405,14 +2887,7 @@
                     // Store data globally for time format switching
                     window.currentData = convertedData;
                     window.currentTimezone = timezone;
-                    
-                    // Save last used location and timezone
-                    savePreference('lastLocation', JSON.stringify({
-                        name: locationInput.value,
-                        lat: latitude,
-                        lng: longitude
-                    }));
-                    savePreference('lastTimezone', timezone);
+                    lastApiResponse = convertedData; // Store for sharing
                     
                     displayResults(convertedData, timezone);
                 } catch (error) {
@@ -1508,6 +2983,75 @@
                 return convertedData;
             }
 
+            function truncateMuhuratsToMidnight(data) {
+                if (!data.chaughadiya || !Array.isArray(data.chaughadiya)) return data;
+                
+                // Clone the data
+                const truncatedData = { ...data };
+                let muhurats = [...data.chaughadiya];
+                
+                // Helper function to convert time string "HH:MM:SS" to seconds since midnight
+                const timeToSeconds = (timeStr) => {
+                    const [h, m, s] = timeStr.split(':').map(Number);
+                    return h * 3600 + m * 60 + s;
+                };
+                
+                // Helper function to check if end_time < start_time (wraps to next day)
+                const isWrappedToNextDay = (startTime, endTime) => {
+                    return timeToSeconds(endTime) <= timeToSeconds(startTime);
+                };
+                
+                // Filter 1: Remove muhurats from the start until we find one where:
+                // (end_time < start_time) OR (start_time == 00:00:00)
+                let startIndex = 0;
+                for (let i = 0; i < muhurats.length; i++) {
+                    const muhurat = muhurats[i];
+                    const startTime = muhurat['start-time'];
+                    const endTime = muhurat['end-time'];
+                    
+                    if (isWrappedToNextDay(startTime, endTime) || startTime === '00:00:00') {
+                        startIndex = i;
+                        // Set start time to 00:00:00 for this muhurat
+                        muhurats[i] = { ...muhurat, 'start-time': '00:00:00' };
+                        break;
+                    }
+                }
+                
+                // Remove muhurats before startIndex
+                muhurats = muhurats.slice(startIndex);
+                
+                // Filter 2: Remove muhurats from the end (in reverse) until we find one where:
+                // (end_time < start_time) OR (end_time == 00:00:00)
+                let endIndex = muhurats.length;
+                for (let i = muhurats.length - 1; i >= 0; i--) {
+                    const muhurat = muhurats[i];
+                    const startTime = muhurat['start-time'];
+                    const endTime = muhurat['end-time'];
+                    
+                    if (isWrappedToNextDay(startTime, endTime) || endTime === '00:00:00') {
+                        endIndex = i + 1;
+                        // Set end time to 00:00:00 (representing 24:00:00/midnight of next day)
+                        muhurats[i] = { ...muhurat, 'end-time': '00:00:00' };
+                        break;
+                    }
+                }
+                
+                // Keep muhurats up to endIndex
+                muhurats = muhurats.slice(0, endIndex);
+                
+                truncatedData.chaughadiya = muhurats;
+                
+                // Log for debugging
+                console.log('Truncation applied:');
+                console.log('  Total muhurats after truncation:', muhurats.length);
+                if (muhurats.length > 0) {
+                    console.log('  First muhurat:', muhurats[0]);
+                    console.log('  Last muhurat:', muhurats[muhurats.length - 1]);
+                }
+                
+                return truncatedData;
+            }
+
             function displayResults(data, userTimezone) {
                 if (!data) {
                     resultsContainer.innerHTML = '<div class="alert alert-warning animate-fade-in"><i class="fas fa-exclamation-triangle me-2"></i>No results found.</div>';
@@ -1565,6 +3109,20 @@
                 return durationString;
             }
 
+            function isDateTodayInTimezone(dateString, timezone) {
+                // Get today's date in the specified timezone
+                const now = new Date();
+                const todayInTimezone = new Date(now.toLocaleString('en-US', { timeZone: timezone }));
+                
+                // Format as YYYY-MM-DD
+                const year = todayInTimezone.getFullYear();
+                const month = String(todayInTimezone.getMonth() + 1).padStart(2, '0');
+                const day = String(todayInTimezone.getDate()).padStart(2, '0');
+                const todayDateString = `${year}-${month}-${day}`;
+                
+                return dateString === todayDateString;
+            }
+
             function generateChaughadiyaTable(data, userTimezone) {
                 if (!data.chaughadiya || !Array.isArray(data.chaughadiya)) {
                     return '<div class="alert alert-warning animate-fade-in"><i class="fas fa-exclamation-triangle me-2"></i>No chaughadiya data available.</div>';
@@ -1576,21 +3134,46 @@
                 const nightPart2 = data.chaughadiya.slice(16, 24);
 
                 // Muhurat types and their meanings
+                // Using 3 colors: green (good), grey (neutral), red (bad)
                 const muhuratInfo = {
                     'Udveg': { color: 'danger', meaning: 'Inauspicious - Avoid important tasks', icon: 'fas fa-times-circle' },
-                    'Kaal': { color: 'dark', meaning: 'Very Inauspicious - Not favorable for new ventures', icon: 'fas fa-exclamation-triangle' },
-                    'Rog': { color: 'warning', meaning: 'Illness - Health concerns', icon: 'fas fa-user-injured' },
+                    'Kaal': { color: 'danger', meaning: 'Very Inauspicious - Not favorable for new ventures', icon: 'fas fa-exclamation-triangle' },
+                    'Rog': { color: 'danger', meaning: 'Illness - Health concerns', icon: 'fas fa-user-injured' },
                     'Chal': { color: 'secondary', meaning: 'Movement - Good for travel', icon: 'fas fa-route' },
                     'Labh': { color: 'success', meaning: 'Profit - Good for business', icon: 'fas fa-coins' },
-                    'Amrit': { color: 'primary', meaning: 'Nectar - Very auspicious', icon: 'fas fa-gem' },
-                    'Shubh': { color: 'info', meaning: 'Auspicious - Good for all work', icon: 'fas fa-star' }
+                    'Amrit': { color: 'success', meaning: 'Nectar - Very auspicious', icon: 'fas fa-gem' },
+                    'Shubh': { color: 'success', meaning: 'Auspicious - Good for all work', icon: 'fas fa-star' }
+                };
+
+                // Helper function to determine if a muhurat is during the day
+                const isMuhuratDuringDay = (muhuratStartTime, sunriseTime, sunsetTime) => {
+                    const timeToSeconds = (timeStr) => {
+                        const [h, m, s] = timeStr.split(':').map(Number);
+                        return h * 3600 + m * 60 + s;
+                    };
+                    
+                    const muhuratSeconds = timeToSeconds(muhuratStartTime);
+                    const sunriseSeconds = timeToSeconds(sunriseTime);
+                    const sunsetSeconds = timeToSeconds(sunsetTime);
+                    
+                    // Day is from sunrise to sunset
+                    // Handle case where sunset might be on next day (shouldn't happen after conversion, but safety check)
+                    if (sunsetSeconds < sunriseSeconds) {
+                        // Sunset is on next day
+                        return muhuratSeconds >= sunriseSeconds || muhuratSeconds < sunsetSeconds;
+                    } else {
+                        return muhuratSeconds >= sunriseSeconds && muhuratSeconds < sunsetSeconds;
+                    }
                 };
 
                 const sunriseRounded = roundTimeToMinute(data['sunrise-time']);
                 const sunsetRounded = roundTimeToMinute(data['sunset-time']);
                 
-                // Get current muhurat
-                const currentMuhuratData = getCurrentMuhurat(data, userTimezone);
+                // Check if the data date is today in the user's timezone
+                const isTodayInTimezone = isDateTodayInTimezone(data.date, userTimezone);
+                
+                // Get current muhurat only if viewing today's date
+                const currentMuhuratData = isTodayInTimezone ? getCurrentMuhurat(data, userTimezone) : null;
                 
                 let html = `
                     <div class="animate-fade-in">
@@ -1601,7 +3184,7 @@
                     const info = muhuratInfo[currentMuhuratData.muhurat.muhurat] || { color: 'secondary', meaning: 'Unknown', icon: 'fas fa-question' };
                     html += `
                         <!-- Current Muhurat Banner -->
-                        <div class="current-muhurat-banner pulse-animation" id="current-muhurat-banner">
+                        <div class="current-muhurat-banner" id="current-muhurat-banner">
                             <div class="current-muhurat-content">
                                 <div class="row align-items-center">
                                     <div class="col-md-3 text-center mb-3 mb-md-0">
@@ -1631,44 +3214,43 @@
                 html += `
                         <!-- Sunrise and Sunset Times -->
                         <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="mb-0"><i class="fas fa-calendar-day me-2"></i>Chaughadiya for ${data.date}</h5>
+                                ${userTimezone ? `<small><i class="fas fa-globe me-1"></i>All times shown in ${userTimezone}</small>` : ''}
+                            </div>
                             <div class="card-body">
                                 <div class="row text-center">
                                     <div class="col-md-6 mb-3">
-                                        <div class="time-info">
-                                            <i class="fas fa-sunrise fa-3x text-warning mb-2"></i>
-                                            <h5>Sunrise</h5>
+                                        <div class="time-info sunrise-info">
+                                            <div class="sun-icon-container mb-2">
+                                                <i class="fas fa-sun fa-3x" style="color: #FFA500;"></i>
+                                                <i class="fas fa-arrow-up" style="position: absolute; font-size: 1.2rem; color: #FFD700; margin-left: -0.8rem; margin-top: 0.3rem;"></i>
+                                            </div>
+                                            <h5 class="mb-2"><i class="fas fa-cloud-sun me-2" style="color: #FFA500;"></i>Sunrise</h5>
                                             <h3 class="mb-0" style="font-family: 'Courier New', monospace;">${formatTime(sunriseRounded, is24HourFormat)}</h3>
                                         </div>
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <div class="time-info">
-                                            <i class="fas fa-sunset fa-3x text-orange mb-2"></i>
-                                            <h5>Sunset</h5>
+                                        <div class="time-info sunset-info">
+                                            <div class="moon-icon-container mb-2">
+                                                <i class="fas fa-moon fa-3x" style="color: #FF6347;"></i>
+                                                <i class="fas fa-arrow-down" style="position: absolute; font-size: 1.2rem; color: #FF4500; margin-left: -0.8rem; margin-top: 0.3rem;"></i>
+                                            </div>
+                                            <h5 class="mb-2"><i class="fas fa-cloud-moon me-2" style="color: #FF6347;"></i>Sunset</h5>
                                             <h3 class="mb-0" style="font-family: 'Courier New', monospace;">${formatTime(sunsetRounded, is24HourFormat)}</h3>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
 
-                        <!-- Summary Card -->
-                        <div class="card mb-4">
-                            <div class="card-header bg-gradient text-white" style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));">
-                                <h5 class="mb-0"><i class="fas fa-calendar-day me-2"></i>Chaughadiya for ${data.date}</h5>
-                                ${userTimezone ? `<small class="text-light"><i class="fas fa-globe me-1"></i>All times shown in ${userTimezone}</small>` : ''}
-                            </div>
-                            <div class="card-body">
                                 <div class="row text-center">
                                     <div class="col-md-6 mb-3">
                                         <div class="time-info">
-                                            <i class="fas fa-sun fa-2x text-warning mb-2"></i>
                                             <h6>Day Muhurat Duration</h6>
                                             <strong style="font-family: 'Courier New', monospace;">${formatDuration(data['day-muhurat-length'])}</strong>
                                         </div>
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <div class="time-info">
-                                            <i class="fas fa-moon fa-2x text-primary mb-2"></i>
                                             <h6>Night Muhurat Duration</h6>
                                             <strong style="font-family: 'Courier New', monospace;">${formatDuration(data['night-muhurat-length'])}</strong>
                                         </div>
@@ -1690,7 +3272,7 @@
                 const allMuhurats = [...nightPart1, ...dayPart, ...nightPart2];
                 allMuhurats.forEach((muhurat, index) => {
                     const info = muhuratInfo[muhurat.muhurat] || { color: 'secondary', meaning: 'Unknown', icon: 'fas fa-question' };
-                    const isDay = index >= 8 && index < 16;
+                    const isDay = isMuhuratDuringDay(muhurat['start-time'], data['sunrise-time'], data['sunset-time']);
                     const timelineClass = isDay ? 'border-warning' : 'border-primary';
                     
                     // Check if this is the current muhurat
@@ -1703,7 +3285,7 @@
                     html += `
                         <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
                             <div class="card h-100 ${timelineClass} ${highlightClass}" style="border-width: 3px;">
-                                <div class="card-body text-center p-3">
+                                <div class="card-body text-center p-3 d-flex flex-column">
                                     <div class="mb-2">
                                         <i class="${info.icon} fa-2x text-${info.color}"></i>
                                     </div>
@@ -1713,8 +3295,8 @@
                                     <p class="card-text small mb-2" style="font-family: 'Courier New', monospace;">
                                         <strong>${startTimeFormatted} - ${endTimeFormatted}</strong>
                                     </p>
-                                    <p class="card-text small text-muted">${info.meaning}</p>
-                                    <div class="mt-2">
+                                    <p class="card-text small text-muted mb-2">${info.meaning}</p>
+                                    <div class="mt-auto">
                                         <small class="badge ${isDay ? 'bg-warning text-dark' : 'bg-primary'}">
                                             ${isDay ? 'Day' : 'Night'}
                                         </small>
@@ -1753,7 +3335,7 @@
                 // Generate table rows
                 allMuhurats.forEach((muhurat, index) => {
                     const info = muhuratInfo[muhurat.muhurat] || { color: 'secondary', meaning: 'Unknown', icon: 'fas fa-question' };
-                    const isDay = index >= 8 && index < 16;
+                    const isDay = isMuhuratDuringDay(muhurat['start-time'], data['sunrise-time'], data['sunset-time']);
                     const isCurrent = currentMuhuratData && currentMuhuratData.index === index;
                     const rowClass = isCurrent ? 'table-warning fw-bold' : '';
                     const startTimeFormatted = formatTime(muhurat['start-time'], is24HourFormat);
