@@ -3197,16 +3197,27 @@
                 return durationString;
             }
 
-            function formatISODateTime(isoString, timezone) {
+            function formatISODateTime(isoString, timezone, use24Hour) {
                 if (!isoString) return 'N/A';
                 try {
                     const date = new Date(isoString);
-                    return date.toLocaleString('en-US', { 
+                    // Format date part
+                    const dateStr = date.toLocaleDateString('en-US', { 
                         timeZone: timezone,
-                        dateStyle: 'medium',
-                        timeStyle: 'short'
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric'
                     });
+                    // Format time part
+                    const timeStr = date.toLocaleTimeString('en-US', { 
+                        timeZone: timezone,
+                        hour12: !use24Hour,
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    return `${dateStr}, ${timeStr}`;
                 } catch (e) {
+                    console.error('Error formatting date:', e);
                     return 'N/A';
                 }
             }
@@ -3254,14 +3265,14 @@
                                         <div class="col-md-6 text-center">
                                             <div class="time-info" style="background: rgba(138, 43, 226, 0.1); border: 2px solid rgba(138, 43, 226, 0.3);">
                                                 <h6 class="mb-2"><i class="fas fa-play-circle me-1"></i>Tithi Begins</h6>
-                                                <p class="mb-1" style="font-family: 'Courier New', monospace; font-size: 0.9rem;"><strong>${formatISODateTime(tithiData.start_time, timezone)}</strong></p>
+                                                <p class="mb-1" style="font-family: 'Courier New', monospace; font-size: 0.9rem;"><strong>${formatISODateTime(tithiData.start_time, timezone, is24HourFormat)}</strong></p>
                                                 <small class="text-muted">Previous: ${tithiData.tithi_number > 1 ? (tithiData.tithi_number === 16 ? 'Purnima' : __getTithiNameByNumber(tithiData.tithi_number - 1)) : 'Amavasya'}</small>
                                             </div>
                                         </div>
                                         <div class="col-md-6 text-center">
                                             <div class="time-info" style="background: rgba(138, 43, 226, 0.1); border: 2px solid rgba(138, 43, 226, 0.3);">
                                                 <h6 class="mb-2"><i class="fas fa-stop-circle me-1"></i>Tithi Ends</h6>
-                                                <p class="mb-1" style="font-family: 'Courier New', monospace; font-size: 0.9rem;"><strong>${formatISODateTime(tithiData.end_time, timezone)}</strong></p>
+                                                <p class="mb-1" style="font-family: 'Courier New', monospace; font-size: 0.9rem;"><strong>${formatISODateTime(tithiData.end_time, timezone, is24HourFormat)}</strong></p>
                                                 <small class="text-muted">Next: ${tithiData.next_tithi_name || 'N/A'}</small>
                                             </div>
                                         </div>
