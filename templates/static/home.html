@@ -699,7 +699,7 @@
             }
 
             .card-header {
-                padding: 0.5rem 0.75rem;
+                padding: 0.75rem 1rem;
             }
 
             .card-header h5 {
@@ -1059,66 +1059,191 @@
 
         /* Tithi Information Styles */
         .tithi-info-card {
-            background: linear-gradient(135deg, rgba(138, 43, 226, 0.15), rgba(123, 104, 238, 0.1));
-            border: 2px solid rgba(138, 43, 226, 0.3);
-            border-radius: 15px;
-            padding: 1.5rem;
             transition: all 0.3s ease;
-            margin-bottom: 2rem;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         .tithi-info-card:hover {
-            background: linear-gradient(135deg, rgba(138, 43, 226, 0.2), rgba(123, 104, 238, 0.15));
-            border-color: rgba(138, 43, 226, 0.5);
-            box-shadow: 0 5px 15px rgba(138, 43, 226, 0.3);
+            box-shadow: 0 8px 15px rgba(138, 43, 226, 0.2);
+        }
+
+        .tithi-info-card .card-header {
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.9), rgba(123, 104, 238, 0.9));
+            color: white;
+            border-bottom: none;
+            padding: 0.75rem 1rem;
+        }
+
+        .tithi-info-card .card-header h5 {
+            color: white;
+            margin: 0;
+        }
+
+        .tithi-moon-section {
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.08), rgba(123, 104, 238, 0.05));
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            border: 2px solid rgba(138, 43, 226, 0.2);
+            transition: all 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .tithi-moon-section:hover {
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.12), rgba(123, 104, 238, 0.08));
+            border-color: rgba(138, 43, 226, 0.4);
         }
 
         .tithi-icon-container {
             position: relative;
             display: inline-block;
             animation: iconFloat 3s ease-in-out infinite;
+            margin-bottom: 1rem;
         }
 
         .tithi-info-card .fa-moon {
-            filter: drop-shadow(0 0 10px rgba(138, 43, 226, 0.6));
+            filter: drop-shadow(0 0 15px rgba(138, 43, 226, 0.7));
+        }
+
+        .tithi-details-section {
+            padding: 1.5rem;
+        }
+
+        .tithi-name-display {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #8a2be2;
+            margin: 0.5rem 0;
+            text-shadow: 0 2px 4px rgba(138, 43, 226, 0.1);
         }
 
         .tithi-paksha-badge {
             display: inline-block;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
+            padding: 0.5rem 1.2rem;
+            border-radius: 25px;
             font-size: 0.9rem;
             font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin: 0.5rem 0;
         }
 
         .shukla-paksha {
             background: linear-gradient(135deg, #ffd700, #ffed4e);
             color: #333;
+            border: 2px solid rgba(255, 215, 0, 0.5);
         }
 
         .krishna-paksha {
             background: linear-gradient(135deg, #4a5568, #2d3748);
             color: white;
+            border: 2px solid rgba(74, 85, 104, 0.5);
         }
 
-        .tithi-progress-bar {
-            background: rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-            height: 10px;
-            overflow: hidden;
+        .tithi-significance {
+            background: rgba(138, 43, 226, 0.05);
+            border-left: 4px solid #8a2be2;
+            padding: 0.75rem 1rem;
+            margin: 1rem 0;
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+        }
+
+        .tithi-time-box {
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.08), rgba(123, 104, 238, 0.05));
+            border: 2px solid rgba(138, 43, 226, 0.25);
+            border-radius: 12px;
+            padding: 1.2rem;
+            transition: all 0.3s ease;
+            height: 100%;
+            text-align: center;
+        }
+
+        .tithi-time-box:hover {
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.12), rgba(123, 104, 238, 0.08));
+            border-color: rgba(138, 43, 226, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(138, 43, 226, 0.2);
+        }
+
+        .tithi-time-box h6 {
+            color: #8a2be2;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .tithi-time-box .time-display {
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #333;
+            margin: 0.5rem 0;
+        }
+
+        [data-bs-theme="dark"] .tithi-time-box .time-display {
+            color: #fff;
+        }
+
+        .tithi-time-box .time-label {
+            font-size: 0.75rem;
+            color: #666;
             margin-top: 0.5rem;
         }
 
-        .tithi-progress-fill {
-            background: linear-gradient(135deg, #8a2be2, #9370db);
-            height: 100%;
-            transition: width 0.3s ease;
-            border-radius: 10px;
+        [data-bs-theme="dark"] .tithi-time-box .time-label {
+            color: #aaa;
+        }
+
+        .tithi-phase-icon {
+            font-size: 1.2rem;
+            margin-right: 0.5rem;
+            vertical-align: middle;
+        }
+
+        .tithi-divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(138, 43, 226, 0.3), transparent);
+            margin: 1.5rem 0;
         }
 
         [data-bs-theme="dark"] .tithi-info-card {
-            background: linear-gradient(135deg, rgba(138, 43, 226, 0.2), rgba(123, 104, 238, 0.15));
-            border-color: rgba(138, 43, 226, 0.4);
+            background: rgba(20, 20, 30, 0.95);
+        }
+
+        [data-bs-theme="dark"] .tithi-moon-section {
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.15), rgba(123, 104, 238, 0.1));
+            border-color: rgba(138, 43, 226, 0.3);
+        }
+
+        [data-bs-theme="dark"] .tithi-name-display {
+            color: #b388ff;
+        }
+
+        [data-bs-theme="dark"] .tithi-significance {
+            background: rgba(138, 43, 226, 0.1);
+            border-left-color: #b388ff;
+        }
+
+        /* Responsive adjustments for Tithi card */
+        @media (max-width: 768px) {
+            .tithi-name-display {
+                font-size: 1.5rem;
+            }
+            
+            .tithi-moon-section {
+                padding: 1.5rem;
+                margin-bottom: 1rem;
+            }
+            
+            .tithi-time-box {
+                margin-bottom: 0.75rem;
+            }
         }
 
         .loading-spinner {
@@ -3229,52 +3354,97 @@
 
                 const isPakshaShukla = tithiData.paksha && tithiData.paksha.includes('Shukla');
                 const pakshaClass = isPakshaShukla ? 'shukla-paksha' : 'krishna-paksha';
-                const moonIcon = isPakshaShukla ? 'fa-moon' : 'fa-moon';
                 const moonPhase = isPakshaShukla ? 'Waxing Moon' : 'Waning Moon';
+                const phaseIcon = isPakshaShukla ? '🌒' : '🌘';
                 
                 // Get appropriate moon icon based on tithi number
                 let moonIconClass = 'fa-moon';
                 /*
+                A full purple circle doesn't look good, so we're not using it.
                 if (tithiData.tithi_name && tithiData.tithi_name.includes('Purnima')) {
                     moonIconClass = 'fa-circle'; // Full moon
                 } else if (tithiData.tithi_name && tithiData.tithi_name.includes('Amavasya')) {
                     moonIconClass = 'fa-circle'; // New moon (will be styled differently)
                 }
                 */
+                // Get previous tithi name
+                const previousTithi = tithiData.tithi_number > 1 ? 
+                    (tithiData.tithi_number === 16 ? 'Purnima' : __getTithiNameByNumber(tithiData.tithi_number - 1)) : 
+                    'Amavasya';
+
                 return `
                     <!-- Tithi Information Card -->
                     <div class="card mb-4 tithi-info-card">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-moon me-2"></i>Tithi (Lunar Day) Information
+                            </h5>
+                        </div>
                         <div class="card-body">
-                            <div class="row align-items-center">
-                                <div class="col-md-2 text-center mb-3 mb-md-0">
-                                    <div class="tithi-icon-container">
-                                        <i class="fas ${moonIconClass} fa-4x" style="color: #8a2be2;"></i>
+                            <div class="row">
+                                <!-- Moon Phase Section -->
+                                <div class="col-lg-3 col-md-12 mb-4 mb-lg-0">
+                                    <div class="tithi-moon-section">
+                                        <div class="tithi-icon-container">
+                                            <i class="fas ${moonIconClass} fa-5x" style="color: #8a2be2;"></i>
+                                        </div>
+                                        <div class="mt-3">
+                                            <span class="tithi-paksha-badge ${pakshaClass}">
+                                                <span class="tithi-phase-icon">${phaseIcon}</span>${moonPhase}
+                                            </span>
+                                        </div>
+                                        <div class="mt-2">
+                                            <small class="text-muted fw-bold">${tithiData.paksha || 'N/A'}</small>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-md-6 mb-3 mb-md-0">
-                                    <h4 class="mb-2"><i class="fas fa-calendar-alt me-2" style="color: #8a2be2;"></i>Lunar Day (Tithi)</h4>
-                                    <h2 class="mb-2"><strong>${tithiData.tithi_name || 'N/A'}</strong></h2>
-                                    <p class="mb-2">
-                                        <span class="tithi-paksha-badge ${pakshaClass}">
-                                            ${moonPhase} - ${tithiData.paksha || 'N/A'}
-                                        </span>
-                                    </p>
-                                    <p class="mb-0 text-muted"><strong>Significance:</strong> ${tithiData.significance || 'Traditional lunar day'}</p>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="row g-2">
-                                        <div class="col-md-6 text-center">
-                                            <div class="time-info" style="background: rgba(138, 43, 226, 0.1); border: 2px solid rgba(138, 43, 226, 0.3);">
-                                                <h6 class="mb-2"><i class="fas fa-play-circle me-1"></i>Tithi Begins</h6>
-                                                <p class="mb-1" style="font-family: 'Courier New', monospace; font-size: 0.9rem;"><strong>${formatISODateTime(tithiData.start_time, timezone, is24HourFormat)}</strong></p>
-                                                <small class="text-muted">Previous: ${tithiData.tithi_number > 1 ? (tithiData.tithi_number === 16 ? 'Purnima' : __getTithiNameByNumber(tithiData.tithi_number - 1)) : 'Amavasya'}</small>
-                                            </div>
+
+                                <!-- Tithi Details Section -->
+                                <div class="col-lg-9 col-md-12">
+                                    <div class="tithi-details-section">
+                                        <!-- Tithi Name -->
+                                        <div class="text-center text-lg-start mb-3">
+                                            <h6 class="text-muted text-uppercase mb-2" style="letter-spacing: 1px;">
+                                                <i class="fas fa-calendar-alt me-2"></i>Tithi
+                                            </h6>
+                                            <div class="tithi-name-display">${tithiData.tithi_name || 'N/A'}</div>
                                         </div>
-                                        <div class="col-md-6 text-center">
-                                            <div class="time-info" style="background: rgba(138, 43, 226, 0.1); border: 2px solid rgba(138, 43, 226, 0.3);">
-                                                <h6 class="mb-2"><i class="fas fa-stop-circle me-1"></i>Tithi Ends</h6>
-                                                <p class="mb-1" style="font-family: 'Courier New', monospace; font-size: 0.9rem;"><strong>${formatISODateTime(tithiData.end_time, timezone, is24HourFormat)}</strong></p>
-                                                <small class="text-muted">Next: ${tithiData.next_tithi_name || 'N/A'}</small>
+
+                                        <!-- Significance -->
+                                        ${tithiData.significance ? `
+                                        <div class="tithi-significance">
+                                            <i class="fas fa-info-circle me-2" style="color: #8a2be2;"></i>
+                                            <strong>Significance:</strong> ${tithiData.significance}
+                                        </div>
+                                        ` : ''}
+
+                                        <div class="tithi-divider"></div>
+
+                                        <!-- Time Information -->
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <div class="tithi-time-box">
+                                                    <h6>
+                                                        <i class="fas fa-play-circle me-2"></i>Tithi Begins
+                                                    </h6>
+                                                    <div class="time-display">${formatISODateTime(tithiData.start_time, timezone, is24HourFormat)}</div>
+                                                    <div class="time-label">
+                                                        <i class="fas fa-arrow-left me-1"></i>
+                                                        Transition from: <strong>${previousTithi}</strong>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="tithi-time-box">
+                                                    <h6>
+                                                        <i class="fas fa-stop-circle me-2"></i>Tithi Ends
+                                                    </h6>
+                                                    <div class="time-display">${formatISODateTime(tithiData.end_time, timezone, is24HourFormat)}</div>
+                                                    <div class="time-label">
+                                                        <i class="fas fa-arrow-right me-1"></i>
+                                                        Transition to: <strong>${tithiData.next_tithi_name || 'N/A'}</strong>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -3451,11 +3621,6 @@
                         </div>
                 `;
 
-                // Add Tithi information if available
-                if (data.tithi) {
-                    html += generateTithiHTML(data.tithi, userTimezone);
-                }
-
                 html += `
                         <!-- Muhurat Timeline -->
                         <div class="card mb-4">
@@ -3511,7 +3676,7 @@
                         </div>
 
                         <!-- Table View -->
-                        <div class="card">
+                        <div class="card mb-4">
                             <div class="card-header">
                                 <h5 class="mb-0"><i class="fas fa-table me-2"></i>Chaughadiya Table</h5>
                             </div>
@@ -3563,6 +3728,14 @@
                                 </div>
                             </div>
                         </div>
+                `;
+
+                // Add Tithi information if available (after Muhurat timeline and table)
+                if (data.tithi) {
+                    html += generateTithiHTML(data.tithi, userTimezone);
+                }
+
+                html += `
                     </div>
                 `;
 
