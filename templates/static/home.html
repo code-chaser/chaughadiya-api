@@ -185,6 +185,104 @@
             background: linear-gradient(135deg, var(--secondary-color) 0%, #a04000 100%)
         }
 
+        /* Rahu Kaal Styles */
+        .rahu-kaal-row {
+            position: relative;
+            background: repeating-linear-gradient(
+                45deg,
+                rgba(139, 0, 0, 0.08),
+                rgba(139, 0, 0, 0.08) 10px,
+                rgba(178, 34, 34, 0.08) 10px,
+                rgba(178, 34, 34, 0.08) 20px
+            ) !important;
+            border-left: 4px solid #8B0000 !important;
+        }
+
+        [data-bs-theme="dark"] .rahu-kaal-row {
+            background: repeating-linear-gradient(
+                45deg,
+                rgba(220, 20, 60, 0.15),
+                rgba(220, 20, 60, 0.15) 10px,
+                rgba(178, 34, 34, 0.15) 10px,
+                rgba(178, 34, 34, 0.15) 20px
+            ) !important;
+        }
+
+        .rahu-kaal-indicator {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: linear-gradient(135deg, #8B0000, #DC143C);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(139, 0, 0, 0.3);
+            animation: rahuPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes rahuPulse {
+            0%, 100% { opacity: 1; transform: translateY(-50%) scale(1); }
+            50% { opacity: 0.8; transform: translateY(-50%) scale(1.05); }
+        }
+
+        /* Combined Current + Rahu Kaal Styles */
+        .current-rahu-kaal-row {
+            position: relative;
+            background: linear-gradient(
+                135deg,
+                rgba(255, 193, 7, 0.2) 0%,
+                rgba(139, 0, 0, 0.15) 100%
+            ) !important;
+            border-left: 4px solid #DC143C !important;
+            box-shadow: inset 0 0 0 2px rgba(255, 193, 7, 0.3);
+        }
+
+        [data-bs-theme="dark"] .current-rahu-kaal-row {
+            background: linear-gradient(
+                135deg,
+                rgba(255, 193, 7, 0.25) 0%,
+                rgba(220, 20, 60, 0.2) 100%
+            ) !important;
+            box-shadow: inset 0 0 0 2px rgba(255, 193, 7, 0.4);
+        }
+
+        .current-rahu-kaal-indicator {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .current-rahu-kaal-indicator .live-badge {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            animation: livePulse 2s ease-in-out infinite;
+        }
+
+        .current-rahu-kaal-indicator .rahu-badge {
+            background: linear-gradient(135deg, #8B0000, #DC143C);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        @keyframes livePulse {
+            0%, 100% { opacity: 1; box-shadow: 0 0 5px rgba(40, 167, 69, 0.5); }
+            50% { opacity: 0.8; box-shadow: 0 0 15px rgba(40, 167, 69, 0.8); }
+        }
+
         /* Current Muhurat Styles */
         .current-muhurat-banner {
             padding: 0.25rem;
@@ -1347,6 +1445,12 @@
                     <i class="fas fa-share-alt"></i><span class="d-none d-sm-inline ms-1">Share</span>
                 </button>
                 <div class="form-check form-switch mb-0">
+                    <input class="form-check-input" type="checkbox" id="rahuKaalToggle">
+                    <label class="form-check-label text-white" for="rahuKaalToggle" title="Show Rahu Kaal (inauspicious period)">
+                        <i class="fas fa-exclamation-triangle me-1"></i><span class="d-none d-md-inline">Rahu Kaal</span>
+                    </label>
+                </div>
+                <div class="form-check form-switch mb-0">
                     <input class="form-check-input" type="checkbox" id="timeFormatSwitcher">
                     <label class="form-check-label text-white" for="timeFormatSwitcher">
                         <i class="fas fa-clock me-1"></i><span class="d-none d-md-inline">24-Hour</span>
@@ -1659,6 +1763,19 @@
             const timeFormatSwitcher = document.getElementById('timeFormatSwitcher');
             const htmlElement = document.documentElement;
             let is24HourFormat = false;
+            let showRahuKaal = false;
+
+            // Rahu Kaal Constant - Maps weekday (Monday=0) to muhurat number (1-8) during day period
+            // Rahu Kaal occurs at specific muhurats after sunrise on each day
+            const RAHU_KAAL_MUHURAT = {
+                0: 2-1,  // Monday - 2nd muhurat after sunrise
+                1: 7-1,  // Tuesday - 7th muhurat after sunrise
+                2: 5-1,  // Wednesday - 5th muhurat after sunrise
+                3: 6-1,  // Thursday - 6th muhurat after sunrise
+                4: 4-1,  // Friday - 4th muhurat after sunrise
+                5: 3-1,  // Saturday - 3rd muhurat after sunrise
+                6: 8-1   // Sunday - 8th muhurat after sunrise
+            };
 
             // Footer flip card functionality
             const footerFlipCard = document.getElementById('footerFlipCard');
@@ -1673,6 +1790,7 @@
             function loadPreferences() {
                 const savedDarkMode = localStorage.getItem('chaughadiya_darkMode') === 'true';
                 const saved24Hour = localStorage.getItem('chaughadiya_24hour') === 'true';
+                const savedRahuKaal = localStorage.getItem('chaughadiya_rahuKaal') === 'true';
                 
                 if (savedDarkMode) {
                     themeSwitcher.checked = true;
@@ -1682,6 +1800,11 @@
                 if (saved24Hour) {
                     timeFormatSwitcher.checked = true;
                     is24HourFormat = true;
+                }
+                
+                if (savedRahuKaal) {
+                    rahuKaalToggle.checked = true;
+                    showRahuKaal = true;
                 }
             }
 
@@ -1703,6 +1826,17 @@
             timeFormatSwitcher.addEventListener('change', function () {
                 is24HourFormat = this.checked;
                 savePreference('24hour', this.checked ? 'true' : 'false');
+                // Re-render results if they exist
+                if (window.currentData && window.currentTimezone) {
+                    displayResults(window.currentData, window.currentTimezone);
+                }
+            });
+
+            // Rahu Kaal toggle
+            const rahuKaalToggle = document.getElementById('rahuKaalToggle');
+            rahuKaalToggle.addEventListener('change', function () {
+                showRahuKaal = this.checked;
+                savePreference('rahuKaal', this.checked ? 'true' : 'false');
                 // Re-render results if they exist
                 if (window.currentData && window.currentTimezone) {
                     displayResults(window.currentData, window.currentTimezone);
@@ -3622,6 +3756,33 @@
                 return tithiNames[number - 1] || 'N/A';
             }
 
+            // Helper function to identify if a muhurat is Rahu Kaal
+            function getRahuKaalMuhurat(dateString) {
+                // Get the weekday for the given date (0 = Monday, 6 = Sunday)
+                const date = new Date(dateString + 'T00:00:00');
+                const weekday = (date.getDay() + 6) % 7; // Convert Sunday=0 to Sunday=6, Monday=1 to Monday=0
+                return RAHU_KAAL_MUHURAT[weekday];
+            }
+
+            function isRahuKaalMuhurat(muhurat, muhuratIndex, dateString, data) {
+                if (!showRahuKaal) return false;
+                
+                // Get the Rahu Kaal muhurat number for this weekday
+                const rahuKaalNumber = getRahuKaalMuhurat(dateString);
+                
+                // Rahu Kaal is during day time only but to identify how many night muhurats are there before sunrise, we need to iterate through the chaughadiya array and count the number of night muhurats before sunrise.
+                let nightMuhuratsBeforeSunrise = 0;
+                const sunriseTime = data['sunrise-time'];
+                for (let i = 0; i < data.chaughadiya.length; i++) {
+                    if (data.chaughadiya[i]['start-time'] < sunriseTime) {
+                        nightMuhuratsBeforeSunrise++;
+                    } else {
+                        break;
+                    }
+                }
+                return muhuratIndex === nightMuhuratsBeforeSunrise + rahuKaalNumber;
+            }
+
             function isDateTodayInTimezone(dateString, timezone) {
                 // Get today's date in the specified timezone
                 const now = new Date();
@@ -3788,11 +3949,32 @@
                 allMuhurats.forEach((muhurat, index) => {
                     const info = muhuratInfo[muhurat.muhurat] || { color: 'secondary', meaning: 'Unknown', icon: 'fas fa-question' };
                     const isDay = isMuhuratDuringDay(muhurat['start-time'], data['sunrise-time'], data['sunset-time']);
-                    const timelineClass = isDay ? 'border-warning' : 'border-primary';
-                    
-                    // Check if this is the current muhurat
                     const isCurrent = currentMuhuratData && currentMuhuratData.index === index;
-                    const highlightClass = isCurrent ? 'current-muhurat-highlight' : '';
+                    const isRahuKaal = isRahuKaalMuhurat(muhurat, index, data.date, data);
+                    
+                    // Determine border and highlight classes based on Rahu Kaal and current status
+                    let timelineClass = isDay ? 'border-warning' : 'border-primary';
+                    let highlightClass = '';
+                    let rahuKaalBadge = '';
+                    
+                    if (isCurrent && isRahuKaal) {
+                        // Both current and Rahu Kaal - special border
+                        timelineClass = 'border-danger';
+                        highlightClass = 'current-muhurat-highlight';
+                        rahuKaalBadge = `
+                            <div class="mt-2 mb-2">
+                                <span class="badge bg-danger">⚠ RAHU KAAL</span>
+                            </div>
+                        `;
+                    } else if (isCurrent) {
+                        // Only current muhurat
+                        highlightClass = 'current-muhurat-highlight';
+                    } else if (isRahuKaal) {
+                        // Only Rahu Kaal
+                        timelineClass = 'border-danger';
+                        highlightClass = 'rahu-kaal-row';
+                        rahuKaalBadge = '<div class="mt-2 mb-2"><span class="badge bg-danger">⚠ RAHU KAAL</span></div>';
+                    }
                     
                     const startTimeFormatted = formatTime(muhurat['start-time'], is24HourFormat);
                     const endTimeFormatted = formatTime(muhurat['end-time'], is24HourFormat);
@@ -3811,6 +3993,7 @@
                                         <strong>${startTimeFormatted} - ${endTimeFormatted}</strong>
                                     </p>
                                     <p class="card-text small text-muted mb-2">${info.meaning}</p>
+                                    ${rahuKaalBadge}
                                     <div class="mt-auto">
                                         <small class="badge ${isDay ? 'bg-warning text-dark' : 'bg-primary'}">
                                             ${isDay ? 'Day' : 'Night'}
@@ -3852,7 +4035,30 @@
                     const info = muhuratInfo[muhurat.muhurat] || { color: 'secondary', meaning: 'Unknown', icon: 'fas fa-question' };
                     const isDay = isMuhuratDuringDay(muhurat['start-time'], data['sunrise-time'], data['sunset-time']);
                     const isCurrent = currentMuhuratData && currentMuhuratData.index === index;
-                    const rowClass = isCurrent ? 'table-warning fw-bold' : '';
+                    const isRahuKaal = isRahuKaalMuhurat(muhurat, index, data.date, data);
+                    
+                    // Determine row class based on current and Rahu Kaal status
+                    let rowClass = '';
+                    let rahuKaalBadge = '';
+                    
+                    if (isCurrent && isRahuKaal) {
+                        // Both current and Rahu Kaal - special combined styling
+                        rowClass = 'current-rahu-kaal-row fw-bold';
+                        rahuKaalBadge = `
+                            <div class="current-rahu-kaal-indicator">
+                                <span class="live-badge">⚡ LIVE</span>
+                                <span class="rahu-badge">⚠ RAHU KAAL</span>
+                            </div>
+                        `;
+                    } else if (isCurrent) {
+                        // Only current muhurat
+                        rowClass = 'table-warning fw-bold';
+                    } else if (isRahuKaal) {
+                        // Only Rahu Kaal
+                        rowClass = 'rahu-kaal-row';
+                        rahuKaalBadge = '<span class="rahu-kaal-indicator">⚠ RAHU KAAL</span>';
+                    }
+                    
                     const startTimeFormatted = formatTime(muhurat['start-time'], is24HourFormat);
                     const endTimeFormatted = formatTime(muhurat['end-time'], is24HourFormat);
                     
@@ -3862,6 +4068,7 @@
                             <td>
                                 <i class="${info.icon} text-${info.color} me-2"></i>
                                 <strong class="text-${info.color}">${muhurat.muhurat}</strong>
+                                ${rahuKaalBadge}
                             </td>
                             <td>${startTimeFormatted}</td>
                             <td>${endTimeFormatted}</td>
