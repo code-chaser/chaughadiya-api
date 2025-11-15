@@ -1058,34 +1058,13 @@
         }
 
         /* Tithi Information Styles */
-        .tithi-info-card {
-            transition: all 0.3s ease;
-            border: none;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .tithi-info-card:hover {
-            box-shadow: 0 8px 15px rgba(138, 43, 226, 0.2);
-        }
-
-        .tithi-info-card .card-header {
-            background: linear-gradient(135deg, rgba(138, 43, 226, 0.9), rgba(123, 104, 238, 0.9));
-            color: white;
-            border-bottom: none;
-            padding: 0.75rem 1rem;
-        }
-
-        .tithi-info-card .card-header h5 {
-            color: white;
-            margin: 0;
-        }
 
         .tithi-moon-section {
-            background: linear-gradient(135deg, rgba(138, 43, 226, 0.08), rgba(123, 104, 238, 0.05));
+            background: linear-gradient(135deg, rgba(255, 99, 71, 0.15), rgba(255, 69, 0, 0.1));
             border-radius: 15px;
             padding: 2rem;
             text-align: center;
-            border: 2px solid rgba(138, 43, 226, 0.2);
+            border: 2px solid rgba(255, 99, 71, 0.3);
             transition: all 0.3s ease;
             height: 100%;
             display: flex;
@@ -1094,8 +1073,9 @@
         }
 
         .tithi-moon-section:hover {
-            background: linear-gradient(135deg, rgba(138, 43, 226, 0.12), rgba(123, 104, 238, 0.08));
-            border-color: rgba(138, 43, 226, 0.4);
+            background: linear-gradient(135deg, rgba(255, 99, 71, 0.2), rgba(255, 69, 0, 0.15));
+            border: 2px solid rgba(255, 99, 71, 0.5);
+            box-shadow: 0 5px 15px rgba(255, 99, 71, 0.3);
         }
 
         .tithi-icon-container {
@@ -1106,7 +1086,7 @@
         }
 
         .tithi-info-card .fa-moon {
-            filter: drop-shadow(0 0 15px rgba(138, 43, 226, 0.7));
+            filter: drop-shadow(0 0 10px rgba(255, 99, 71, 0.7));
         }
 
         .tithi-details-section {
@@ -1116,9 +1096,9 @@
         .tithi-name-display {
             font-size: 2rem;
             font-weight: 700;
-            color: #8a2be2;
+            color: rgb(255, 99, 71);
             margin: 0.5rem 0;
-            text-shadow: 0 2px 4px rgba(138, 43, 226, 0.1);
+            text-shadow: 0 2px 4px rgba(255, 99, 71, 0.1);
         }
 
         .tithi-paksha-badge {
@@ -1144,8 +1124,8 @@
         }
 
         .tithi-significance {
-            background: rgba(138, 43, 226, 0.05);
-            border-left: 4px solid #8a2be2;
+            background: rgba(255, 99, 71, 0.05);
+            border-left: 4px solid rgb(255, 99, 71);
             padding: 0.75rem 1rem;
             margin: 1rem 0;
             border-radius: 0 8px 8px 0;
@@ -1153,8 +1133,8 @@
         }
 
         .tithi-time-box {
-            background: linear-gradient(135deg, rgba(138, 43, 226, 0.08), rgba(123, 104, 238, 0.05));
-            border: 2px solid rgba(138, 43, 226, 0.25);
+            background: linear-gradient(135deg, rgba(255, 99, 71, 0.15), rgba(255, 69, 0, 0.1));
+            border: 2px solid rgba(255, 99, 71, 0.3);
             border-radius: 12px;
             padding: 1.2rem;
             transition: all 0.3s ease;
@@ -1163,14 +1143,14 @@
         }
 
         .tithi-time-box:hover {
-            background: linear-gradient(135deg, rgba(138, 43, 226, 0.12), rgba(123, 104, 238, 0.08));
-            border-color: rgba(138, 43, 226, 0.4);
+            background: linear-gradient(135deg, rgba(255, 99, 71, 0.2), rgba(255, 69, 0, 0.15));
+            border: 2px solid rgba(255, 99, 71, 0.5);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(138, 43, 226, 0.2);
+            box-shadow: 0 5px 15px rgba(255, 99, 71, 0.3);
         }
 
         .tithi-time-box h6 {
-            color: #8a2be2;
+            color: rgb(255, 99, 71);
             font-weight: 600;
             margin-bottom: 0.75rem;
             font-size: 0.9rem;
@@ -1208,11 +1188,11 @@
 
         .tithi-divider {
             height: 2px;
-            background: linear-gradient(90deg, transparent, rgba(138, 43, 226, 0.3), transparent);
+            background: linear-gradient(90deg, transparent, rgb(255, 99, 71, 0.5), transparent);
             margin: 1.5rem 0;
         }
 
-        [data-bs-theme="dark"] .tithi-info-card {
+        /* [data-bs-theme="dark"] .tithi-info-card {
             background: rgba(20, 20, 30, 0.95);
         }
 
@@ -1228,7 +1208,7 @@
         [data-bs-theme="dark"] .tithi-significance {
             background: rgba(138, 43, 226, 0.1);
             border-left-color: #b388ff;
-        }
+        } */
 
         /* Responsive adjustments for Tithi card */
         @media (max-width: 768px) {
@@ -3374,7 +3354,7 @@
 
                 return `
                     <!-- Tithi Information Card -->
-                    <div class="card mb-4 tithi-info-card">
+                    <div class="card mb-4">
                         <div class="card-header">
                             <h5 class="mb-0">
                                 <i class="fas fa-moon me-2"></i>Tithi (Lunar Day) Information
@@ -3386,7 +3366,7 @@
                                 <div class="col-lg-3 col-md-12 mb-4 mb-lg-0">
                                     <div class="tithi-moon-section">
                                         <div class="tithi-icon-container">
-                                            <i class="fas ${moonIconClass} fa-5x" style="color: #8a2be2;"></i>
+                                            <i class="fas ${moonIconClass} fa-5x" style="color: rgb(255, 99, 71);"></i>
                                         </div>
                                         <div class="mt-3">
                                             <span class="tithi-paksha-badge ${pakshaClass}">
@@ -3413,7 +3393,7 @@
                                         <!-- Significance -->
                                         ${tithiData.significance ? `
                                         <div class="tithi-significance">
-                                            <i class="fas fa-info-circle me-2" style="color: #8a2be2;"></i>
+                                            <i class="fas fa-info-circle me-2" style="color: rgb(255, 99, 71);"></i>
                                             <strong>Significance:</strong> ${tithiData.significance}
                                         </div>
                                         ` : ''}

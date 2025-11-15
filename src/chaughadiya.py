@@ -50,6 +50,15 @@ __CHAUGHADIYA = {
     ]
 }
 
+__RAHU_KAAL = {
+    0: 2,
+    1: 7,
+    2: 5,
+    3: 6,
+    4: 4,
+    5: 3,
+    6: 8
+}
 
 """
 There are 8 muhurats between every sunrise and sunset.
