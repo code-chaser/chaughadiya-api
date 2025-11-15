@@ -1070,7 +1070,6 @@
         .tithi-info-card:hover {
             background: linear-gradient(135deg, rgba(138, 43, 226, 0.2), rgba(123, 104, 238, 0.15));
             border-color: rgba(138, 43, 226, 0.5);
-            transform: translateY(-3px);
             box-shadow: 0 5px 15px rgba(138, 43, 226, 0.3);
         }
 
@@ -3230,11 +3229,7 @@
                     moonIconClass = 'fa-circle'; // New moon (will be styled differently)
                 }
 
-                // Check if the Tithi data is for today (to show progress bar)
-                const isTodayTithi = tithiData.input_date && isDateTodayInTimezone(tithiData.input_date, timezone);
-
-                // Build the HTML
-                let html = `
+                return `
                     <!-- Tithi Information Card -->
                     <div class="card mb-4 tithi-info-card">
                         <div class="card-body">
@@ -3244,7 +3239,7 @@
                                         <i class="fas ${moonIconClass} fa-4x" style="color: #8a2be2;"></i>
                                     </div>
                                 </div>
-                                <div class="col-md-${isTodayTithi ? '5' : '6'} mb-3 mb-md-0">
+                                <div class="col-md-6 mb-3 mb-md-0">
                                     <h4 class="mb-2"><i class="fas fa-calendar-alt me-2" style="color: #8a2be2;"></i>Lunar Day (Tithi)</h4>
                                     <h2 class="mb-2"><strong>${tithiData.tithi_name || 'N/A'}</strong></h2>
                                     <p class="mb-2">
@@ -3252,20 +3247,9 @@
                                             ${moonPhase} - ${tithiData.paksha || 'N/A'}
                                         </span>
                                     </p>
-                                    <p class="mb-1 text-muted"><strong>Significance:</strong> ${tithiData.significance || 'Traditional lunar day'}</p>`;
-                
-                // Only show progress percentage and progress bar if it's today's Tithi
-                if (isTodayTithi) {
-                    html += `
-                                    <p class="mb-0"><small class="text-muted">Progress: ${tithiData.progress_percentage || 0}% complete</small></p>
-                                    <div class="tithi-progress-bar">
-                                        <div class="tithi-progress-fill" style="width: ${tithiData.progress_percentage || 0}%"></div>
-                                    </div>`;
-                }
-                
-                html += `
+                                    <p class="mb-0 text-muted"><strong>Significance:</strong> ${tithiData.significance || 'Traditional lunar day'}</p>
                                 </div>
-                                <div class="col-md-${isTodayTithi ? '5' : '4'}">
+                                <div class="col-md-4">
                                     <div class="row g-2">
                                         <div class="col-md-6 text-center">
                                             <div class="time-info" style="background: rgba(138, 43, 226, 0.1); border: 2px solid rgba(138, 43, 226, 0.3);">
@@ -3287,8 +3271,6 @@
                         </div>
                     </div>
                 `;
-                
-                return html;
             }
 
             // Helper function to get Tithi name by number (for previous Tithi display)
