@@ -2088,6 +2088,8 @@
                 // Add Tithi information section if available
                 if (window.currentData.tithi && !window.currentData.tithi.error) {
                     const tithi = window.currentData.tithi;
+                    const isTodayDate = isDateTodayInTimezone(window.currentData.date, window.currentTimezone);
+                    
                     csv += '\n';
                     csv += 'TITHI (LUNAR DAY) INFORMATION\n';
                     csv += 'Property,Value\n';
@@ -2097,8 +2099,12 @@
                     csv += `Significance,"${tithi.significance || 'N/A'}"\n`;
                     csv += `Start Time,${formatISODateTime(tithi.start_time, window.currentTimezone, is24HourFormat)}\n`;
                     csv += `End Time,${formatISODateTime(tithi.end_time, window.currentTimezone, is24HourFormat)}\n`;
-                    csv += `Next Tithi,${tithi.next_tithi_name || 'N/A'}\n`;
-                    csv += `Progress,${tithi.progress_percentage || 0}%\n`;
+                    
+                    // Only show progress and next tithi if viewing today's date
+                    if (isTodayDate) {
+                        csv += `Next Tithi,${tithi.next_tithi_name || 'N/A'}\n`;
+                        csv += `Progress,${tithi.progress_percentage || 0}%\n`;
+                    }
                 }
                 
                 const blob = new Blob([csv], { type: 'text/csv' });
@@ -2160,7 +2166,14 @@
                 const muhuratCount = data.chaughadiya.length;
                 const rowHeight = 45;
                 const baseHeight = 670; // Header + info + stats + timeline + footer (with creator credit) + padding
-                const tithiSectionHeight = (data.tithi && !data.tithi.error) ? 290 : 0; // Tithi section: 40 (title) + 220 (card) + 30 (spacing)
+                
+                // Tithi section height varies: 245px (without progress) or 290px (with progress for today)
+                let tithiSectionHeight = 0;
+                if (data.tithi && !data.tithi.error) {
+                    const isTodayForHeight = isDateTodayInTimezone(data.date, timezoneSelect.value);
+                    tithiSectionHeight = isTodayForHeight ? 290 : 245; // 40 (title) + (220 or 175) (card) + 30 (spacing)
+                }
+                
                 const height = baseHeight + (muhuratCount * rowHeight) + tithiSectionHeight;
                 
                 canvas.width = width * scale;
@@ -2697,8 +2710,9 @@
                     ctx.fillText(moonIcon + ' Tithi (Lunar Day) Information', margin, yPos);
                     yPos += 40;
                     
-                    // Tithi card background - increased height for better spacing
-                    const tithiCardHeight = 220;
+                    // Tithi card background - height varies based on whether showing progress
+                    // 175px without progress, 220px with progress (includes 45px for progress bar area)
+                    const tithiCardHeight = isTodayInTimezone ? 220 : 175;
                     
                     // Background with subtle gradient effect
                     const gradient = ctx.createLinearGradient(margin, yPos, margin, yPos + tithiCardHeight);
@@ -2776,8 +2790,8 @@
                     ctx.fillStyle = colors.text;
                     ctx.fillText(formatISODateTime(tithi.end_time, timezoneSelect.value, is24HourFormat), col2X, tithiY + 24);
                     
-                    // Progress bar (if we have progress percentage)
-                    if (tithi.progress_percentage !== undefined) {
+                    // Progress bar (only show if viewing today's date and we have progress percentage)
+                    if (isTodayInTimezone && tithi.progress_percentage !== undefined) {
                         const progressBarY = yPos + tithiCardHeight - 45;
                         const progressBarHeight = 8;
                         const progressBarWidth = contentWidth - 50;
