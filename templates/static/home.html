@@ -2085,6 +2085,22 @@
                     csv += `${index + 1},${muhurat.muhurat},${muhurat['start-time']},${muhurat['end-time']},${period}\n`;
                 });
                 
+                // Add Tithi information section if available
+                if (window.currentData.tithi && !window.currentData.tithi.error) {
+                    const tithi = window.currentData.tithi;
+                    csv += '\n';
+                    csv += 'TITHI (LUNAR DAY) INFORMATION\n';
+                    csv += 'Property,Value\n';
+                    csv += `Tithi Name,${tithi.tithi_name || 'N/A'}\n`;
+                    csv += `Tithi Number,${tithi.tithi_number || 'N/A'}\n`;
+                    csv += `Paksha (Lunar Phase),${tithi.paksha || 'N/A'}\n`;
+                    csv += `Significance,"${tithi.significance || 'N/A'}"\n`;
+                    csv += `Start Time,${formatISODateTime(tithi.start_time, window.currentTimezone, is24HourFormat)}\n`;
+                    csv += `End Time,${formatISODateTime(tithi.end_time, window.currentTimezone, is24HourFormat)}\n`;
+                    csv += `Next Tithi,${tithi.next_tithi_name || 'N/A'}\n`;
+                    csv += `Progress,${tithi.progress_percentage || 0}%\n`;
+                }
+                
                 const blob = new Blob([csv], { type: 'text/csv' });
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
@@ -2144,7 +2160,8 @@
                 const muhuratCount = data.chaughadiya.length;
                 const rowHeight = 45;
                 const baseHeight = 670; // Header + info + stats + timeline + footer (with creator credit) + padding
-                const height = baseHeight + (muhuratCount * rowHeight);
+                const tithiSectionHeight = (data.tithi && !data.tithi.error) ? 290 : 0; // Tithi section: 40 (title) + 220 (card) + 30 (spacing)
+                const height = baseHeight + (muhuratCount * rowHeight) + tithiSectionHeight;
                 
                 canvas.width = width * scale;
                 canvas.height = height * scale;
@@ -2468,6 +2485,10 @@
                     
                     xPos = tableX;
                     
+                    // Determine text color for current muhurat (use dark text on light background)
+                    const currentRowTextColor = isCurrent ? '#1a1a1a' : colors.text;
+                    const currentRowSecondaryColor = isCurrent ? '#333333' : colors.textSecondary;
+                    
                     // Serial number with circle background for current
                     if (isCurrent) {
                         ctx.fillStyle = info.color;
@@ -2488,20 +2509,20 @@
                     ctx.fillText(`${info.icon} ${muhurat.muhurat}`, xPos + colWidths[1] / 2, yPos + 28);
                     xPos += colWidths[1];
                     
-                    // Start time
-                    ctx.fillStyle = colors.text;
+                    // Start time - use contrasting color for current muhurat
+                    ctx.fillStyle = currentRowTextColor;
                     ctx.font = '17px Courier New, monospace';
                     ctx.fillText(formatTime(roundTimeToMinute(muhurat['start-time']), is24HourFormat), 
                         xPos + colWidths[2] / 2, yPos + 28);
                     xPos += colWidths[2];
                     
-                    // End time
+                    // End time - use contrasting color for current muhurat
                     ctx.fillText(formatTime(roundTimeToMinute(muhurat['end-time']), is24HourFormat), 
                         xPos + colWidths[3] / 2, yPos + 28);
                     xPos += colWidths[3];
                     
-                    // Period
-                    ctx.fillStyle = colors.textSecondary;
+                    // Period - use contrasting color for current muhurat
+                    ctx.fillStyle = currentRowSecondaryColor;
                     ctx.font = '17px Arial, sans-serif';
                     ctx.fillText(period, xPos + colWidths[4] / 2, yPos + 28);
                     
@@ -2651,6 +2672,142 @@
                 }
                 
                 yPos += timelineHeight + 30;
+                
+                // Tithi Information Section (if available)
+                if (data.tithi && !data.tithi.error) {
+                    const tithi = data.tithi;
+                    
+                    // Tithi section header
+                    ctx.fillStyle = colors.text;
+                    ctx.font = 'bold 24px Arial, sans-serif';
+                    ctx.textAlign = 'left';
+                    
+                    // Determine moon icon based on tithi
+                    let moonIcon = '🌙';
+                    if (tithi.tithi_name && tithi.tithi_name.includes('Purnima')) {
+                        moonIcon = '🌕'; // Full Moon
+                    } else if (tithi.tithi_name && tithi.tithi_name.includes('Amavasya')) {
+                        moonIcon = '🌑'; // New Moon
+                    } else if (tithi.paksha && tithi.paksha.includes('Shukla')) {
+                        moonIcon = '🌒'; // Waxing Moon
+                    } else {
+                        moonIcon = '🌘'; // Waning Moon
+                    }
+                    
+                    ctx.fillText(moonIcon + ' Tithi (Lunar Day) Information', margin, yPos);
+                    yPos += 40;
+                    
+                    // Tithi card background - increased height for better spacing
+                    const tithiCardHeight = 220;
+                    
+                    // Background with subtle gradient effect
+                    const gradient = ctx.createLinearGradient(margin, yPos, margin, yPos + tithiCardHeight);
+                    gradient.addColorStop(0, isDarkTheme ? 'rgba(255, 153, 51, 0.15)' : 'rgba(255, 153, 51, 0.08)');
+                    gradient.addColorStop(1, isDarkTheme ? 'rgba(128, 0, 0, 0.15)' : 'rgba(128, 0, 0, 0.08)');
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(margin, yPos, contentWidth, tithiCardHeight);
+                    
+                    // Border
+                    ctx.strokeStyle = colors.primary;
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(margin, yPos, contentWidth, tithiCardHeight);
+                    
+                    // Left accent bar
+                    ctx.fillStyle = colors.primary;
+                    ctx.fillRect(margin, yPos, 6, tithiCardHeight);
+                    
+                    const tithiContentX = margin + 25;
+                    let tithiY = yPos + 35;
+                    
+                    // Tithi Name (prominent)
+                    ctx.fillStyle = colors.text;
+                    ctx.font = 'bold 26px Arial, sans-serif';
+                    ctx.textAlign = 'left';
+                    ctx.fillText(tithi.tithi_name || 'N/A', tithiContentX, tithiY);
+                    
+                    // Paksha badge (next to name)
+                    const tithiNameWidth = ctx.measureText(tithi.tithi_name || 'N/A').width;
+                    ctx.font = '16px Arial, sans-serif';
+                    ctx.fillStyle = colors.textSecondary;
+                    const pakshaText = ' • ' + (tithi.paksha || 'N/A');
+                    ctx.fillText(pakshaText, tithiContentX + tithiNameWidth + 10, tithiY);
+                    
+                    tithiY += 35;
+                    
+                    // Significance (if available and fits)
+                    if (tithi.significance) {
+                        ctx.font = '15px Arial, sans-serif';
+                        ctx.fillStyle = colors.textSecondary;
+                        const maxWidth = contentWidth - 50;
+                        const significanceText = truncateText('✨ ' + tithi.significance, 80);
+                        ctx.fillText(significanceText, tithiContentX, tithiY);
+                        tithiY += 35;
+                    }
+                    
+                    // Divider line
+                    ctx.strokeStyle = isDarkTheme ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)';
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.moveTo(tithiContentX, tithiY);
+                    ctx.lineTo(margin + contentWidth - 25, tithiY);
+                    ctx.stroke();
+                    
+                    tithiY += 25;
+                    
+                    // Two-column layout for start and end times
+                    const col1X = tithiContentX;
+                    const col2X = tithiContentX + contentWidth / 2 - 25;
+                    
+                    // Start Time
+                    ctx.font = 'bold 14px Arial, sans-serif';
+                    ctx.fillStyle = colors.textSecondary;
+                    ctx.fillText('🌅 Tithi Begins', col1X, tithiY);
+                    
+                    ctx.font = 'bold 18px Courier New, monospace';
+                    ctx.fillStyle = colors.text;
+                    ctx.fillText(formatISODateTime(tithi.start_time, timezoneSelect.value, is24HourFormat), col1X, tithiY + 24);
+                    
+                    // End Time
+                    ctx.font = 'bold 14px Arial, sans-serif';
+                    ctx.fillStyle = colors.textSecondary;
+                    ctx.fillText('🌄 Tithi Ends', col2X, tithiY);
+                    
+                    ctx.font = 'bold 18px Courier New, monospace';
+                    ctx.fillStyle = colors.text;
+                    ctx.fillText(formatISODateTime(tithi.end_time, timezoneSelect.value, is24HourFormat), col2X, tithiY + 24);
+                    
+                    // Progress bar (if we have progress percentage)
+                    if (tithi.progress_percentage !== undefined) {
+                        const progressBarY = yPos + tithiCardHeight - 45;
+                        const progressBarHeight = 8;
+                        const progressBarWidth = contentWidth - 50;
+                        const progressBarX = tithiContentX;
+                        
+                        // Progress bar background
+                        ctx.fillStyle = isDarkTheme ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+                        ctx.fillRect(progressBarX, progressBarY, progressBarWidth, progressBarHeight);
+                        
+                        // Progress bar fill
+                        const progressWidth = (tithi.progress_percentage / 100) * progressBarWidth;
+                        const progressGradient = ctx.createLinearGradient(progressBarX, progressBarY, progressBarX + progressWidth, progressBarY);
+                        progressGradient.addColorStop(0, colors.primary);
+                        progressGradient.addColorStop(1, colors.secondary);
+                        ctx.fillStyle = progressGradient;
+                        ctx.fillRect(progressBarX, progressBarY, progressWidth, progressBarHeight);
+                        
+                        // Progress text
+                        ctx.font = '12px Arial, sans-serif';
+                        ctx.fillStyle = colors.textSecondary;
+                        ctx.textAlign = 'right';
+                        ctx.fillText(`${tithi.progress_percentage}% complete`, progressBarX + progressBarWidth, progressBarY + 22);
+                        
+                        // Next tithi text
+                        ctx.textAlign = 'left';
+                        ctx.fillText(`Next: ${tithi.next_tithi_name || 'N/A'}`, progressBarX, progressBarY + 22);
+                    }
+                    
+                    yPos += tithiCardHeight + 30;
+                }
                 
                 // Footer text with creator credit
                 ctx.fillStyle = colors.textSecondary;
@@ -3327,7 +3484,8 @@
                 }
             }
 
-            function generateTithiHTML(tithiData, timezone) {
+            function generateTithiHTML(data, timezone) {
+                let tithiData = data.tithi;
                 if (!tithiData || tithiData.error) {
                     return '';
                 }
@@ -3712,7 +3870,7 @@
 
                 // Add Tithi information if available (after Muhurat timeline and table)
                 if (data.tithi) {
-                    html += generateTithiHTML(data.tithi, userTimezone);
+                    html += generateTithiHTML(data, userTimezone);
                 }
 
                 html += `
