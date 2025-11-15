@@ -1790,7 +1790,6 @@
             function loadPreferences() {
                 const savedDarkMode = localStorage.getItem('chaughadiya_darkMode') === 'true';
                 const saved24Hour = localStorage.getItem('chaughadiya_24hour') === 'true';
-                const savedRahuKaal = localStorage.getItem('chaughadiya_rahuKaal') === 'true';
                 
                 if (savedDarkMode) {
                     themeSwitcher.checked = true;
@@ -1800,11 +1799,6 @@
                 if (saved24Hour) {
                     timeFormatSwitcher.checked = true;
                     is24HourFormat = true;
-                }
-                
-                if (savedRahuKaal) {
-                    rahuKaalToggle.checked = true;
-                    showRahuKaal = true;
                 }
             }
 
@@ -1836,7 +1830,6 @@
             const rahuKaalToggle = document.getElementById('rahuKaalToggle');
             rahuKaalToggle.addEventListener('change', function () {
                 showRahuKaal = this.checked;
-                savePreference('rahuKaal', this.checked ? 'true' : 'false');
                 // Re-render results if they exist
                 if (window.currentData && window.currentTimezone) {
                     displayResults(window.currentData, window.currentTimezone);
