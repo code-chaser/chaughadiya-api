@@ -1057,6 +1057,71 @@
             75% { transform: translateY(-5px); }
         }
 
+        /* Tithi Information Styles */
+        .tithi-info-card {
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.15), rgba(123, 104, 238, 0.1));
+            border: 2px solid rgba(138, 43, 226, 0.3);
+            border-radius: 15px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+        }
+
+        .tithi-info-card:hover {
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.2), rgba(123, 104, 238, 0.15));
+            border-color: rgba(138, 43, 226, 0.5);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(138, 43, 226, 0.3);
+        }
+
+        .tithi-icon-container {
+            position: relative;
+            display: inline-block;
+            animation: iconFloat 3s ease-in-out infinite;
+        }
+
+        .tithi-info-card .fa-moon {
+            filter: drop-shadow(0 0 10px rgba(138, 43, 226, 0.6));
+        }
+
+        .tithi-paksha-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .shukla-paksha {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #333;
+        }
+
+        .krishna-paksha {
+            background: linear-gradient(135deg, #4a5568, #2d3748);
+            color: white;
+        }
+
+        .tithi-progress-bar {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            height: 10px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+
+        .tithi-progress-fill {
+            background: linear-gradient(135deg, #8a2be2, #9370db);
+            height: 100%;
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+
+        [data-bs-theme="dark"] .tithi-info-card {
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.2), rgba(123, 104, 238, 0.15));
+            border-color: rgba(138, 43, 226, 0.4);
+        }
+
         .loading-spinner {
             display: none;
             text-align: center;
@@ -2875,11 +2940,35 @@
                         throw new Error(data.error);
                     }
                     
+                    // Fetch Tithi data
+                    let tithiData = null;
+                    try {
+                        const tithiEndpoint = '/api/get-tithi';
+                        const tithiParams = `date=${dateString}&latitude=${latitude}&longitude=${longitude}&timezone=${timezone}`;
+                        const tithiResponse = await fetch(`${tithiEndpoint}?${tithiParams}`);
+                        
+                        if (tithiResponse.ok) {
+                            tithiData = await tithiResponse.json();
+                            if (tithiData.error) {
+                                console.warn('Tithi calculation error:', tithiData.error);
+                                tithiData = null;
+                            }
+                        }
+                    } catch (tithiError) {
+                        console.warn('Failed to fetch Tithi data:', tithiError);
+                        // Continue without Tithi data - it's optional
+                    }
+                    
                     // Convert GMT times to user timezone
                     let convertedData = convertChaughadiyaTimesToUserTimezone(data, timezone);
                     
                     // Apply truncation filters to ensure muhurats fit within 00:00:00 to 24:00:00
                     convertedData = truncateMuhuratsToMidnight(convertedData);
+                    
+                    // Add Tithi data to converted data
+                    if (tithiData) {
+                        convertedData.tithi = tithiData;
+                    }
                     
                     // Hide loading state
                     loadingSpinner.style.display = 'none';
@@ -3109,6 +3198,75 @@
                 return durationString;
             }
 
+            function formatISODateTime(isoString, timezone) {
+                if (!isoString) return 'N/A';
+                try {
+                    const date = new Date(isoString);
+                    return date.toLocaleString('en-US', { 
+                        timeZone: timezone,
+                        dateStyle: 'medium',
+                        timeStyle: 'short'
+                    });
+                } catch (e) {
+                    return 'N/A';
+                }
+            }
+
+            function generateTithiHTML(tithiData, timezone) {
+                if (!tithiData || tithiData.error) {
+                    return '';
+                }
+
+                const isPakshaShukla = tithiData.paksha && tithiData.paksha.includes('Shukla');
+                const pakshaClass = isPakshaShukla ? 'shukla-paksha' : 'krishna-paksha';
+                const moonIcon = isPakshaShukla ? 'fa-moon' : 'fa-moon';
+                const moonPhase = isPakshaShukla ? 'Waxing Moon' : 'Waning Moon';
+                
+                // Get appropriate moon icon based on tithi number
+                let moonIconClass = 'fa-moon';
+                if (tithiData.tithi_name && tithiData.tithi_name.includes('Purnima')) {
+                    moonIconClass = 'fa-circle'; // Full moon
+                } else if (tithiData.tithi_name && tithiData.tithi_name.includes('Amavasya')) {
+                    moonIconClass = 'fa-circle'; // New moon (will be styled differently)
+                }
+
+                return `
+                    <!-- Tithi Information Card -->
+                    <div class="card mb-4 tithi-info-card">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-2 text-center mb-3 mb-md-0">
+                                    <div class="tithi-icon-container">
+                                        <i class="fas ${moonIconClass} fa-4x" style="color: #8a2be2;"></i>
+                                    </div>
+                                </div>
+                                <div class="col-md-7 mb-3 mb-md-0">
+                                    <h4 class="mb-2"><i class="fas fa-calendar-alt me-2" style="color: #8a2be2;"></i>Lunar Day (Tithi)</h4>
+                                    <h2 class="mb-2"><strong>${tithiData.tithi_name || 'N/A'}</strong></h2>
+                                    <p class="mb-2">
+                                        <span class="tithi-paksha-badge ${pakshaClass}">
+                                            ${moonPhase} - ${tithiData.paksha || 'N/A'}
+                                        </span>
+                                    </p>
+                                    <p class="mb-1 text-muted"><strong>Significance:</strong> ${tithiData.significance || 'Traditional lunar day'}</p>
+                                    <p class="mb-0"><small class="text-muted">Progress: ${tithiData.progress_percentage || 0}% complete</small></p>
+                                    <div class="tithi-progress-bar">
+                                        <div class="tithi-progress-fill" style="width: ${tithiData.progress_percentage || 0}%"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 text-center">
+                                    <div class="time-info" style="background: rgba(138, 43, 226, 0.1); border: 2px solid rgba(138, 43, 226, 0.3);">
+                                        <h6 class="mb-2">Tithi Ends</h6>
+                                        <p class="mb-1" style="font-family: 'Courier New', monospace;"><strong>${formatISODateTime(tithiData.end_time, timezone)}</strong></p>
+                                        <small class="text-muted">Next: ${tithiData.next_tithi_name || 'N/A'}</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
             function isDateTodayInTimezone(dateString, timezone) {
                 // Get today's date in the specified timezone
                 const now = new Date();
@@ -3258,7 +3416,14 @@
                                 </div>
                             </div>
                         </div>
+                `;
 
+                // Add Tithi information if available
+                if (data.tithi) {
+                    html += generateTithiHTML(data.tithi, userTimezone);
+                }
+
+                html += `
                         <!-- Muhurat Timeline -->
                         <div class="card mb-4">
                             <div class="card-header">
