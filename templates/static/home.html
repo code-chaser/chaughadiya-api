@@ -3987,7 +3987,8 @@
                     'Chal': { color: 'secondary', meaning: 'Movement - Good for travel', icon: 'fas fa-route' },
                     'Labh': { color: 'success', meaning: 'Profit - Good for business', icon: 'fas fa-coins' },
                     'Amrit': { color: 'success', meaning: 'Nectar - Very auspicious', icon: 'fas fa-gem' },
-                    'Shubh': { color: 'success', meaning: 'Auspicious - Good for all work', icon: 'fas fa-star' }
+                    'Shubh': { color: 'success', meaning: 'Auspicious - Good for all work', icon: 'fas fa-star' },
+                    'RahuKaal': { color: 'danger', meaning: 'Rahu Kaal - Very Inauspicious', icon: 'fas fa-exclamation-triangle' }
                 };
 
                 // Helper function to determine if a muhurat is during the day
@@ -4203,43 +4204,39 @@
 
                 // Generate table rows
                 allMuhurats.forEach((muhurat, index) => {
-                    const info = muhuratInfo[muhurat.muhurat] || { color: 'secondary', meaning: 'Unknown', icon: 'fas fa-question' };
+                    const isRahuKaal = isRahuKaalMuhurat(muhurat, index, data.date, data);
+                    const info = isRahuKaal ? muhuratInfo['RahuKaal'] : muhuratInfo[muhurat.muhurat] || { color: 'secondary', meaning: 'Unknown', icon: 'fas fa-question' };
                     const isDay = isMuhuratDuringDay(muhurat['start-time'], data['sunrise-time'], data['sunset-time']);
                     const isCurrent = currentMuhuratData && currentMuhuratData.index === index;
-                    const isRahuKaal = isRahuKaalMuhurat(muhurat, index, data.date, data);
-                    
                     // Determine row class based on current and Rahu Kaal status
                     let rowClass = '';
-                    let rahuKaalBadge = '';
+                    let rahuKaalIcon = '';
                     
                     if (isCurrent && isRahuKaal) {
                         // Both current and Rahu Kaal - special combined styling
                         rowClass = 'current-rahu-kaal-row fw-bold';
-                        rahuKaalBadge = `
-                            <div class="current-rahu-kaal-indicator">
-                                <span class="live-badge">⚡ LIVE</span>
-                                <span class="rahu-badge">⚠ RAHU KAAL</span>
-                            </div>
-                        `;
+                        rahuKaalIcon = '<span class="text-danger ms-2" title="Rahu Kaal">⚠</span>';
                     } else if (isCurrent) {
                         // Only current muhurat
                         rowClass = 'table-warning fw-bold';
                     } else if (isRahuKaal) {
                         // Only Rahu Kaal
                         rowClass = 'rahu-kaal-row';
-                        rahuKaalBadge = '<span class="rahu-kaal-indicator">⚠ RAHU KAAL</span>';
+                        rahuKaalIcon = '<span class="text-danger ms-2" title="Rahu Kaal">⚠</span>';
                     }
                     
                     const startTimeFormatted = formatTime(muhurat['start-time'], is24HourFormat);
                     const endTimeFormatted = formatTime(muhurat['end-time'], is24HourFormat);
+                    
                     
                     html += `
                         <tr class="${rowClass}">
                             <td><strong>${index + 1}</strong></td>
                             <td>
                                 <i class="${info.icon} text-${info.color} me-2"></i>
-                                <strong class="text-${info.color}">${muhurat.muhurat}</strong>
-                                ${rahuKaalBadge}
+                                <strong class="text-${info.color}">${
+                                    muhurat.muhurat + (isRahuKaal ? ' (Rahu)' : '')
+                                }</strong>
                             </td>
                             <td>${startTimeFormatted}</td>
                             <td>${endTimeFormatted}</td>
