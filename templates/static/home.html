@@ -2241,6 +2241,46 @@
                     }
                 }
                 
+                // Add Rahu Kaal information if toggle is enabled
+                if (showRahuKaal) {
+                    const rahuKaalMuhuratNumber = getRahuKaalMuhurat(window.currentData.date);
+                    
+                    // Find the Rahu Kaal muhurat in the data
+                    let rahuKaalMuhurat = null;
+                    let rahuKaalIndex = -1;
+                    
+                    let nightMuhuratsBeforeSunrise = 0;
+                    const sunriseTime = window.currentData['sunrise-time'];
+                    for (let i = 0; i < data.length; i++) {
+                        if (data[i]['start-time'] < sunriseTime) {
+                            nightMuhuratsBeforeSunrise++;
+                        } else {
+                            break;
+                        }
+                    }
+                    
+                    rahuKaalIndex = nightMuhuratsBeforeSunrise + rahuKaalMuhuratNumber;
+                    if (rahuKaalIndex >= 0 && rahuKaalIndex < data.length) {
+                        rahuKaalMuhurat = data[rahuKaalIndex];
+                    }
+                    
+                    const weekdayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+                    const date = new Date(window.currentData.date + 'T00:00:00');
+                    const weekday = (date.getDay() + 6) % 7;
+                    
+                    csv += '\n';
+                    csv += 'RAHU KAAL (INAUSPICIOUS PERIOD)\n';
+                    csv += 'Property,Value\n';
+                    csv += `Day,${weekdayNames[weekday]}\n`;
+                    csv += `Muhurat Number,${rahuKaalIndex + 1}\n`;
+                    if (rahuKaalMuhurat) {
+                        csv += `Muhurat Name,${rahuKaalMuhurat.muhurat}\n`;
+                        csv += `Start Time,${formatTime(rahuKaalMuhurat['start-time'], is24HourFormat)}\n`;
+                        csv += `End Time,${formatTime(rahuKaalMuhurat['end-time'], is24HourFormat)}\n`;
+                    }
+                    csv += 'Note,"Rahu Kaal is considered inauspicious for starting new ventures"\n';
+                }
+                
                 const blob = new Blob([csv], { type: 'text/csv' });
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
@@ -2301,14 +2341,18 @@
                 const rowHeight = 45;
                 const baseHeight = 670; // Header + info + stats + timeline + footer (with creator credit) + padding
                 
-                // Tithi section height varies: 245px (without progress) or 290px (with progress for today)
+                // Tithi section height varies based on progress display
                 let tithiSectionHeight = 0;
                 if (data.tithi && !data.tithi.error) {
                     const isTodayForHeight = isDateTodayInTimezone(data.date, timezoneSelect.value);
-                    tithiSectionHeight = isTodayForHeight ? 290 : 245; // 40 (title) + (220 or 175) (card) + 30 (spacing)
+                    // 30 (pre-title spacing) + 15 (post-title) + (220 or 175) (card) + 30 (post-card)
+                    tithiSectionHeight = isTodayForHeight ? 295 : 250;
                 }
+
+                // Rahu Kaal section height: 30 (pre-title) + 15 (post-title) + 140 (card) + 30 (post-card)
+                const rahuKaalSectionHeight = showRahuKaal ? 215 : 0;
                 
-                const height = baseHeight + (muhuratCount * rowHeight) + tithiSectionHeight;
+                const height = baseHeight + (muhuratCount * rowHeight) + tithiSectionHeight + rahuKaalSectionHeight + 10 + 10;
                 
                 canvas.width = width * scale;
                 canvas.height = height * scale;
@@ -2577,9 +2621,15 @@
                         ? (muhuratSeconds >= sunriseSeconds || muhuratSeconds < sunsetSeconds)
                         : (muhuratSeconds >= sunriseSeconds && muhuratSeconds < sunsetSeconds);
                     const period = isDay ? '☀️ Day' : '🌙 Night';
+                    const isRahuKaal = isRahuKaalMuhurat(muhurat, index, data.date, data);
                     
                     const info = muhuratInfo[muhurat.muhurat] || { color: colors.info, bg: '#e7f3f8', icon: '○', meaning: 'Neutral' };
                     
+                    if (isRahuKaal) {
+                        ctx.fillStyle = '#DC143C';
+                    } else {
+                        ctx.fillStyle = info.color + '80';
+                    }
                     // Calculate duration
                     const startSeconds = timeToSeconds(muhurat['start-time']);
                     const endSeconds = timeToSeconds(muhurat['end-time']);
@@ -2731,9 +2781,15 @@
                     const info = muhuratInfo[muhurat.muhurat] || { color: colors.info, bg: '#e7f3f8', icon: '○', meaning: 'Neutral' };
                     const startSeconds = timeToSeconds(muhurat['start-time']);
                     const endSeconds = timeToSeconds(muhurat['end-time']);
+                    const isRahuKaal = isRahuKaalMuhurat(muhurat, index, data.date, data);
                     let durationSeconds = endSeconds - startSeconds;
                     if (durationSeconds < 0) durationSeconds += 86400;
                     
+                    if (isRahuKaal) {
+                        ctx.fillStyle = '#DC143C';
+                    } else {
+                        ctx.fillStyle = info.color + '80';
+                    }
                     const blockX = margin + (startSeconds * pixelsPerSecond);
                     const blockWidth = durationSeconds * pixelsPerSecond;
                     
@@ -2825,6 +2881,7 @@
                     const tithi = data.tithi;
                     
                     // Tithi section header
+                    yPos += 30;
                     ctx.fillStyle = colors.text;
                     ctx.font = 'bold 24px Arial, sans-serif';
                     ctx.textAlign = 'left';
@@ -2842,7 +2899,7 @@
                     }
                     
                     ctx.fillText(moonIcon + ' Tithi (Lunar Day) Information', margin, yPos);
-                    yPos += 40;
+                    yPos += 15;
                     
                     // Tithi card background - height varies based on whether showing progress
                     // 175px without progress, 220px with progress (includes 45px for progress bar area)
@@ -2956,6 +3013,120 @@
                     
                     yPos += tithiCardHeight + 30;
                 }
+                
+                // Rahu Kaal Information Section (if enabled)
+                if (showRahuKaal) {
+                    const rahuKaalMuhuratNumber = getRahuKaalMuhurat(data.date);
+                    
+                    // Find the Rahu Kaal muhurat in the data
+                    let rahuKaalMuhurat = null;
+                    let rahuKaalIndex = -1;
+                    
+                    let nightMuhuratsBeforeSunrise = 0;
+                    const sunriseTime = data['sunrise-time'];
+                    for (let i = 0; i < data.chaughadiya.length; i++) {
+                        if (data.chaughadiya[i]['start-time'] < sunriseTime) {
+                            nightMuhuratsBeforeSunrise++;
+                        } else {
+                            break;
+                        }
+                    }
+                    
+                    rahuKaalIndex = nightMuhuratsBeforeSunrise + rahuKaalMuhuratNumber;
+                    if (rahuKaalIndex >= 0 && rahuKaalIndex < data.chaughadiya.length) {
+                        rahuKaalMuhurat = data.chaughadiya[rahuKaalIndex];
+                    }
+                    
+                    if (rahuKaalMuhurat) {
+                        // Rahu Kaal section header
+                        yPos += 30;
+                        ctx.fillStyle = colors.text;
+                        ctx.font = 'bold 24px Arial, sans-serif';
+                        ctx.textAlign = 'left';
+                        ctx.fillText('⚠️ Rahu Kaal (Inauspicious Period)', margin, yPos);
+                        yPos += 15;
+                        
+                        // Rahu Kaal card background
+                        const rahuKaalCardHeight = 140;
+                        
+                        // Background with warning gradient
+                        const rahuGradient = ctx.createLinearGradient(margin, yPos, margin, yPos + rahuKaalCardHeight);
+                        rahuGradient.addColorStop(0, isDarkTheme ? 'rgba(220, 20, 60, 0.15)' : 'rgba(139, 0, 0, 0.08)');
+                        rahuGradient.addColorStop(1, isDarkTheme ? 'rgba(139, 0, 0, 0.15)' : 'rgba(178, 34, 34, 0.08)');
+                        ctx.fillStyle = rahuGradient;
+                        ctx.fillRect(margin, yPos, contentWidth, rahuKaalCardHeight);
+                        
+                        // Border with warning color
+                        ctx.strokeStyle = '#DC143C';
+                        ctx.lineWidth = 2;
+                        ctx.strokeRect(margin, yPos, contentWidth, rahuKaalCardHeight);
+                        
+                        // Left accent bar (red)
+                        ctx.fillStyle = '#DC143C';
+                        ctx.fillRect(margin, yPos, 6, rahuKaalCardHeight);
+                        
+                        // Diagonal stripe pattern overlay
+                        ctx.save();
+                        ctx.globalAlpha = 0.1;
+                        for (let i = -rahuKaalCardHeight; i < contentWidth + rahuKaalCardHeight; i += 20) {
+                            ctx.strokeStyle = '#DC143C';
+                            ctx.lineWidth = 2;
+                            ctx.beginPath();
+                            ctx.moveTo(margin + i, yPos);
+                            ctx.lineTo(margin + i + rahuKaalCardHeight, yPos + rahuKaalCardHeight);
+                            ctx.stroke();
+                        }
+                        ctx.restore();
+                        
+                        const rahuContentX = margin + 25;
+                        let rahuY = yPos + 35;
+                        
+                        // Weekday name
+                        const weekdayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+                        const dateObj = new Date(data.date + 'T00:00:00');
+                        const weekday = (dateObj.getDay() + 6) % 7;
+                        
+                        ctx.fillStyle = colors.text;
+                        ctx.font = 'bold 22px Arial, sans-serif';
+                        ctx.textAlign = 'left';
+                        ctx.fillText(`${weekdayNames[weekday]} • Muhurat #${getRahuKaalMuhurat(data.date) + 1}: ${rahuKaalMuhurat.muhurat}`, rahuContentX, rahuY);
+                        
+                        rahuY += 35;
+                        
+                        // Warning message
+                        ctx.font = '15px Arial, sans-serif';
+                        ctx.fillStyle = colors.textSecondary;
+                        ctx.fillText('⚠ Not recommended for starting new ventures or important activities', rahuContentX, rahuY);
+                        
+                        rahuY += 30;
+                        
+                        // Two-column layout for start and end times
+                        const rahuCol1X = rahuContentX;
+                        const rahuCol2X = rahuContentX + contentWidth / 2 - 25;
+                        
+                        // Start Time
+                        ctx.font = 'bold 14px Arial, sans-serif';
+                        ctx.fillStyle = colors.textSecondary;
+                        ctx.fillText('⏰ Begins', rahuCol1X, rahuY);
+                        
+                        ctx.font = 'bold 18px Courier New, monospace';
+                        ctx.fillStyle = '#DC143C';
+                        ctx.fillText(formatTime(roundTimeToMinute(rahuKaalMuhurat['start-time']), is24HourFormat), rahuCol1X, rahuY + 24);
+                        
+                        // End Time
+                        ctx.font = 'bold 14px Arial, sans-serif';
+                        ctx.fillStyle = colors.textSecondary;
+                        ctx.fillText('⏰ Ends', rahuCol2X, rahuY);
+                        
+                        ctx.font = 'bold 18px Courier New, monospace';
+                        ctx.fillStyle = '#DC143C';
+                        ctx.fillText(formatTime(roundTimeToMinute(rahuKaalMuhurat['end-time']), is24HourFormat), rahuCol2X, rahuY + 24);
+                        
+                        yPos += rahuKaalCardHeight + 30;
+                    }
+                }
+
+                yPos += 10;
                 
                 // Footer text with creator credit
                 ctx.fillStyle = colors.textSecondary;
