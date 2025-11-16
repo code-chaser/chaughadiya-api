@@ -1448,6 +1448,10 @@
             border-radius: 0.75rem;
         }
 
+        .location-timezone-row {
+            display: block;
+        }
+
         .cta-actions {
             display: flex;
             flex-direction: column;
@@ -1472,6 +1476,18 @@
         @media (min-width: 990px) {
             .cta-column {
                 max-width: 460px;
+            }
+        }
+
+        @media (min-width: 1121px) {
+            .location-timezone-row {
+                display: flex;
+                gap: 1rem;
+            }
+
+            .location-timezone-row .form-floating {
+                flex: 1 1 0;
+                margin-bottom: 0;
             }
         }
 
@@ -1672,15 +1688,17 @@
                                             Location & Timezone
                                         </span>
                                     </div>
-                                    <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" id="location" placeholder="Enter a location">
-                                        <label for="location"><i class="fas fa-map-marker-alt me-2"></i>Location</label>
-                                    </div>
-                                    <div class="form-floating">
-                                        <select class="form-select" id="timezone">
-                                            <option value="">Select timezone</option>
-                                        </select>
-                                        <label for="timezone"><i class="fas fa-globe me-2"></i>Timezone</label>
+                                    <div class="location-timezone-row">
+                                        <div class="form-floating mb-3">
+                                            <input type="text" class="form-control" id="location" placeholder="Enter a location">
+                                            <label for="location"><i class="fas fa-map-marker-alt me-2"></i>Location</label>
+                                        </div>
+                                        <div class="form-floating mb-3 mb-lg-0">
+                                            <select class="form-select" id="timezone">
+                                                <option value="">Select timezone</option>
+                                            </select>
+                                            <label for="timezone"><i class="fas fa-globe me-2"></i>Timezone</label>
+                                        </div>
                                     </div>
                                     <div class="map-input mt-3">
                                         <label><i class="fas fa-map me-2 text-primary"></i>Select on Map</label>
