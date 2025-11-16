@@ -50,6 +50,15 @@ __CHAUGHADIYA = {
     ]
 }
 
+__RAHU_KAAL = {
+    0: 2,
+    1: 7,
+    2: 5,
+    3: 6,
+    4: 4,
+    5: 3,
+    6: 8
+}
 
 """
 There are 8 muhurats between every sunrise and sunset.
@@ -120,12 +129,19 @@ def get_chaughadiya(date: str, latitude: float, longitude: float):
     sun = Sun(latitude, longitude)
     sunrise = sun.get_sunrise_time(date)
     sunset = sun.get_sunset_time(date)
+    
     # Fetching sunset time of the previous day,
     # and sunrise time of the next day.
     prev_date = date - datetime.timedelta(days=1)
     next_date = date + datetime.timedelta(days=1)
     prev_sunset = sun.get_sunset_time(prev_date)
     next_sunrise = sun.get_sunrise_time(next_date)
+    
+    # Handle edge cases for temporal ordering
+    while sunset < sunrise:
+        prev_sunset = sunset
+        sunset = sunset + datetime.timedelta(days=1)
+    
     # Calculating the length of muhurats (3 kinds).
     part_1_muhurat_length = (sunrise - prev_sunset).total_seconds() / 8
     part_2_muhurat_length = (sunset - sunrise).total_seconds() / 8
