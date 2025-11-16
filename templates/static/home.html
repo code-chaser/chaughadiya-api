@@ -763,7 +763,7 @@
             }
             
             .lead {
-                font-size: 0.9rem;
+                font-size: 0.7rem;
             }
 
             .navbar-brand {
@@ -1358,6 +1358,142 @@
             padding: 1rem 0.75rem;
         }
 
+        .date-input-wrapper,
+        .location-input-wrapper {
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 1rem;
+            padding: 1rem 1.25rem 0.85rem;
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: var(--shadow-light);
+        }
+
+        [data-bs-theme="dark"] .date-input-wrapper,
+        [data-bs-theme="dark"] .location-input-wrapper {
+            background: rgba(44, 62, 80, 0.75);
+            border-color: rgba(255, 255, 255, 0.08);
+            box-shadow: var(--shadow-dark);
+        }
+
+        .date-input-header,
+        .location-input-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .date-input-title,
+        .location-input-title {
+            font-size: 0.8rem;
+            letter-spacing: 0.08em;
+            font-weight: 700;
+            color: var(--light-text);
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        [data-bs-theme="dark"] .date-input-title,
+        [data-bs-theme="dark"] .location-input-title {
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        .map-input {
+            border-radius: 0.85rem;
+            background: rgba(255, 255, 255, 0.85);
+            padding: 0.75rem;
+            border: 1px dashed rgba(0, 0, 0, 0.1);
+            width: 100%;
+        }
+
+        [data-bs-theme="dark"] .map-input {
+            background: rgba(44, 62, 80, 0.65);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .map-input label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 600;
+            color: rgba(0, 0, 0, 0.6);
+            margin-bottom: 0.4rem;
+        }
+
+        [data-bs-theme="dark"] .map-input label {
+            color: rgba(255, 255, 255, 0.75);
+        }
+
+        .map-input #map {
+            width: 100%;
+            border-radius: 0.75rem;
+        }
+
+        .cta-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .cta-actions .btn {
+            width: 100%;
+        }
+
+        @media (min-width: 768px) {
+            .cta-actions {
+                flex-direction: row;
+            }
+
+            .cta-actions .btn {
+                width: auto;
+                flex: 1;
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .cta-column {
+                max-width: 460px;
+            }
+        }
+
+        .date-quick-actions {
+            display: flex;
+            gap: 0.4rem;
+        }
+
+        .quick-date-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            border-radius: 999px;
+            padding: 0.2rem 0.85rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            background: rgba(255, 153, 51, 0.12);
+            color: var(--secondary-color);
+            backdrop-filter: blur(6px);
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .quick-date-btn i {
+            font-size: 0.65rem;
+        }
+
+        .quick-date-btn:hover {
+            background: rgba(255, 153, 51, 0.2);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 153, 51, 0.25);
+        }
+
+        [data-bs-theme="dark"] .quick-date-btn {
+            border-color: rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--dark-text);
+        }
+
         .gradient-text {
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             -webkit-background-clip: text;
@@ -1490,17 +1626,54 @@
                 </div>
                 <div class="card-body">
                     <form id="chaughadiya-form">
-                        <div class="row">
-                            <div class="col-lg-6 mb-3">
-                                <div class="form-floating">
-                                    <input type="text" class="form-control" id="location" placeholder="Enter a location">
-                                    <label for="location"><i class="fas fa-map-marker-alt me-2"></i>Location</label>
+                        <div class="row g-3 mb-3">
+                            <div class="col-12">
+                                <div class="location-input-wrapper">
+                                    <div class="location-input-header">
+                                        <span class="location-input-title">
+                                            <i class="fas fa-map-marker-alt text-primary"></i>
+                                            Location & Timezone
+                                        </span>
+                                    </div>
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control" id="location" placeholder="Enter a location">
+                                        <label for="location"><i class="fas fa-map-marker-alt me-2"></i>Location</label>
+                                    </div>
+                                    <div class="form-floating">
+                                        <select class="form-select" id="timezone">
+                                            <option value="">Select timezone</option>
+                                        </select>
+                                        <label for="timezone"><i class="fas fa-globe me-2"></i>Timezone</label>
+                                    </div>
+                                    <div class="map-input mt-3">
+                                        <label><i class="fas fa-map me-2 text-primary"></i>Select on Map</label>
+                                        <div id="map" style="height: 320px;"></div>
+                                    </div>
                                 </div>
                             </div>
-                            
-                            <div class="col-lg-6 mb-3">
-                                <div class="row g-2">
-                                    <div class="col-4">
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-12">
+                                <div class="date-input-wrapper">
+                                    <div class="date-input-header">
+                                        <span class="date-input-title">
+                                            <i class="fas fa-calendar-week text-primary"></i>
+                                            Select Date
+                                        </span>
+                                        <div class="date-quick-actions">
+                                            <button type="button" class="quick-date-btn" id="datePrevBtn" title="Show previous day">
+                                                <i class="fas fa-chevron-left"></i>
+                                                Prev
+                                            </button>
+                                            <button type="button" class="quick-date-btn" id="dateNextBtn" title="Show next day">
+                                                Next
+                                                <i class="fas fa-chevron-right"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="row g-2">
+                                    <div class="col-12 col-md-4">
                                         <div class="form-floating">
                                             <select class="form-select" id="day" required>
                                                 <option value="">Day</option>
@@ -1508,7 +1681,7 @@
                                             <label for="day"><i class="fas fa-calendar-day me-1"></i>Day</label>
                                         </div>
                                     </div>
-                                    <div class="col-4">
+                                    <div class="col-12 col-md-4">
                                         <div class="form-floating">
                                             <select class="form-select" id="month" required>
                                                 <option value="">Month</option>
@@ -1528,37 +1701,29 @@
                                             <label for="month"><i class="fas fa-calendar-alt me-1"></i>Month</label>
                                         </div>
                                     </div>
-                                    <div class="col-4">
+                                    <div class="col-12 col-md-4">
                                         <div class="form-floating">
                                             <select class="form-select" id="year" required>
                                                 <option value="">Year</option>
                                             </select>
                                             <label for="year"><i class="fas fa-calendar me-1"></i>Year</label>
-                                        </div>
+                                    </div>
+                                </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         
                         <div class="row mb-3">
-                            <div class="col-lg-8 mb-3 mb-lg-0">
-                                <div id="map" style="height: 300px;"></div>
-                            </div>
-                            
-                            <div class="col-lg-4 d-flex flex-column">
-                                <div class="form-floating mb-3">
-                                    <select class="form-select" id="timezone">
-                                        <option value="">Select timezone</option>
-                                    </select>
-                                    <label for="timezone"><i class="fas fa-globe me-2"></i>Timezone</label>
+                            <div class="col-12 col-lg-5 ms-lg-auto cta-column">
+                                <div class="cta-actions">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-search me-2"></i>Get Chaughadiya
+                                    </button>
+                                    <button type="button" class="btn btn-outline-primary" id="saveFavoriteBtn">
+                                        <i class="fas fa-star me-2"></i>Save as Favorite
+                                    </button>
                                 </div>
-                                
-                                <button type="submit" class="btn btn-primary w-100 mt-auto mb-2">
-                                    <i class="fas fa-search me-2"></i>Get Chaughadiya
-                                </button>
-                                <button type="button" class="btn btn-outline-primary w-100" id="saveFavoriteBtn">
-                                    <i class="fas fa-star me-2"></i>Save as Favorite
-                                </button>
                             </div>
                         </div>
                     </form>
@@ -3245,6 +3410,8 @@
             const timezoneSelect = document.getElementById('timezone');
             const form = document.getElementById('chaughadiya-form');
             const resultsContainer = document.getElementById('results-container');
+            const previousDayBtn = document.getElementById('datePrevBtn');
+            const nextDayBtn = document.getElementById('dateNextBtn');
             let latitude, longitude;
             let searchTimeout;
             let lastApiResponse = null; // Store last response for sharing
@@ -3275,7 +3442,67 @@
                 yearSelect.value = today.getFullYear();
             }
 
+            function ensureYearOption(year) {
+                const options = Array.from(yearSelect.options);
+                const alreadyExists = options.some(option => parseInt(option.value, 10) === year);
+                if (alreadyExists) {
+                    return;
+                }
+
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+
+                let inserted = false;
+                for (let i = 0; i < options.length; i++) {
+                    const optionYear = parseInt(options[i].value, 10);
+                    if (isNaN(optionYear)) continue;
+                    if (optionYear > year) {
+                        yearSelect.insertBefore(option, options[i]);
+                        inserted = true;
+                        break;
+                    }
+                }
+
+                if (!inserted) {
+                    yearSelect.appendChild(option);
+                }
+            }
+
+            function getSelectedDateSafe() {
+                if (!daySelect.value || !monthSelect.value || !yearSelect.value) {
+                    return null;
+                }
+
+                return new Date(
+                    parseInt(yearSelect.value, 10),
+                    parseInt(monthSelect.value, 10) - 1,
+                    parseInt(daySelect.value, 10)
+                );
+            }
+
+            function handleQuickDateChange(offset) {
+                const baseDate = getSelectedDateSafe() || new Date();
+                baseDate.setDate(baseDate.getDate() + offset);
+
+                ensureYearOption(baseDate.getFullYear());
+
+                daySelect.value = String(baseDate.getDate());
+                monthSelect.value = String(baseDate.getMonth() + 1);
+                yearSelect.value = String(baseDate.getFullYear());
+
+                form.dispatchEvent(new Event('submit'));
+            }
+
             initializeDateDropdowns();
+
+            if (previousDayBtn) {
+                previousDayBtn.addEventListener('click', () => handleQuickDateChange(-1));
+            }
+
+            if (nextDayBtn) {
+                nextDayBtn.addEventListener('click', () => handleQuickDateChange(1));
+            }
 
             // Add location search functionality
             locationInput.addEventListener('input', function() {
